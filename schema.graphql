@@ -5,6 +5,12 @@ integer on BE)
 scalar CreditAmount
 
 """
+The `Date` scalar type represents a date. The Date appears in a JSON
+response as an ISO8601 formatted string, without a time component.
+"""
+scalar Date
+
+"""
 The `DateTime` scalar type represents a date and time in the UTC
 timezone. The DateTime appears in a JSON response as an ISO8601 formatted
 string, including UTC timezone ("Z"). The parsed date and time string will
@@ -224,6 +230,16 @@ enum ExportFormat {
   WEBP
 }
 
+"""An enum representing the types of Components that can be exported"""
+enum ExportableComponentType {
+  """Color variables"""
+  COLOR_VARIABLE
+  """Layer styles"""
+  LAYER_STYLE
+  """Text styles"""
+  TEXT_STYLE
+}
+
 """File types"""
 enum FileType {
   """Image file for the layers in an artboard with fix position when scrolling"""
@@ -260,6 +276,11 @@ enum InviteStatus {
 
 """Version's kind"""
 enum Kind {
+  """
+  Auto-saved Version / An auto-saved version containing changes not
+  explicitly consolidated by the user
+  """
+  AUTO
   """Draft version / 'Save' in UI visible terminology"""
   DRAFT
   """Published version / 'Star' in UI visible terminology"""
@@ -507,12 +528,29 @@ enum PublicTokenExport {
   LATEST_STARRED
 }
 
-"""Workspace profile publication sort order"""
+"""Possible options for Publication Reactions."""
+enum PublicationReactionType {
+  """Heart reaction on a publication."""
+  HEART
+  """No reaction on a publication."""
+  NO_REACTION
+}
+
+"""Publications sort order"""
 enum PublicationSortOrder {
   """Sort by most recently published"""
-  LATEST_FIRST
+  LATEST_FIRST @deprecated(reason: "Use `UPDATED_AT_DESC instead`")
+  """
+  Sort by number of reactions, in descending order
+  (i.e. the one with most reactions first).
+  """
+  MOST_REACTED_DESC
+  """Sort by share's name, alphabetically in ascending order."""
+  NAME_ASC
   """Sort randomly"""
   RANDOM
+  """Sort by most recently published"""
+  UPDATED_AT_DESC
 }
 
 enum RenderStatusType {
@@ -926,6 +964,15 @@ An enum representing the different filters that can be used when querying
 Shares.
 """
 enum WorkspaceShareFilterType {
+  """
+  Filter for Shares that contain at least one Prototype.
+  
+  i.e. At least one Artboard in the latest Version of the Share has
+  `is_flow_home=true`.
+  """
+  HAS_PROTOTYPES
+  """Filter for Shares that the current user can edit."""
+  I_CAN_EDIT
   """Filter for Shares that are Libraries."""
   LIBRARY
   """Filter for Shares that do not belong to a Collection."""
@@ -1093,12 +1140,32 @@ type ActivityStatus {
   status: UserActivityStatus!
 }
 
+"""Response from mutation addPermissionGroupMembers"""
+type AddPermissionGroupMembersResponse {
+  """The created permission group membership"""
+  members: [PermissionGroupMembership]!
+  """The permission group"""
+  permissionGroup: PermissionGroup!
+}
+
+"""Response from mutation addPermissionGroupRelation"""
+type AddPermissionGroupRelationResponse {
+  """The created relation"""
+  relation: PermissionGroupRelation!
+}
+
 """Response from mutation addProjectMember"""
 type AddProjectMemberResponse {
   """The affected project"""
   project: Project!
   """The created project membership"""
   projectMembership: ProjectMembership!
+}
+
+"""API response for addReactionToPublication."""
+type AddReactionToPublicationResponse {
+  """Publication to which a reaction has been added."""
+  publication: Publication!
 }
 
 """A notification that is created when a member is added to a share."""
@@ -1412,6 +1479,12 @@ type Artboards {
   meta: PaginationMeta!
 }
 
+"""A response from the AskAI assistant"""
+type AskAiResponse {
+  """The response from the AskAI assistant"""
+  response: String!
+}
+
 """SAML attribute mappings configuration"""
 type AttributeMappingEntry {
   """Attribute name for Avatar URL"""
@@ -1533,7 +1606,18 @@ type Collection {
   
   If the Collection is trashed, then all Shares are included.
   """
-  previews: [CollectionSharePreview!]!
+  previews(
+    """
+    Parameters for searching the Shares in the Collection.
+    
+    Only Shares that match the search parameters will be included in the
+    list of previews.
+    
+    If no search parameters are given, then all Shares in the Collection
+    are included in the list.
+    """
+    search: SharesSearchParams
+  ): [CollectionSharePreview!]!
   """
   The number of Shares in the Collection.
   
@@ -1545,7 +1629,18 @@ type Collection {
   
   This count excludes trashed Shares if the Collection is not in the trash.
   """
-  shareCount: Int!
+  shareCount(
+    """
+    Parameters for searching the Shares in the Collection.
+    
+    Only Shares that match the search parameters will be included in the
+    count.
+    
+    If no search parameters are given, then all Shares in the Collection
+    are included in the count.
+    """
+    search: SharesSearchParams
+  ): Int!
   """
   The paginated Shares within this Collection.
   
@@ -1830,6 +1925,12 @@ type CreateEducationApplicationResponse {
   workspace: Workspace! @deprecated(reason: "Can be fetched through the educationApplication field")
 }
 
+"""Response from mutation createPermissionGroup"""
+type CreatePermissionGroupResponse {
+  """The created permission group"""
+  permissionGroup: PermissionGroup!
+}
+
 """API response for createWorkspaceProfile"""
 type CreateWorkspaceProfileResponse {
   """The workspace profile which has been created"""
@@ -1908,6 +2009,12 @@ type DeleteAnnotationResponse {
 type DeleteCollectionResponse {
   """The deleted collection"""
   collection: Collection!
+}
+
+"""Response from mutation deletePermissionGroup"""
+type DeletePermissionGroupResponse {
+  """The UUID of the deleted permission group"""
+  permissionGroupIdentifier: UUID!
 }
 
 """API response for deleteProjectPermanently"""
@@ -2064,6 +2171,12 @@ type DisableScimResponse {
   workspace: Workspace!
 }
 
+"""Response for disabling Support Access in a Workspace"""
+type DisableSupportAccessResponse {
+  """Modified workspace"""
+  workspace: Workspace!
+}
+
 """Discussion"""
 type Discussion {
   """Deprecated identifier"""
@@ -2199,6 +2312,15 @@ type Document {
     colorFormat: TokenColorFormat
     """Design Token format to use"""
     format: TokenExportFormat! = AMAZON
+    """
+    The types of Components to include in the export.
+    
+    Clients can control which Component types are exported using this
+    argument.
+    
+    Defaults to [ColorVariable] which will export only color variables.
+    """
+    tokenTypes: [ExportableComponentType]! = [COLOR_VARIABLE]
   ): TokenExport!
   """Updated at"""
   updatedAt: DateTime
@@ -2513,6 +2635,12 @@ type EmptyWorkspaceTrashResponse {
 type EnableScimResponse {
   """The token for SCIM authentication"""
   scimToken: String!
+  """Modified workspace"""
+  workspace: Workspace!
+}
+
+"""Response for enabling Support Access in a Workspace"""
+type EnableSupportAccessResponse {
   """Modified workspace"""
   workspace: Workspace!
 }
@@ -2833,6 +2961,11 @@ type MoveAllCollectionSharesResponse {
   """Identifier of the project where the collection belongs"""
   projectIdentifier: UUID!
   """
+  The collection where all of the shares were moved, or null if the shares
+  were moved back to the project root.
+  """
+  targetCollection: Collection
+  """
   Identifier of the collection where all shares were moved to, or null if shares were moved
   out of a collection and back to the project root.
   """
@@ -3071,22 +3204,6 @@ type OrganizationAcceptTosPayload {
   successful: Boolean!
 }
 
-type OrganizationAvatarDeletePayload {
-  """A list of errors, raised when executing this migrations."""
-  errors: [UserError]!
-  organization: Organization
-  """Indicates whether the mutation completed successfully or not."""
-  successful: Boolean!
-}
-
-type OrganizationAvatarUpload {
-  """A list of errors, raised when executing this migrations."""
-  errors: [UserError]!
-  """Indicates whether the mutation completed successfully or not."""
-  successful: Boolean!
-  url: String
-}
-
 """Organization Invite"""
 type OrganizationInvite {
   """Email"""
@@ -3277,6 +3394,108 @@ type Partner {
   name: String
 }
 
+"""PermissionGroup"""
+type PermissionGroup {
+  """Identifier"""
+  identifier: UUID!
+  """List of members in that permission group"""
+  members(
+    after: String
+    before: String
+    limit: Int = 20
+    """Search by term"""
+    search: String
+  ): PermissionGroupMemberships!
+  """Permission group name"""
+  name: String!
+  """List of projects with which the permission group is shared with"""
+  projects(
+    after: String
+    before: String
+    limit: Int = 20
+    """Search by project name"""
+    search: String
+  ): PermissionGroupRelationProjects!
+  """List of shares with which the permission group is shared with"""
+  shares(
+    after: String
+    before: String
+    limit: Int = 20
+    """Search by share name"""
+    search: String
+  ): PermissionGroupRelationShares!
+}
+
+"""PermissionGroupMembership"""
+type PermissionGroupMembership {
+  """Identifier"""
+  identifier: UUID!
+  """Permission group"""
+  permissionGroup: PermissionGroup!
+  """The membership of the user with the workspace"""
+  workspaceMember: WorkspaceMembership!
+}
+
+"""List of Permission group memberships"""
+type PermissionGroupMemberships {
+  """Paginated permission group memberships"""
+  entries: [PermissionGroupMembership!]!
+  """Pagination information"""
+  meta: PaginationMeta!
+}
+
+"""A relation between a permission group and a project"""
+type PermissionGroupRelationProject {
+  """The access level of that group on the project"""
+  accessLevel: PrivateAccessLevel!
+  """When the relation was created"""
+  createdAt: NaiveDateTime!
+  """Identifier"""
+  identifier: UUID!
+  """Permission group"""
+  permissionGroup: PermissionGroup!
+  """The project"""
+  project: Project!
+}
+
+"""List of Permission group relations for project"""
+type PermissionGroupRelationProjects {
+  """Paginated permission group relations for projects"""
+  entries: [PermissionGroupRelationProject!]!
+  """Pagination information"""
+  meta: PaginationMeta!
+}
+
+"""A relation between a permission group and a share"""
+type PermissionGroupRelationShare {
+  """The access level of that group on the share"""
+  accessLevel: PrivateAccessLevel!
+  """When the relation was created"""
+  createdAt: NaiveDateTime!
+  """Identifier"""
+  identifier: UUID!
+  """Permission group"""
+  permissionGroup: PermissionGroup!
+  """The share"""
+  share: Share!
+}
+
+"""List of Permission group relations for shares"""
+type PermissionGroupRelationShares {
+  """Paginated permission group relations for shares"""
+  entries: [PermissionGroupRelationShare!]!
+  """Pagination information"""
+  meta: PaginationMeta!
+}
+
+"""List of Permission groups"""
+type PermissionGroups {
+  """Paginated permission groups"""
+  entries: [PermissionGroup!]!
+  """Pagination information"""
+  meta: PaginationMeta!
+}
+
 """
 Personal tokens are used to authenticate requests to the public API.
 
@@ -3353,13 +3572,19 @@ type PresentationFile {
   """A URL that can be used to download the presentation-manifest.json file."""
   manifestUrl: String
   """The presentation file status"""
-  status: PresentationFileStatus
+  status: PresentationFileStatus @deprecated(reason: "Use version > presentationStatus instead")
 }
 
 """This event is dispatched every time a page gets its presentation file generated."""
 type PresentationFileEvent {
   """Download URL for the presentation file"""
   url: String!
+}
+
+"""Result of processComponents mutation"""
+type ProcessComponentsPayload {
+  """Did the mutation succeed?"""
+  success: Boolean!
 }
 
 """Project"""
@@ -3374,7 +3599,18 @@ type Project {
     identifier: UUID!
   ): Collection!
   """The paginated Collections within this Project."""
-  collections(after: String, before: String, limit: Int = 20): Collections!
+  collections(
+    after: String
+    before: String
+    limit: Int = 20
+    """
+    Filter the returned collections based on the share search parameters.
+    
+    Only collections that contain at least one share that match the given
+    parameters will be returned.
+    """
+    shareSearch: SharesSearchParams
+  ): Collections!
   """Unpaginated list of Collections within this Project."""
   collectionsUnpaginated(after: String, before: String, limit: Int = 20): [UnpaginatedCollection!]!
   """Date and time in which the project was moved to trash"""
@@ -3389,6 +3625,14 @@ type Project {
   memberships(after: String, before: String, limit: Int = 20): ProjectMemberships!
   """Project name"""
   name: String!
+  """List permission group assigned to the project"""
+  permissionGroupRelations(
+    after: String
+    before: String
+    limit: Int = 20
+    """Search term to filter permission group by name"""
+    search: String
+  ): PermissionGroupRelationProjects!
   """The privacy icon to be displayed"""
   privacyIcon: ProjectPrivacyIcon!
   """Shares"""
@@ -3823,10 +4067,20 @@ type Publication {
   identifier: UUID!
   """Published share information"""
   share: Share!
+  """The count of heart reactions the publication has received."""
+  totalHearts: Int!
   """Updated at"""
   updatedAt: DateTime!
+  """The reaction of the current user on the publication."""
+  userReaction: PublicationReactionType!
   """Workspace profile information (null when profile isn't public)"""
   workspaceProfile: WorkspaceProfile
+}
+
+"""An event that is broadcast whenever publication reactions are updated."""
+type PublicationReactionsUpdatedEvent {
+  """The updated Publication."""
+  publication: Publication!
 }
 
 """List of publications with pagination info"""
@@ -3859,6 +4113,22 @@ type RGBAColor {
 type RecoveryCodes {
   """Recovery codes"""
   entries: [String!]!
+}
+
+"""Response from mutation removePermissionGroupMembers"""
+type RemovePermissionGroupMemberResponse {
+  """The permission group"""
+  permissionGroup: PermissionGroup!
+}
+
+"""Response from mutation addPermissionGroupRelation"""
+type RemovePermissionGroupRelationResponse {
+  """The permission group of deleted relation"""
+  permissionGroup: PermissionGroup!
+  """project of the relation, null if concerns share"""
+  project: Project
+  """share of the relation, null if concerns project"""
+  share: Share
 }
 
 """Response from mutation removeProjectMember"""
@@ -4093,6 +4363,16 @@ type RootMutationType {
     """The single-use token for accepting this membership invite"""
     membershipToken: String!
   ): AcceptWorkspaceInviteResponse!
+  """Add a member to a permission group"""
+  addPermissionGroupMembers(
+    """The input param to add a member to a permission group"""
+    input: AddPermissionGroupMembersParams!
+  ): AddPermissionGroupMembersResponse!
+  """Add a permission group to a share or a project"""
+  addPermissionGroupRelation(
+    """The input param to add a permission group to a share or a project"""
+    input: AddPermissionGroupRelationParams!
+  ): AddPermissionGroupRelationResponse!
   """Add a member to a private project"""
   addProjectMember(
     """
@@ -4109,6 +4389,21 @@ type RootMutationType {
     """Workspace Membership identifier of the user to add to the project"""
     workspaceMembershipIdentifier: UUID
   ): AddProjectMemberResponse!
+  """
+  Add reaction to publication. Possible reactions are `HEART` and `NO_REACTION`.
+  
+  Each user can react with `HEART` only once per publication. Each subsequent request
+  to add `HEART` reaction won't change anything.
+  
+  Sending `NO_REACTION` will remove current `HEART` reaction of the user.
+  Sending `NO_REACTION` when `HEART` reaction is not avalable, won't change anything.
+  """
+  addReactionToPublication(
+    """The identifier of the publication."""
+    publicationIdentifier: UUID!
+    """The reaction to the publication."""
+    reaction: PublicationReactionType!
+  ): AddReactionToPublicationResponse
   """
   Add member to a share using either an email address, or a user identifier.
   If the email address is not known in the system, they will be added to the share as a
@@ -4462,6 +4757,11 @@ type RootMutationType {
     """Organization short id"""
     organizationShortId: ShortId
   ): ProjectCreatePayload! @deprecated(reason: "Use createWorkspaceProject instead")
+  """Create a permission group"""
+  createPermissionGroup(
+    """The input param to create a permission group"""
+    input: CreatePermissionGroupParams!
+  ): CreatePermissionGroupResponse!
   """Create a student application"""
   createStudentApplication(
     """Input for creating a student application"""
@@ -4501,6 +4801,11 @@ type RootMutationType {
     guestsToInvite: [CreateWorkspaceProjectGuestToInvite!]
     """Project name"""
     name: String!
+    """
+    A list of identifiers/access level of permission groups that will be added to
+    the project.
+    """
+    permissionGroups: [PermissionGroupParam!]
     """Workspace access level of the project"""
     workspaceAccessLevel: ProjectWorkspaceAccessLevel = DEFAULT
     """Workspace identifier"""
@@ -4546,6 +4851,11 @@ type RootMutationType {
     """Identifier of the design system page to delete"""
     identifier: UUID!
   ): DesignSystemPage!
+  """Delete a permission group"""
+  deletePermissionGroup(
+    """The input param to delete a permission group"""
+    input: DeletePermissionGroupParams!
+  ): DeletePermissionGroupResponse!
   """Delete a project"""
   deleteProject(
     """Project id (deprecated)"""
@@ -4587,6 +4897,11 @@ type RootMutationType {
     """Workspace identifier"""
     identifier: UUID!
   ): DisableScimResponse!
+  """Mutation for disabling Support Access"""
+  disableSupportAccess(
+    """Workspace identifier"""
+    identifier: UUID!
+  ): DisableSupportAccessResponse!
   """Cancel a multipart upload session"""
   documentUploadCancel(
     """identifier of the document"""
@@ -4696,6 +5011,13 @@ type RootMutationType {
     """Workspace identifier"""
     identifier: UUID!
   ): EnableScimResponse!
+  """Mutation for enabling Support Access"""
+  enableSupportAccess(
+    """Permission duration (in days)"""
+    duration: Int
+    """Workspace identifier"""
+    identifier: UUID!
+  ): EnableSupportAccessResponse!
   """Generate a new set of recovery codes"""
   generateMfaRecoveryCodes(
     """User password"""
@@ -4820,20 +5142,6 @@ type RootMutationType {
     """Whether the Terms of Service have been accepted"""
     tosAccepted: Boolean
   ): OrganizationAcceptTosPayload! @deprecated(reason: "Use agreeToWorkspaceTermsOfService instead.")
-  """Mutation for deleting an avatar"""
-  organizationAvatarDelete(
-    """Organization identifier"""
-    id: UUID!
-    """Organization identifier"""
-    identifier: UUID
-  ): OrganizationAvatarDeletePayload @deprecated(reason: "Use deleteWorkspaceAvatar instead.")
-  """Mutation for uploading an avatar"""
-  organizationAvatarUpload(
-    """Organization identifier"""
-    id: UUID!
-    """Organization identifier"""
-    identifier: UUID
-  ): OrganizationAvatarUpload! @deprecated(reason: "Use updateTeam instead.")
   """Resend team membership invitation"""
   organizationResendInvite(
     """The identifier of the membership you wish to resend the invitation for"""
@@ -4886,6 +5194,11 @@ type RootMutationType {
     """The identifier of the token to delete"""
     identifier: UUID!
   ): DeletedPersonalToken!
+  """Triggers async component processing"""
+  processComponents(
+    """Identifier of the document that will be processed"""
+    documentIdentifier: UUID!
+  ): ProcessComponentsPayload!
   """Publish share to Community"""
   publishShare(
     """Enables commenting for external users"""
@@ -4895,6 +5208,16 @@ type RootMutationType {
     """The identifier of the share you want to publish"""
     shareIdentifier: UUID!
   ): PublishShareResponse
+  """Revove a member from a permission group"""
+  removePermissionGroupMember(
+    """The input param to remove a member from a permission group"""
+    input: RemovePermissionGroupMemberParams!
+  ): RemovePermissionGroupMemberResponse!
+  """Remove a permission group relation"""
+  removePermissionGroupRelation(
+    """The input param to remove a permission group to a share or a project"""
+    input: RemovePermissionGroupRelationParams!
+  ): RemovePermissionGroupRelationResponse!
   """Remove a member from private project"""
   removeProjectMember(
     """Indication if user has confirmed the operation"""
@@ -5248,6 +5571,16 @@ type RootMutationType {
     """Input object for notifications"""
     input: NotificationInput!
   ): NotificationsUpdatedPayload
+  """Update a permission group"""
+  updatePermissionGroup(
+    """The input param to update a permission group"""
+    input: UpdatePermissionGroupParams!
+  ): UpdatePermissionGroupResponse!
+  """Update a permission group relation"""
+  updatePermissionGroupRelation(
+    """The input param to update a permission group relation"""
+    input: UpdatePermissionGroupRelationParams!
+  ): UpdatePermissionGroupRelationResponse!
   """Update a project membership"""
   updateProjectMembership(
     """Indicate if the guest can comment shares"""
@@ -5424,6 +5757,11 @@ type RootMutationType {
     """The identifier of the workspace whose destination should be updated"""
     workspaceIdentifier: UUID!
   ): WebhookDestination!
+  """Returns an URL to download the CSV file"""
+  workspaceMembersReport(
+    """The workspace identifier"""
+    workspaceIdentifier: UUID!
+  ): WorkspaceMembersReportResponse!
 }
 
 type RootQueryType {
@@ -5479,6 +5817,7 @@ type RootQueryType {
     uuid: String!
   ): Artboard
   artboardRevisions(after: String, before: String, limit: Int = 20, permanentArtboardId: ID!, shareIdentifier: UUID!): ArtboardRevisions!
+  askAi(question: String!): AskAiResponse!
   """Get the latest version of a component via its UUID"""
   componentInDocumentWithUuid(
     """The ID of the document whose scope we want to limit the component lookup to"""
@@ -5540,6 +5879,29 @@ type RootQueryType {
     shareIdentifier: UUID
     """The identifier of the workspace"""
     workspaceIdentifier: UUID!
+  ): WorkspaceMemberships! @deprecated(reason: "Use `invitableUsersAndGroups` query instead")
+  invitableUsersAndGroups(
+    """Number of results per entity"""
+    limit: Int = 3
+    """Project members will be filtered out from the list if provided"""
+    projectIdentifier: UUID
+    """Search users by name or email"""
+    search: String
+    """Share members will be filtered out from the list if provided"""
+    shareIdentifier: UUID
+    """The identifier of the workspace"""
+    workspaceIdentifier: UUID!
+  ): [InvitableUserOrPermissionGroup!]!
+  invitableUsersForPermissionGroup(
+    after: String
+    before: String
+    limit: Int = 20
+    """If provided, the members of the permission group will be excluded from the result"""
+    permissionGroupIdentifier: UUID
+    """Search users by name or email"""
+    search: String
+    """The identifier of the workspace"""
+    workspaceIdentifier: UUID!
   ): WorkspaceMemberships!
   invitableUsersForProject(
     after: String
@@ -5551,7 +5913,7 @@ type RootQueryType {
     search: String
     """The identifier of the workspace"""
     workspaceIdentifier: UUID!
-  ): WorkspaceMemberships!
+  ): WorkspaceMemberships! @deprecated(reason: "Use `invitableUsersAndGroups` query instead")
   me: User!
   organization(customerId: ID, id: ID, shortId: ShortId): Organization! @deprecated(reason: "Use workspace instead")
   """Partner"""
@@ -5561,6 +5923,11 @@ type RootQueryType {
   ): Partner
   """Get a pending workspace membership by the invite token"""
   pendingWorkspaceMembership(membershipToken: String!): PublicWorkspaceMembership!
+  """Fetch one permission group from the identifier"""
+  permissionGroup(
+    """The identifier of the permission group"""
+    identifier: UUID!
+  ): PermissionGroup!
   """[WILL BE REMOVED] Legacy plans"""
   plans: Plans!
   project(
@@ -5575,6 +5942,20 @@ type RootQueryType {
   publicOrganization(id: UUID): PublicOrganization @deprecated(reason: "Use `publicWorkspace` query instead")
   publicWorkspace(identifier: UUID): PublicWorkspace!
   publication(identifier: UUID!): Publication!
+  """List of all publications from public workspace profiles with pagination info."""
+  publications(
+    after: String
+    before: String
+    """List of publication identifiers to exclude from the results."""
+    exclude: [UUID!]! = []
+    """Include only those publications whose identifiers are present in the list."""
+    include: [UUID!]
+    limit: Int = 20
+    """Available params for searching all public workspace profiles' publications."""
+    search: PublicationsSearchParams
+    """Publications sort order"""
+    sortOrder: PublicationSortOrder! = MOST_REACTED_DESC
+  ): Publications!
   share(id: UUID, shortId: ShortId): Share
   """Get a Share via a document's UUID"""
   shareForDocumentWithUuid(
@@ -5792,6 +6173,14 @@ type RootSubscriptionType {
     subject: AnnotationSubjectInput
   ): [Comment]!
   """
+  A subscription that fires when the state of components have changed. This
+  happens when components have been ingested.
+  """
+  componentsStateUpdated(
+    """Document identifier"""
+    documentIdentifier: UUID
+  ): DocumentComponentsState!
+  """
   A subscription for events of permanently deleting a trashed share
     (Deprecated) Use the shareUpdated subscription
   """
@@ -5804,7 +6193,7 @@ type RootSubscriptionType {
   presentationFile(
     """Page identifier of the page you are waiting for the presentation files to be generated"""
     pageId: String!
-  ): PresentationFileEvent!
+  ): PresentationFileEvent! @deprecated(reason: "Use the `versionUpdated` subscription instead")
   """
   Triggered when access to a project (project membership)
   changes for the current user.
@@ -5820,6 +6209,16 @@ type RootSubscriptionType {
     """Document identifier you are waiting for the prototype files to be generated"""
     documentId: String!
   ): PrototypeFileEvent!
+  """
+  A subscription for changes to reactions of a Publication.
+  
+  Clients can use this to subscribe to `PublicationReactionsUpdatedEvents` for a
+  given Publication.
+  """
+  publicationReactionsUpdated(
+    """The identifier of the Publication that you are subscribing to."""
+    publicationIdentifier: UUID!
+  ): PublicationReactionsUpdatedEvent!
   """A subscription that fires when a document is processed and revisions are created"""
   revisionCreated(
     """Permanent Artboard Short ID"""
@@ -6129,6 +6528,17 @@ type Share {
   parentAccessLevel: ParentAccessLevel!
   """Whether or not comments are enabled for workspace members"""
   parentCommentsEnabled: Boolean! @deprecated(reason: "(Deprecated) Use shareMembership.guestCommentsEnabled instead")
+  """
+  Lists share memberships, this is only visible for people who
+  can administer this share or are members.
+  """
+  permissionGroupRelations(
+    after: String
+    before: String
+    limit: Int = 20
+    """Search term to filter memberships against"""
+    search: String
+  ): PermissionGroupRelationShares!
   """(Deprecated) The preview images for this Share"""
   previewFiles(
     """The scale of the image (Retina or not)"""
@@ -6156,9 +6566,18 @@ type Share {
     Color format to use. Only applicable to CSS and Amazon
             export formats.
     """
-    colorFormat: TokenColorFormat = RGBA
+    colorFormat: TokenColorFormat
     """Design Token format to use"""
     format: TokenExportFormat! = AMAZON
+    """
+    The types of Components to include in the export.
+    
+    Clients can control which Component types are exported using this
+    argument.
+    
+    Defaults to [ColorVariable] which will export only color variables.
+    """
+    tokenTypes: [ExportableComponentType]! = [COLOR_VARIABLE]
   ): String
   """The Share's URL on Sketch Cloud"""
   publicUrl: String!
@@ -6890,6 +7309,18 @@ type UpdateBillingSeatsResponse {
   workspace: Workspace!
 }
 
+"""Response from mutation updatePermissionGroupRelation"""
+type UpdatePermissionGroupRelationResponse {
+  """The updated relation"""
+  relation: PermissionGroupRelation!
+}
+
+"""Response from mutation updatePermissionGroup"""
+type UpdatePermissionGroupResponse {
+  """The updated permission group"""
+  permissionGroup: PermissionGroup!
+}
+
 """Response from mutation updateProjectMembership"""
 type UpdateProjectMembershipResponse {
   """The updated project membership"""
@@ -7238,7 +7669,7 @@ type Version {
   """Created timestamp"""
   createdAt: DateTime!
   """User"""
-  creator: PublicUser!
+  creator: PublicUser
   """Description"""
   description: String
   """Document"""
@@ -7259,6 +7690,8 @@ type Version {
   Non-empty only when version is returned in version history.
   """
   order: Int
+  """The status of presentation files for this version"""
+  presentationStatus: PresentationFileStatus!
   """The preview images for this Share"""
   previewFiles(
     """The scale of the image (Retina or not)"""
@@ -7295,11 +7728,13 @@ type VersionDeleted {
   """Created at"""
   createdAt: DateTime!
   """Creator"""
-  creator: PublicUser!
+  creator: PublicUser
   """Deleted at"""
   deletedAt: DateTime!
   """Identifier"""
   identifier: UUID!
+  """Version's kind"""
+  kind: Kind!
   """
   Version order.
   
@@ -7335,7 +7770,7 @@ type VersionUnavailable {
   """Created at"""
   createdAt: DateTime!
   """Creator"""
-  creator: PublicUser!
+  creator: PublicUser
   """Identifier"""
   identifier: UUID!
   """
@@ -7413,6 +7848,14 @@ type Workspace {
   memberships: WorkspaceMembershipsRestricted!
   """Workspace's name"""
   name: String!
+  """List of permission groups in the Workspace"""
+  permissionGroups(
+    after: String
+    before: String
+    limit: Int = 20
+    """Search by term"""
+    search: String
+  ): PermissionGroups!
   """
   The community profile of the workspace.
   
@@ -7447,6 +7890,11 @@ type Workspace {
   ): Shares!
   """The status of the workspace"""
   status: WorkspaceStatus!
+  """
+  If Support Access is enabled, this field indicates its expiration (UTC) date.
+  `null` otherwise.
+  """
+  supportAccessGrantedUntil: DateTime
   """The type of workspace. This can be either `standard`, `personal` or `student`"""
   type: WorkspaceType!
   """Determines if uploads are restricted and for whom"""
@@ -7510,6 +7958,13 @@ type WorkspaceCustomer {
   canUseSso: Boolean! @deprecated(reason: "Use workspaces.entries.features.sso instead.")
   """Customer's unique identifier, corresponds to the id in paymentsql"""
   identifier: UUID!
+  """
+  "When a user signs up and a workspace is created during the process, the
+  'metadata.source' field of the `SignUp` mutation represents the application used.
+  Valid values are 'ios', 'mac', 'macappstore', or 'web'. If no value, or if an
+  unrecognized value is provided, the source defaults to 'web'."
+  """
+  source: String!
   """Fetch SSO config for a Customer"""
   ssoConfig: WorkspaceSsoConfig
   """Whether SSO is enabled for this Customer's Workspaces"""
@@ -7542,6 +7997,8 @@ type WorkspaceCustomerSubscriptionUpdatedEvent {
 type WorkspaceFeatures {
   """Are Design Systems enabled for this workspace?"""
   designSystemsEnabled: Boolean!
+  """Is the Permission Group feature available for this workspace?"""
+  permissionGroupsEnabled: Boolean!
   """Are public links restricted in this workspace?"""
   restrictedPublicLinks: Boolean!
   """Is the SSO feature available for this workspace?"""
@@ -7568,6 +8025,12 @@ type WorkspaceMembers {
   meta: PaginationMeta!
 }
 
+"""The response for the report mutation"""
+type WorkspaceMembersReportResponse {
+  """The URl to download the file"""
+  downloadUrl: String!
+}
+
 """Relation between a user and the workspace they're a member of"""
 type WorkspaceMembership {
   """Timestamp for membership acceptance"""
@@ -7587,6 +8050,14 @@ type WorkspaceMembership {
   isEditor: Boolean!
   """Whether the user is the owner of the workspace"""
   isOwner: Boolean!
+  """Permission group memberships belonging to this workspace member"""
+  permissionGroupMemberships(
+    after: String
+    before: String
+    limit: Int = 20
+    """Search permission group by name"""
+    search: String
+  ): PermissionGroupMemberships!
   """
   Whether the member is permitted to use personal access tokens within this
   workspace.
@@ -7680,10 +8151,14 @@ type WorkspaceProfile {
     after: String
     before: String
     """List of publication identifiers to exclude from the results"""
-    exclude: [UUID!]
+    exclude: [UUID!]! = []
+    """Include only those publications whose identifiers are present in the list."""
+    include: [UUID!]
     limit: Int = 20
+    """Available params for searching publications of this workspace profile."""
+    search: PublicationsSearchParams
     """Workspace profile publication sort order"""
-    sortOrder: PublicationSortOrder = LATEST_FIRST
+    sortOrder: PublicationSortOrder! = LATEST_FIRST
   ): Publications!
   """Short URL Name"""
   shortUrlName: String!
@@ -7731,6 +8206,12 @@ union ArtboardRevisionItem = Revision | RevisionDeleted | RevisionUnavailable
 """Object representing current subject of the Annotation"""
 union CurrentSubject = Artboard | ColorVariable | LayerStyle | Page | Symbol | TextStyle | UnprocessedSubject
 
+"""Union between workspace membership and permission group"""
+union InvitableUserOrPermissionGroup = PermissionGroup | WorkspaceMembership
+
+"""Union type for a permission group relation"""
+union PermissionGroupRelation = PermissionGroupRelationProject | PermissionGroupRelationShare
+
 """
 Events that are published whenever a Share is added to or removed from a
 Collection.
@@ -7761,6 +8242,29 @@ input AcceptProjectMembershipInvitationParams {
   projectMembershipIdentifier: UUID
   """The token from the email"""
   token: String
+}
+
+"""Parameters for the mutation addPermissionGroupMembers"""
+input AddPermissionGroupMembersParams {
+  """The UUID of the permission group to update"""
+  identifier: UUID!
+  """List of workspace member identifier to be added to the permission group"""
+  members: [UUID!]
+}
+
+"""
+Parameters for the mutation addPermissionGroupRelation,
+  must have either shareIdentifier or projectIdentifier
+"""
+input AddPermissionGroupRelationParams {
+  """Access level"""
+  accessLevel: PrivateAccessLevel
+  """Identifier of permission group"""
+  permissionGroupIdentifier: UUID!
+  """Identifier of project"""
+  projectIdentifier: UUID
+  """Identifier of share"""
+  shareIdentifier: UUID
 }
 
 """
@@ -7866,6 +8370,16 @@ input CreateInstitutionApplicationParams {
   workspaceIdentifier: UUID
 }
 
+"""Parameters for the mutation createPermissionGroup"""
+input CreatePermissionGroupParams {
+  """List of workspace member identifier to be added to the permission group"""
+  members: [UUID!]
+  """The name of the permission group"""
+  name: String!
+  """The UUID of the workspace to create the permission group on"""
+  workspaceIdentifier: UUID!
+}
+
 """Input parameters for requesting a student subscription"""
 input CreateStudentApplicationParams {
   """Comments that may be relevant to the application"""
@@ -7965,6 +8479,12 @@ input CuratedSketchTemplateSearchInput {
   name: String
 }
 
+"""Parameters for the mutation deletePermissionGroup"""
+input DeletePermissionGroupParams {
+  """The UUID of the permission group to delete"""
+  permissionGroupIdentifier: UUID!
+}
+
 """Design system search params"""
 input DesignSystemSearchParams {
   """Case-insensitive search in name"""
@@ -8047,6 +8567,14 @@ input OrganizationSharesSearchInput {
   name: String
 }
 
+"""An input object used when inviting permission group when creating a project"""
+input PermissionGroupParam {
+  """Access level for the group"""
+  accessLevel: PrivateAccessLevel!
+  """Identifer of permission group"""
+  identifier: UUID!
+}
+
 """Allowed parameters to filter project memberships within workspace membership query"""
 input ProjectMemberAccessSearchParams {
   """Queries projects with a name that contains the given search query string."""
@@ -8059,6 +8587,30 @@ input ProjectSharesSearchInput {
   isCurrentVersionDownloadable: Boolean
   """Name"""
   name: String
+}
+
+"""Publications search params"""
+input PublicationsSearchParams {
+  """Date that is less than or equal to the publication creation date."""
+  createdAfter: Date
+  """Date that is greater than or equal to the publication creation date."""
+  createdBefore: Date
+  """Document type of the associated share."""
+  documentType: ShareType
+  """Name of the associated share or short url name of the workspace profile."""
+  name: String
+}
+
+"""Parameters for the mutation removePermissionGroupMember"""
+input RemovePermissionGroupMemberParams {
+  """Identifier of permission group membership to be removed from the permission group"""
+  member: UUID!
+}
+
+"""Parameters for the mutation removePermissionGroupRelation"""
+input RemovePermissionGroupRelationParams {
+  """Identifier of relation to delete"""
+  relationIdentifier: UUID!
 }
 
 """
@@ -8161,6 +8713,21 @@ input ShareSearchInput {
 input SharesSearchParams {
   """Share filter"""
   filter: WorkspaceShareFilterType
+  """
+  A list of WorkspaceShareFilterTypes to apply to the search.
+  
+  Clients can optionally provide one or more filters to apply to the
+  search. See WorkspaceShareFilterTypes for a list of supported filters.
+  
+  **NOTE** previously clients could provide a single filter via the
+  `filter` field. `filter` has been deprecated in favour of `filters`, but
+  to maintain compatibility with older clients we still support `filter`.
+  If `filter` is provided we assume the request is coming from an older
+  client that does not support `filters`, and so `filter` takes precedence.
+  
+  Defaults to an empty list.
+  """
+  filters: [WorkspaceShareFilterType!] = []
   """Whether the current version is downloadable or not"""
   isCurrentVersionDownloadable: Boolean
   """Name"""
@@ -8287,6 +8854,22 @@ input UpdateIdentityProviderConfigParams {
   entityId: String!
   """Identity provider's sign-in URL"""
   ssoUrl: String!
+}
+
+"""Parameters for the mutation updatePermissionGroup"""
+input UpdatePermissionGroupParams {
+  """The UUID of the permission group to update"""
+  identifier: UUID!
+  """The name of the permission group"""
+  name: String
+}
+
+"""Parameters for the mutation updatePermissionGroupRelation"""
+input UpdatePermissionGroupRelationParams {
+  """Update access level"""
+  accessLevel: PrivateAccessLevel
+  """Identifier of relation to update"""
+  relationIdentifier: UUID!
 }
 
 """Parameters to update the restricted public links"""
