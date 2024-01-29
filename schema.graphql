@@ -176,6 +176,8 @@ enum DocumentComponentsState {
   CAN_PROCESS
   """Components has been processed"""
   PROCESSED
+  """Components is being processed"""
+  PROCESSING
 }
 
 """Document download unavailable error"""
@@ -303,13 +305,15 @@ enum MfaStateType {
   ENABLED
 }
 
-"""The seen/read state of a notification"""
+"""The read state of a notification"""
 enum NotificationState {
+  """The notification has been marked done"""
+  DONE
   """The notification has not been seen"""
-  NEW
-  """The notification has been seen and read"""
+  NEW @deprecated(reason: "Use `unread` instead")
+  """The notification has been read"""
   READ
-  """The notification has been seen but not read"""
+  """The notification has not been read"""
   UNREAD
 }
 
@@ -459,6 +463,26 @@ enum PrivateAccessLevel {
   VIEW
 }
 
+"""The status of the project if it was archived. Used for filtering"""
+enum ProjectArchivedStatus {
+  """All projects"""
+  ALL
+  """Archived projects only"""
+  ARCHIVED
+  """Unarchived projects only"""
+  UNARCHIVED
+}
+
+"""The status of the project if it was pinned. Used for filtering"""
+enum ProjectPinnedStatus {
+  """All projects"""
+  ALL
+  """Pinned projects only"""
+  PINNED
+  """Unpinned projects only"""
+  UNPINNED
+}
+
 """The privacy icon to be displayed"""
 enum ProjectPrivacyIcon {
   """Restricted or non-restricted project with some guests"""
@@ -558,8 +582,10 @@ enum RenderStatusType {
   CREATED
   """Errored"""
   ERRORED
-  """FInished"""
+  """Finished"""
   FINISHED
+  """Not rendered"""
+  NOT_RENDERED
   """Processing"""
   PROCESSING
   """Rendering"""
@@ -582,6 +608,16 @@ enum SessionType {
   MAC_APP
   """Web"""
   WEB
+}
+
+"""The status of the share if it was archived. Used for filtering"""
+enum ShareArchivedStatus {
+  """All shares in the workspace"""
+  ALL
+  """Archived shares only"""
+  ARCHIVED
+  """Unarchived shares only"""
+  UNARCHIVED
 }
 
 """Available versions depending on user's permissions and starred updates"""
@@ -1088,8 +1124,6 @@ interface UserNotification {
   isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is the notification read?"""
   isRead: Boolean
-  """Is the notification seen?"""
-  isSeen: Boolean
   """Organization the user belongs to"""
   organization: PublicOrganization @deprecated(reason: "Use `workspace`")
   """Relative path to an associated resource"""
@@ -1182,8 +1216,6 @@ type AddShareMemberNotification implements UserNotification {
   isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Is seen"""
-  isSeen: Boolean @deprecated(reason: "Use `state` instead.")
   """Organization"""
   organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Notification subject's URL path"""
@@ -1356,6 +1388,12 @@ type Annotations {
   entries: [Annotation!]!
   """Pagination metadata"""
   meta: PaginationMeta!
+}
+
+"""API response for archiveProject"""
+type ArchiveProjectResponse {
+  """The archived project"""
+  project: Project!
 }
 
 """Artboard"""
@@ -1814,8 +1852,6 @@ type CommentNotification implements UserNotification {
   isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Is seen"""
-  isSeen: Boolean @deprecated(reason: "Use `state` instead.")
   """Organization"""
   organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Path"""
@@ -1870,6 +1906,8 @@ type Components {
   entries: [Component!]!
   """Pagination information"""
   meta: PaginationMeta!
+  """Component processing status"""
+  status: DocumentComponentsState!
 }
 
 """[WILL BE REMOVED] Cost of adding a contributor to a license"""
@@ -1923,6 +1961,12 @@ type CreateEducationApplicationResponse {
   educationApplication: EducationApplication!
   """The workspace the application was requested for"""
   workspace: Workspace! @deprecated(reason: "Can be fetched through the educationApplication field")
+}
+
+"""API response for createPartnerWorkspace"""
+type CreatePartnerWorkspaceResponse {
+  """The associated workspace"""
+  workspace: Workspace!
 }
 
 """Response from mutation createPermissionGroup"""
@@ -2241,8 +2285,6 @@ type Document {
     """Filter components by type"""
     type: ComponentFilterType! = SYMBOL
   ): Components!
-  """Processing state of componentes in this document"""
-  componentsState: DocumentComponentsState!
   """Created at"""
   createdAt: DateTime
   """
@@ -2291,8 +2333,6 @@ type Document {
   path: String
   """Thumbnail of the document"""
   previewFile: File
-  """[experimental] The prototype file for this document"""
-  prototypeFile: PrototypeFile
   """Render status"""
   renderStatus: RenderStatusType
   """Size"""
@@ -2356,8 +2396,6 @@ type DocumentUploadCompleteNotification implements UserNotification {
   isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Is seen"""
-  isSeen: Boolean @deprecated(reason: "Use `state` instead.")
   """Organization"""
   organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Path"""
@@ -2404,8 +2442,6 @@ type DocumentUploadProcessedNotification implements UserNotification {
   isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Is seen"""
-  isSeen: Boolean @deprecated(reason: "Use `state` instead.")
   """Organization"""
   organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Path"""
@@ -2488,8 +2524,6 @@ type DownloadableAssetRenderedNotification implements UserNotification {
   isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Is seen"""
-  isSeen: Boolean @deprecated(reason: "Use `state` instead.")
   """Document version to which the notification is relevant"""
   notifiedVersion: Version
   """Organization"""
@@ -2912,8 +2946,6 @@ type MentionNotification implements UserNotification {
   isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Is seen"""
-  isSeen: Boolean @deprecated(reason: "Use `state` instead.")
   """Organization"""
   organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Path"""
@@ -3034,6 +3066,13 @@ type NotificationMarkAsReadPayload {
   """A list of errors, raised when executing this migrations."""
   errors: [UserError]!
   notification: UserNotification
+  """Indicates whether the mutation completed successfully or not."""
+  successful: Boolean!
+}
+
+type NotificationMarkEveryReadAsDonePayload {
+  """A list of errors, raised when executing this migrations."""
+  errors: [UserError]!
   """Indicates whether the mutation completed successfully or not."""
   successful: Boolean!
 }
@@ -3347,7 +3386,7 @@ type Page {
   name: String
   """Order number"""
   order: Int!
-  """[experimental] The presentation file for this page."""
+  """The presentation file for this page."""
   presentationFile: PresentationFile
   """Slug"""
   slug: String
@@ -3541,6 +3580,18 @@ type PersonalToken {
   lastUsedAt: DateTime
 }
 
+"""Response from mutation pinProject"""
+type PinProjectResponse {
+  """The pinned project"""
+  project: Project!
+}
+
+"""Response from mutation pinShare"""
+type PinShareResponse {
+  """The pinned share"""
+  share: Share!
+}
+
 """[WILL BE REMOVED] Plan"""
 type Plan {
   """Plan amount"""
@@ -3571,24 +3622,12 @@ type PresentationFile {
   imageToken: String!
   """A URL that can be used to download the presentation-manifest.json file."""
   manifestUrl: String
-  """The presentation file status"""
-  status: PresentationFileStatus @deprecated(reason: "Use version > presentationStatus instead")
-}
-
-"""This event is dispatched every time a page gets its presentation file generated."""
-type PresentationFileEvent {
-  """Download URL for the presentation file"""
-  url: String!
-}
-
-"""Result of processComponents mutation"""
-type ProcessComponentsPayload {
-  """Did the mutation succeed?"""
-  success: Boolean!
 }
 
 """Project"""
 type Project {
+  """Date and time in which the project was archived"""
+  archivedAt: DateTime
   """
   Look up a Collection within this Project by its identifier.
   
@@ -3619,6 +3658,8 @@ type Project {
   id: String! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
+  """List of members of this project."""
+  members(after: String, before: String, limit: Int = 20): ProjectMembershipPaginationItems!
   """Project member count by role"""
   membershipCount: MembershipCount!
   """Memberships"""
@@ -3633,6 +3674,8 @@ type Project {
     """Search term to filter permission group by name"""
     search: String
   ): PermissionGroupRelationProjects!
+  """If current user pinned the project, this field will have the date when it was pinned"""
+  pinnedByCurrentUserAt: DateTime
   """The privacy icon to be displayed"""
   privacyIcon: ProjectPrivacyIcon!
   """Shares"""
@@ -3693,6 +3736,16 @@ type ProjectAccessGrantedEvent implements BaseProjectAccessChangedEvent {
 type ProjectAccessRevokedEvent implements BaseProjectAccessChangedEvent {
   """The affected project"""
   project: Project!
+  """Identifier of the workspace to which the project belongs"""
+  workspaceIdentifier: UUID!
+}
+
+"""This event defines when a project is archived"""
+type ProjectArchivedEvent implements BaseProjectChangedEvent {
+  """The affected project"""
+  project: Project!
+  """Identifier of the affected project"""
+  projectIdentifier: UUID! @deprecated(reason: "Use project instead")
   """Identifier of the workspace to which the project belongs"""
   workspaceIdentifier: UUID!
 }
@@ -3801,6 +3854,14 @@ type ProjectMembership {
   workspaceMembership: WorkspaceMembership!
 }
 
+"""Paginated list of member items"""
+type ProjectMembershipPaginationItems {
+  """List of membership pagination items"""
+  entries: [ProjectMembershipPaginationItem!]!
+  """Pagination information"""
+  meta: PaginationMeta!
+}
+
 """List of project memberships"""
 type ProjectMemberships {
   """Paginated project memberships"""
@@ -3835,6 +3896,16 @@ type ProjectRestoredEvent implements BaseProjectChangedEvent {
   workspaceIdentifier: UUID!
 }
 
+"""This event defines when a project is unarchived"""
+type ProjectUnarchivedEvent implements BaseProjectChangedEvent {
+  """The affected project"""
+  project: Project!
+  """Identifier of the affected project"""
+  projectIdentifier: UUID! @deprecated(reason: "Use project instead")
+  """Identifier of the workspace to which the project belongs"""
+  workspaceIdentifier: UUID!
+}
+
 """This event defines when a project's workspace access level is changed"""
 type ProjectWorkspaceAccessLevelChangedEvent implements BaseProjectChangedEvent {
   """Affected project"""
@@ -3851,33 +3922,6 @@ type Projects {
   entries: [Project!]!
   """Pagination information"""
   meta: PaginationMeta!
-}
-
-"""
-Prototype files are a new file format used by the shared prototype player that is
-in development.
-
-As the feature is experimental this type may change frequently during
-development.
-"""
-type PrototypeFile {
-  """A URL that can be used to download the prototype file."""
-  downloadUrl: String
-  """A signed token that can be used to fetch images associated with this prototype file."""
-  imageToken: String!
-  """The prototype file status"""
-  status: PresentationFileStatus
-  """
-  The ID of the task that generated the prototype assets.
-  It is required for the downloading of prototype assets.
-  """
-  taskId: String
-}
-
-"""This event is dispatched every time a document gets its prototype file generated."""
-type PrototypeFileEvent {
-  """Download URL for the prototype file"""
-  url: String!
 }
 
 """Public organization"""
@@ -4321,6 +4365,8 @@ type RootMutationType {
     membershipToken: String!
     """Number of seats the subscription will have in the next billing cycle"""
     seats: Int!
+    """Shipping details for the customer"""
+    shipping: ShippingDetailsInput
     """
     Whether or not the user has agreed to the ToS.
     
@@ -4438,6 +4484,11 @@ type RootMutationType {
     """The identifier of the customer you want to update the SSO identity provider of"""
     customerIdentifier: UUID!
   ): AgreeToWorkspaceTermsOfServiceResponse!
+  """Archive a project and all its shares"""
+  archiveProject(
+    """Project identifier"""
+    identifier: UUID!
+  ): ArchiveProjectResponse!
   """Cancel scheduled seats update"""
   cancelScheduledBillingSeats(
     """Cancel scheduled seats update parameters"""
@@ -4757,6 +4808,11 @@ type RootMutationType {
     """Organization short id"""
     organizationShortId: ShortId
   ): ProjectCreatePayload! @deprecated(reason: "Use createWorkspaceProject instead")
+  """Create a partner workspace"""
+  createPartnerWorkspace(
+    """Create workspace parameters"""
+    input: CreatePartnerWorkspaceParams!
+  ): CreatePartnerWorkspaceResponse!
   """Create a permission group"""
   createPermissionGroup(
     """The input param to create a permission group"""
@@ -5122,7 +5178,7 @@ type RootMutationType {
   """Notification mark all as read payload"""
   notificationMarkAllAsRead: NotificationMarkAllAsReadPayload
   """Marks all notifications of this user as seen"""
-  notificationMarkAllAsSeen: NotificationMarkAllAsSeenPayload
+  notificationMarkAllAsSeen: NotificationMarkAllAsSeenPayload @deprecated(reason: "no longer necessary. function is a noop now.")
   """Notification as read payload"""
   notificationMarkAsRead(
     """Identifier"""
@@ -5130,6 +5186,8 @@ type RootMutationType {
     """Identifier"""
     identifier: UUID
   ): NotificationMarkAsReadPayload
+  """Marks all 'read' notifications as done"""
+  notificationMarkEveryReadAsDone: NotificationMarkEveryReadAsDonePayload
   """Accept team membership"""
   organizationAcceptInvite(
     """The single-use token for accepting this memebership invite"""
@@ -5194,11 +5252,16 @@ type RootMutationType {
     """The identifier of the token to delete"""
     identifier: UUID!
   ): DeletedPersonalToken!
-  """Triggers async component processing"""
-  processComponents(
-    """Identifier of the document that will be processed"""
-    documentIdentifier: UUID!
-  ): ProcessComponentsPayload!
+  """Pin a project"""
+  pinProject(
+    """The input param to pin a project"""
+    input: PinProjectParams!
+  ): PinProjectResponse!
+  """Pin a share"""
+  pinShare(
+    """The input param to pin a share"""
+    input: PinShareParams!
+  ): PinShareResponse!
   """Publish share to Community"""
   publishShare(
     """Enables commenting for external users"""
@@ -5500,6 +5563,21 @@ type RootMutationType {
     """The workspace you want to transfer the share to"""
     workspaceIdentifier: UUID!
   ): TransferShareResponse!
+  """Unarchive a project and all its shares"""
+  unarchiveProject(
+    """Project identifier"""
+    identifier: UUID!
+  ): UnarchiveProjectResponse!
+  """Unpin a project"""
+  unpinProject(
+    """The input param to unpin a project"""
+    input: UnpinProjectParams!
+  ): UnpinProjectResponse!
+  """Unpin a share"""
+  unpinShare(
+    """The input param to unpin a share"""
+    input: UnpinShareParams!
+  ): UnpinShareResponse!
   """Unpublish share from Community"""
   unpublishShare(
     """Sets access level for external users"""
@@ -5984,6 +6062,11 @@ type RootQueryType {
   workspace(identifier: UUID!): Workspace!
   workspaceCustomer(identifier: UUID!): WorkspaceCustomer!
   workspaceProfile(shortUrlName: String, workspaceIdentifier: UUID): WorkspaceProfile!
+  """Get the storage information for the workspace"""
+  workspaceStorage(
+    """The workspace identifier"""
+    identifier: UUID!
+  ): WorkspaceStorage
   """Get the list of trashed items for a workspace"""
   workspaceTrash(
     after: String
@@ -6173,14 +6256,6 @@ type RootSubscriptionType {
     subject: AnnotationSubjectInput
   ): [Comment]!
   """
-  A subscription that fires when the state of components have changed. This
-  happens when components have been ingested.
-  """
-  componentsStateUpdated(
-    """Document identifier"""
-    documentIdentifier: UUID
-  ): DocumentComponentsState!
-  """
   A subscription for events of permanently deleting a trashed share
     (Deprecated) Use the shareUpdated subscription
   """
@@ -6189,11 +6264,6 @@ type RootSubscriptionType {
   emptiedWorkspaceTrash: EmptiedWorkspaceTrashEvent!
   """Notification created"""
   notificationCreated: UserNotification
-  """Presentation file status"""
-  presentationFile(
-    """Page identifier of the page you are waiting for the presentation files to be generated"""
-    pageId: String!
-  ): PresentationFileEvent! @deprecated(reason: "Use the `versionUpdated` subscription instead")
   """
   Triggered when access to a project (project membership)
   changes for the current user.
@@ -6204,11 +6274,6 @@ type RootSubscriptionType {
   belonging to a workspace current user is member of.
   """
   projectChanged: BaseProjectChangedEvent!
-  """Prototype file status"""
-  prototypeFile(
-    """Document identifier you are waiting for the prototype files to be generated"""
-    documentId: String!
-  ): PrototypeFileEvent!
   """
   A subscription for changes to reactions of a Publication.
   
@@ -6402,6 +6467,8 @@ type Share {
   allowedPrivateAccessLevels: [PrivateAccessLevel!]! @deprecated(reason: "This field will always return all 3 levels: VIEW, INSPECT, EDIT")
   """(Deprecated) Allowed Workspace Access Levels"""
   allowedWorkspaceAccessLevels: [WorkspaceAccessLevel!]! @deprecated(reason: "use allowedParentAccessLevels instead")
+  """Date and time in which the share was archived"""
+  archivedAt: DateTime
   """Artboard UUID from its short ID"""
   artboard(
     """The permanent shortId of the artboard you want to look up"""
@@ -6463,6 +6530,8 @@ type Share {
   latestVersionIdentifier: UUID
   """(Deprecated) Please migrate to type"""
   libraryEnabled: Boolean! @deprecated(reason: "Please migrate to type")
+  """List of members of this share."""
+  members(after: String, before: String, limit: Int = 20): ShareMembershipPaginationItems!
   """
   Lists share memberships, this is only visible for people who
   can administer this share or are members.
@@ -6539,6 +6608,8 @@ type Share {
     """Search term to filter memberships against"""
     search: String
   ): PermissionGroupRelationShares!
+  """If current user pinned the share, this field will have the date when it was pinned"""
+  pinnedByCurrentUserAt: DateTime
   """(Deprecated) The preview images for this Share"""
   previewFiles(
     """The scale of the image (Retina or not)"""
@@ -6874,6 +6945,14 @@ type ShareMembershipAcceptPayload {
   successful: Boolean!
 }
 
+"""Paginated list of share membership pagination items"""
+type ShareMembershipPaginationItems {
+  """List of membership pagination items"""
+  entries: [ShareMembershipPaginationItem!]!
+  """Pagination information"""
+  meta: PaginationMeta!
+}
+
 """List of public members with pagination info"""
 type ShareMemberships {
   """List of memberships"""
@@ -7088,6 +7167,47 @@ type SsoUserPublicApiSettings {
   workspaceIdentifier: UUID!
 }
 
+"""
+A notification that is created when a resource that the user is subscribed
+to is starred.
+"""
+type StarNotification implements UserNotification {
+  """Created at date"""
+  createdAt: DateTime!
+  """Date"""
+  date: DateTime @deprecated(reason: "Use `createdAt` instead.")
+  """Identifier"""
+  id: UUID! @deprecated(reason: "Use identifier instead.")
+  """Identifier"""
+  identifier: UUID!
+  """Is organization notification"""
+  isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
+  """Is read"""
+  isRead: Boolean @deprecated(reason: "Use `state` instead.")
+  """Organization"""
+  organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
+  """Path"""
+  path: String
+  """The share to which the version belongs."""
+  share: Share
+  """The read/unread state of the notification"""
+  state: NotificationState
+  """Subtitle"""
+  subtitle: String
+  """Title"""
+  title: String
+  """Token"""
+  token: String
+  """URL"""
+  url: String
+  """User"""
+  user: PublicUser
+  """The version which has been starred."""
+  version: Version
+  """Workspace"""
+  workspace: PublicWorkspace
+}
+
 """Symbol component"""
 type Symbol implements Component {
   """Symbol's artboard"""
@@ -7254,6 +7374,12 @@ type TrashedShares {
   meta: PaginationMeta!
 }
 
+"""API response for unarchiveProject"""
+type UnarchiveProjectResponse {
+  """The unarchived project"""
+  project: Project!
+}
+
 """A minimalist version of Collection aimed at being used for unpaginated queries."""
 type UnpaginatedCollection {
   """A unique identifier for this Collection."""
@@ -7277,6 +7403,18 @@ type UnpaginatedCollectionShare {
   name: String!
   """The date and time that the Share was last updated"""
   updatedAt: DateTime!
+}
+
+"""Response from mutation unpinProject"""
+type UnpinProjectResponse {
+  """The unpinned project"""
+  project: Project!
+}
+
+"""Response from mutation unpinShare"""
+type UnpinShareResponse {
+  """The unpinned share"""
+  share: Share!
 }
 
 """Subject that has not yet been processed and can only be seen in the Mac app"""
@@ -7435,7 +7573,7 @@ type User {
   """Has unread notifications?"""
   hasUnreadNotifications: Boolean
   """Has unseen notifications?"""
-  hasUnseenNotifications: Boolean
+  hasUnseenNotifications: Boolean @deprecated(reason: "use 'has unread' instead")
   """HubSpot visitor identification token for the support chat widget"""
   hsIdentificationToken: String!
   """Deprecated name for the identifier"""
@@ -7871,8 +8009,12 @@ type Workspace {
   """List of projects that belong to this workspace"""
   projects(
     after: String
+    """Filter if a project has been archived or not. Defaults to all projects."""
+    archived: ProjectArchivedStatus = UNARCHIVED
     before: String
     limit: Int = 20
+    """Filter if a project has been pinned or not. Defaults to all projects."""
+    pinned: ProjectPinnedStatus = ALL
     """Project type to filter by. Defaults to all types."""
     type: ProjectType
   ): Projects!
@@ -7881,6 +8023,8 @@ type Workspace {
   """List of shares that belong to this workspace"""
   shares(
     after: String
+    """Filter if a share has been archived or not. Defaults to all shares."""
+    archived: ShareArchivedStatus = UNARCHIVED
     before: String
     limit: Int = 20
     """Available params for searching shares of this workspace"""
@@ -7995,6 +8139,8 @@ type WorkspaceCustomerSubscriptionUpdatedEvent {
 
 """Features available to a Workspace"""
 type WorkspaceFeatures {
+  """Is the Archive feature available for this workspace?"""
+  archiveEnabled: Boolean!
   """Are Design Systems enabled for this workspace?"""
   designSystemsEnabled: Boolean!
   """Is the Permission Group feature available for this workspace?"""
@@ -8003,6 +8149,8 @@ type WorkspaceFeatures {
   restrictedPublicLinks: Boolean!
   """Is the SSO feature available for this workspace?"""
   ssoEnabled: Boolean!
+  """Is the Unlimited Storage feature for this workspace?"""
+  unlimitedStorageEnabled: Boolean!
   """Is the User Permissions Directory feature available for this workspace?"""
   userDirectoryEnabled: Boolean!
   """Is the workspace profile feature enabled in this workspace?"""
@@ -8180,6 +8328,16 @@ type WorkspaceSsoConfig {
   serviceProviderEntityId: String
 }
 
+"""Workspace Storage"""
+type WorkspaceStorage {
+  """Workspace's storage limit"""
+  limit: Float
+  """Workspace's number of shares"""
+  shareCount: Int!
+  """Workspace's used storage"""
+  used: Float!
+}
+
 """A user that is part of a workspace. Allowed to expose a little more than PublicUser."""
 type WorkspaceUser {
   """User avatar"""
@@ -8212,11 +8370,17 @@ union InvitableUserOrPermissionGroup = PermissionGroup | WorkspaceMembership
 """Union type for a permission group relation"""
 union PermissionGroupRelation = PermissionGroupRelationProject | PermissionGroupRelationShare
 
+"""Union type for membership pagination items for projects"""
+union ProjectMembershipPaginationItem = PermissionGroupRelationProject | ProjectMembership
+
 """
 Events that are published whenever a Share is added to or removed from a
 Collection.
 """
 union ShareCollectionChangedEvent = ShareAddedToCollectionEvent | ShareRemovedFromCollectionEvent
+
+"""Union type for membership pagination items for shares"""
+union ShareMembershipPaginationItem = PermissionGroupRelationShare | ShareMembership
 
 """Union type for trashed items (shares and projects)"""
 union TrashedItem = Project | Share | TrashedProject | TrashedShare
@@ -8368,6 +8532,26 @@ input CreateInstitutionApplicationParams {
   seats: Int!
   """Workspace identifier"""
   workspaceIdentifier: UUID
+}
+
+"""Parameters to create a partner workspace"""
+input CreatePartnerWorkspaceParams {
+  """Workspace avatar file"""
+  avatar: Upload
+  """Workspace name"""
+  name: String!
+  """The customer email that will become the workspace owner"""
+  ownerEmail: Email!
+  """Number of seats for the subscription"""
+  seats: Int!
+  """Shipping details for the invited customer"""
+  shipping: ShippingDetailsInput!
+  """
+  Whether or not the user has agreed to the ToS.
+  
+  This must be `true` or the mutation will fail
+  """
+  tosAgreed: Boolean!
 }
 
 """Parameters for the mutation createPermissionGroup"""
@@ -8575,6 +8759,18 @@ input PermissionGroupParam {
   identifier: UUID!
 }
 
+"""Parameters for the mutation pinProject"""
+input PinProjectParams {
+  """The UUID of the project to pin"""
+  projectIdentifier: UUID!
+}
+
+"""Parameters for the mutation pinShare"""
+input PinShareParams {
+  """The UUID of the share to pin"""
+  shareIdentifier: UUID!
+}
+
 """Allowed parameters to filter project memberships within workspace membership query"""
 input ProjectMemberAccessSearchParams {
   """Queries projects with a name that contains the given search query string."""
@@ -8734,6 +8930,30 @@ input SharesSearchParams {
   name: String
 }
 
+"""Parameters for customer address"""
+input ShippingAddress {
+  """City"""
+  city: String!
+  """Country"""
+  country: String!
+  """Line 1"""
+  line1: String!
+  """Line 2"""
+  line2: String
+  """Postal code"""
+  postalCode: String!
+  """State"""
+  state: String
+}
+
+"""Parameters for customer shipping details"""
+input ShippingDetailsInput {
+  """Customer address"""
+  address: ShippingAddress!
+  """Customer name"""
+  name: String!
+}
+
 """Input for signing up"""
 input SignUpInput {
   """Whether a workspace should be created for this user"""
@@ -8780,6 +9000,18 @@ input SubscriptionInput {
 input TrashSearchParams {
   """Allows to search trashed shares by name"""
   name: String
+}
+
+"""Parameters for the mutation unpinProject"""
+input UnpinProjectParams {
+  """The UUID of the project to unpin"""
+  projectIdentifier: UUID!
+}
+
+"""Parameters for the mutation unpinShare"""
+input UnpinShareParams {
+  """The UUID of the share to unpin"""
+  shareIdentifier: UUID!
 }
 
 """
@@ -9010,8 +9242,12 @@ input UpgradePersonalWorkspaceParams {
 
 """Input object for filtering user notifications"""
 input UserNotificationFilterType {
+  """Allow complete filtering via search"""
+  search: String
   """The state of the notification."""
   state: NotificationState
+  """The states of the notification."""
+  states: [NotificationState]
 }
 
 """User parameters"""
