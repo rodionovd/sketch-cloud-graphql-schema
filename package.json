@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@autotelic/graphql-schema-tools": "^0.4.0",
+    "get-graphql-schema": "^2.1.2"
+  }
+}
