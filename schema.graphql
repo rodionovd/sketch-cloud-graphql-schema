@@ -5709,6 +5709,8 @@ type RootMutationType {
   updateUserPreferences(
     """Show onboarding first steps to user"""
     showOnboardingFirstSteps: Boolean
+    """Show modal with info about new 50Gb storage limit"""
+    showStorageLimitChanges: Boolean
   ): UpdateUserPreferencesResponse!
   """Update the description of share's version"""
   updateVersionDescription(
@@ -7783,6 +7785,8 @@ type UserPasswordUpdatePayload {
 type UserPreferences {
   """Show onboarding first steps to user?"""
   showOnboardingFirstSteps: Boolean!
+  """Show modal with info about new 50Gb storage limit (true unless already shown?"""
+  showStorageLimitChanges: Boolean!
 }
 
 type UserRequestPasswordResetPayload {
