@@ -1402,8 +1402,6 @@ type Artboard {
   annotationCount: Int!
   """Artboard base"""
   artboardBase: ArtboardBase!
-  """Background color"""
-  backgroundColor: RGBAColor
   """Annotation count"""
   commentCount: Int! @deprecated(reason: "Please use `annotationCount` instead")
   """
@@ -1430,8 +1428,6 @@ type Artboard {
   id: UUID! @deprecated(reason: "Use identifier instead.")
   """identifier"""
   identifier: UUID!
-  """Incude Background color in Export?"""
-  includeBackgroundColorInExport: Boolean
   """Artboard?"""
   isArtboard: Boolean!
   """Flow home?"""
@@ -1483,8 +1479,6 @@ type Artboard {
   unreadCount: Int!
   """Unique identifier"""
   uuid: UUID!
-  """Viewport"""
-  viewport: Viewport
   """Width"""
   width: Float!
 }
@@ -7931,16 +7925,6 @@ type Versions {
   entries: [Version!]!
   """Pagination metadata"""
   meta: PaginationMeta!
-}
-
-"""Artboard viewport"""
-type Viewport {
-  """height"""
-  height: Float
-  """scale"""
-  scale: Float
-  """width"""
-  width: Float
 }
 
 """
