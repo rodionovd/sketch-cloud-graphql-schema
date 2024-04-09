@@ -6057,6 +6057,11 @@ type RootQueryType {
   """Get a workspace by its identifier"""
   workspace(identifier: UUID!): Workspace!
   workspaceCustomer(identifier: UUID!): WorkspaceCustomer!
+  """Get the heaviest shares in the workspace"""
+  workspaceHeaviestShares(
+    """The workspace identifier"""
+    identifier: UUID!
+  ): [ShareWithSize!]
   workspaceProfile(shortUrlName: String, workspaceIdentifier: UUID): WorkspaceProfile!
   """Get the storage information for the workspace"""
   workspaceStorage(
@@ -7079,6 +7084,14 @@ type ShareWatchPayload {
   successful: Boolean!
 }
 
+"""A share and its size"""
+type ShareWithSize {
+  """A share"""
+  share: Share!
+  """Share's total size (in Gb)"""
+  size: Float!
+}
+
 """List of shares with pagination info"""
 type Shares {
   """List of Shares"""
@@ -8003,6 +8016,8 @@ type Workspace {
     limit: Int = 20
     """Filter if a project has been pinned or not. Defaults to all projects."""
     pinned: ProjectPinnedStatus = ALL
+    """Filter projects"""
+    search: WorkspaceProjectsSearchInput
     """Project type to filter by. Defaults to all types."""
     type: ProjectType
   ): Projects!
@@ -9314,6 +9329,12 @@ input WorkspaceMemberInviteInput {
   email: String!
   """Member's role"""
   role: WorkspaceMembershipInviteRole
+}
+
+"""Workspace projects search input"""
+input WorkspaceProjectsSearchInput {
+  """Name"""
+  name: String
 }
 
 schema {
