@@ -5866,6 +5866,7 @@ type RootQueryType {
     """Only show annotations having particular resolution status, or all."""
     status: AnnotationStatusFilter = ACTIVE_ONLY
     subject: AnnotationSubjectInput
+    subjects: [AnnotationSubjectInput]
     """
     Only annotations linked to subjects present in the given version of the
     share are returned. By default, the share's last version is used so this option is
