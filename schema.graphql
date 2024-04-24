@@ -1182,7 +1182,11 @@ type AddPermissionGroupMembersResponse {
   permissionGroup: PermissionGroup!
 }
 
-"""Response from mutation addPermissionGroupRelation"""
+"""
+Response from mutation addPermissionGroupRelation.
+
+Deprecated
+"""
 type AddPermissionGroupRelationResponse {
   """The created relation"""
   relation: PermissionGroupRelation!
@@ -1194,6 +1198,12 @@ type AddProjectMemberResponse {
   project: Project!
   """The created project membership"""
   projectMembership: ProjectMembership!
+}
+
+"""Response from mutation addProjectPermissionGroupRelation"""
+type AddProjectPermissionGroupRelationResponse {
+  """The created relation"""
+  relation: PermissionGroupRelationProject!
 }
 
 """API response for addReactionToPublication."""
@@ -1242,6 +1252,12 @@ type AddShareMemberNotification implements UserNotification {
 type AddShareMembershipResponse {
   """The created share membership"""
   shareMembership: ShareMembership!
+}
+
+"""Response from mutation addSharePermissionGroupRelation"""
+type AddSharePermissionGroupRelationResponse {
+  """The created relation"""
+  relation: PermissionGroupRelationShare!
 }
 
 """API response for addSharesToCollection"""
@@ -3479,7 +3495,7 @@ type PermissionGroupMemberships {
 
 """A relation between a permission group and a project"""
 type PermissionGroupRelationProject {
-  """The access level of that group on the project"""
+  """The access level of that group on the project. Deprecated."""
   accessLevel: PrivateAccessLevel!
   """When the relation was created"""
   createdAt: NaiveDateTime!
@@ -4408,7 +4424,12 @@ type RootMutationType {
     """The input param to add a member to a permission group"""
     input: AddPermissionGroupMembersParams!
   ): AddPermissionGroupMembersResponse!
-  """Add a permission group to a share or a project"""
+  """
+  Add a permission group to a share or a project.
+  
+  Deprecated, please use addSharePermissionGroupRelation or
+  addProjectPermissionGroupRelation instead.
+  """
   addPermissionGroupRelation(
     """The input param to add a permission group to a share or a project"""
     input: AddPermissionGroupRelationParams!
@@ -4429,6 +4450,13 @@ type RootMutationType {
     """Workspace Membership identifier of the user to add to the project"""
     workspaceMembershipIdentifier: UUID
   ): AddProjectMemberResponse!
+  """Add a permission group to a project"""
+  addProjectPermissionGroupRelation(
+    """Identifier of permission group"""
+    permissionGroupIdentifier: UUID!
+    """Identifier of project"""
+    projectIdentifier: UUID!
+  ): AddProjectPermissionGroupRelationResponse!
   """
   Add reaction to publication. Possible reactions are `HEART` and `NO_REACTION`.
   
@@ -4456,6 +4484,15 @@ type RootMutationType {
     """mutation input"""
     input: AddShareMembershipParams!
   ): AddShareMembershipResponse!
+  """Add a permission group to a share"""
+  addSharePermissionGroupRelation(
+    """Access level"""
+    accessLevel: PrivateAccessLevel!
+    """Identifier of permission group"""
+    permissionGroupIdentifier: UUID!
+    """Identifier of share"""
+    shareIdentifier: UUID!
+  ): AddSharePermissionGroupRelationResponse!
   """Add the list of shares to the collection."""
   addSharesToCollection(
     """Collection identifier"""
@@ -5501,6 +5538,16 @@ type RootMutationType {
     """The identifier of the share you want to watch"""
     identifier: UUID
   ): ShareWatchPayload
+  """
+  Move multiple shares to the trash.
+  
+  You must be an admin in the shares' workspace in order to use this
+  mutation.
+  """
+  sharesDelete(
+    """The identifiers of the shares you want to trash"""
+    identifiers: [UUID!]!
+  ): SharesDeletePayload
   """Sign up for a new account"""
   signUp(
     """Input"""
@@ -5648,7 +5695,11 @@ type RootMutationType {
     """The input param to update a permission group"""
     input: UpdatePermissionGroupParams!
   ): UpdatePermissionGroupResponse!
-  """Update a permission group relation"""
+  """
+  Update a permission group relation.
+  
+  Deprecated, please use updatePermissionGroupRelation instead
+  """
   updatePermissionGroupRelation(
     """The input param to update a permission group relation"""
     input: UpdatePermissionGroupRelationParams!
@@ -5694,6 +5745,13 @@ type RootMutationType {
     """Mutation parameters input permissions you want to update"""
     input: UpdateShareParentPermissionsParams!
   ): Share
+  """Update a share permission group relation"""
+  updateSharePermissionGroupRelation(
+    """Update access level"""
+    accessLevel: PrivateAccessLevel!
+    """Identifier of relation to update"""
+    relationIdentifier: UUID!
+  ): UpdateSharePermissionGroupRelationResponse!
   """Update share public permissions"""
   updateSharePublicPermissions(
     """updateSharePublicPermission input parameters"""
@@ -7101,6 +7159,12 @@ type Shares {
   meta: PaginationMeta!
 }
 
+"""Response when trashing multiple shares"""
+type SharesDeletePayload {
+  """The trashed shares"""
+  shares: [Share!]!
+}
+
 type SignUpPayload {
   credentials: OAuthCredentials
   """A list of errors, raised when executing this migrations."""
@@ -7457,7 +7521,11 @@ type UpdateBillingSeatsResponse {
   workspace: Workspace!
 }
 
-"""Response from mutation updatePermissionGroupRelation"""
+"""
+Response from mutation updatePermissionGroupRelation.
+
+Deprecated
+"""
 type UpdatePermissionGroupRelationResponse {
   """The updated relation"""
   relation: PermissionGroupRelation!
@@ -7497,6 +7565,12 @@ type UpdateRestrictedUploadsStateResponse {
 type UpdateShareMembershipResponse {
   """The updated share membership"""
   shareMembership: ShareMembership!
+}
+
+"""Response from mutation updatePermissionGroupRelation"""
+type UpdateSharePermissionGroupRelationResponse {
+  """The updated relation"""
+  relation: PermissionGroupRelationShare!
 }
 
 """Response for updating user preferences"""
@@ -8422,7 +8496,9 @@ input AddPermissionGroupMembersParams {
 
 """
 Parameters for the mutation addPermissionGroupRelation,
-  must have either shareIdentifier or projectIdentifier
+must have either shareIdentifier or projectIdentifier.
+
+Deprecated
 """
 input AddPermissionGroupRelationParams {
   """Access level"""
@@ -9100,7 +9176,11 @@ input UpdatePermissionGroupParams {
   name: String
 }
 
-"""Parameters for the mutation updatePermissionGroupRelation"""
+"""
+Parameters for the mutation updatePermissionGroupRelation.
+
+Deprecated
+"""
 input UpdatePermissionGroupRelationParams {
   """Update access level"""
   accessLevel: PrivateAccessLevel
