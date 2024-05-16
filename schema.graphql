@@ -2570,6 +2570,12 @@ type DuplicateShareToDraftsResponse {
   share: Share!
 }
 
+"""API response for duplicateShareTo"""
+type DuplicateShareToResponse {
+  """The duplicated share"""
+  share: Share!
+}
+
 """API response for editCollectionDescription"""
 type EditCollectionDescriptionResponse {
   """The edited collection"""
@@ -5018,6 +5024,19 @@ type RootMutationType {
     """filesize in bytes"""
     filesize: Int!
   ): MultipartUpload
+  """Duplicate a share to a given project of the given workspace"""
+  duplicateShareTo(
+    """Identifier of the share to duplicate"""
+    sourceShareIdentifier: UUID!
+    """Identifier of the version to duplicate"""
+    sourceVersionIdentifier: UUID!
+    """Identifier of the collection to duplicate to"""
+    targetCollectionIdentifier: UUID
+    """Identifier of the project to duplicate to"""
+    targetProjectIdentifier: UUID
+    """Identifier of the workspace to duplicate to"""
+    targetWorkspaceIdentifier: UUID!
+  ): DuplicateShareToResponse
   """Duplicate a share to draft folder of the given workspace"""
   duplicateShareToDrafts(
     """Input"""
