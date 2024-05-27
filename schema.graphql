@@ -7683,8 +7683,6 @@ type User {
   hasUnreadNotifications: Boolean
   """Has unseen notifications?"""
   hasUnseenNotifications: Boolean @deprecated(reason: "use 'has unread' instead")
-  """HubSpot visitor identification token for the support chat widget"""
-  hsIdentificationToken: String!
   """Deprecated name for the identifier"""
   id: String @deprecated(reason: "Use identifier instead.")
   """User identifier"""
