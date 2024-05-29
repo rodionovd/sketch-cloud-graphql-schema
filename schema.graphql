@@ -258,6 +258,17 @@ enum FileType {
   SCROLLABLE
 }
 
+"""The type of ingest that was performed on the document"""
+enum IngestType {
+  """
+  A light ingest was performed using the sketch document without any
+  rendering.
+  """
+  LIGHT
+  """A normal, full ingest was performed after rendering."""
+  NORMAL
+}
+
 """The status of the inspector data."""
 enum InspectorStatus {
   """Generating the inspector data is pending."""
@@ -2324,6 +2335,12 @@ type Document {
   id: String! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
+  """
+  The type of ingest that was used to process the document.
+  
+  Defaults to `:normal` when this field is null.
+  """
+  ingestType: IngestType!
   """Is present"""
   isPresent: Boolean
   """Is processing"""
