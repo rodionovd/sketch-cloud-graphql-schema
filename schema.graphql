@@ -590,8 +590,6 @@ enum RenderStatusType {
   ERRORED
   """Finished"""
   FINISHED
-  """Not rendered"""
-  NOT_RENDERED
   """Processing"""
   PROCESSING
   """Rendering"""
