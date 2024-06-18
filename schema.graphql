@@ -4227,6 +4227,12 @@ type RenderDownloadableAssetsPayload {
   successful: Boolean!
 }
 
+"""Response for the render_presentation mutation"""
+type RenderPresentationResponse {
+  """The status of the versions's presentation files."""
+  presentationStatus: PresentationFileStatus!
+}
+
 """API response for reportShare"""
 type ReportShareResponse {
   """Whether the reported got submitted"""
@@ -5393,6 +5399,11 @@ type RootMutationType {
     """The input for our mutation, which is just the document identifier"""
     input: RenderDownloadableAssetsInput!
   ): RenderDownloadableAssetsPayload
+  """Triggers a presentation render for the given version"""
+  renderPresentation(
+    """identifier of the version to render a presentation file for"""
+    versionIdentifier: UUID
+  ): RenderPresentationResponse!
   """Reorders a design system page"""
   reorderDesignSystemPage(
     """If you want to move the source page above or below the target page"""
