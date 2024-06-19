@@ -2930,6 +2930,12 @@ type License {
   users: [PublicUser]
 }
 
+"""API response for linkRegularAccount mutation"""
+type LinkRegularAccountResponse {
+  """The linked user account"""
+  user: User!
+}
+
 """API response for markCommentsAsRead"""
 type MarkCommentsAsReadResponse {
   """Identifiers of comments successfully marked as read"""
@@ -5154,6 +5160,13 @@ type RootMutationType {
     """Project UUID"""
     projectIdentifier: UUID
   ): LeaveProjectResponse!
+  """Link SSO-only account to an existing regular account"""
+  linkRegularAccount(
+    """Email of an existing regular account"""
+    email: Email!
+    """Password of an existing regular account"""
+    password: String!
+  ): LinkRegularAccountResponse!
   """Mark multiple comments as read"""
   markCommentsAsRead(
     """Comment identifiers"""
