@@ -1448,14 +1448,8 @@ type Artboard {
   id: UUID! @deprecated(reason: "Use identifier instead.")
   """identifier"""
   identifier: UUID!
-  """Artboard?"""
-  isArtboard: Boolean!
   """Flow home?"""
   isFlowHome: Boolean!
-  """Page?"""
-  isPage: Boolean!
-  """Symbol master?"""
-  isSymbolMaster: Boolean!
   """
   Returns list of mentionable users for a given `artboard`
   
