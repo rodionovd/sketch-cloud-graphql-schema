@@ -5161,6 +5161,13 @@ type RootMutationType {
     """Password of an existing regular account"""
     password: String!
   ): LinkRegularAccountResponse!
+  """Link SSO-only account to an existing regular account by providing MFA token"""
+  linkRegularAccountWithMfa(
+    """MFA token with encoded user identifier."""
+    mfaToken: String!
+    """MFA verification code"""
+    totp: String!
+  ): LinkRegularAccountResponse!
   """Mark multiple comments as read"""
   markCommentsAsRead(
     """Comment identifiers"""
