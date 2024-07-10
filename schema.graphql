@@ -5165,8 +5165,10 @@ type RootMutationType {
   linkRegularAccountWithMfa(
     """MFA token with encoded user identifier."""
     mfaToken: String!
+    """MFA recovery code"""
+    recoveryCode: String
     """MFA verification code"""
-    totp: String!
+    totp: String
   ): LinkRegularAccountResponse!
   """Mark multiple comments as read"""
   markCommentsAsRead(
