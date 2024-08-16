@@ -2242,8 +2242,6 @@ type Document {
   """Artboard"""
   artboard(
     """Short_id"""
-    id: ShortId
-    """Short_id"""
     shortId: ShortId
   ): Artboard
   """Artboard count"""
@@ -2326,10 +2324,6 @@ type Document {
   name: String!
   """Page"""
   page(
-    """Unique identifier for the Page"""
-    identifier: UUID
-    """Slug"""
-    slug: String
     """Unique identifier for the Page that is consistent across saves"""
     uuid: String
   ): Page
@@ -3177,8 +3171,6 @@ type Organization {
   """Organization membership"""
   organizationMembership(
     """Identifier"""
-    id: ID
-    """Identifier"""
     identifier: UUID
   ): OrganizationMembership @deprecated(reason: "For checking if the viewer is the owner, use viewerIsOwner")
   """List of projects"""
@@ -3703,8 +3695,6 @@ type Project {
     after: String
     before: String
     limit: Int = 20
-    """Project share search params"""
-    search: ProjectSharesSearchInput
     """
     Available params for searching shares of this project.
     
@@ -4755,16 +4745,6 @@ type RootMutationType {
     Position of the annotation, given in (X,Y) coordinates
     """
     coordinates: AnnotationCoordinatesInput
-    """
-    (For floating and fixed artboard annotations only)
-    Permanent id of the artboard to which the annotation should be linked
-    """
-    permanentArtboardId: String
-    """
-    (For floating page annotations only)
-    Permanent id of the page to which the annotation should be linked
-    """
-    permanentPageId: String
     """Share identifier"""
     shareIdentifier: UUID!
     """Information about the subject of the annotation, which can be component, artboard, or page"""
@@ -4850,8 +4830,6 @@ type RootMutationType {
   createOrganizationProject(
     """Project name"""
     name: String!
-    """Organization id (deprecated)"""
-    organizationId: ShortId
     """Organization short id"""
     organizationShortId: ShortId
   ): ProjectCreatePayload! @deprecated(reason: "Use createWorkspaceProject instead")
@@ -4961,8 +4939,6 @@ type RootMutationType {
   ): DeletePermissionGroupResponse!
   """Delete a project"""
   deleteProject(
-    """Project id (deprecated)"""
-    projectId: ShortId
     """Project short id"""
     projectShortId: ShortId
   ): ProjectDeletePayload!
@@ -5012,8 +4988,6 @@ type RootMutationType {
   ): DocumentUploadCancelPayload
   """Mark the multipart upload for the document as completed"""
   documentUploadComplete(
-    """identrifier of the document (deprecated)"""
-    documentId: UUID
     """identifier of the document"""
     documentIdentifier: UUID
     """session ticket"""
@@ -5021,8 +4995,6 @@ type RootMutationType {
   ): DocumentUploadCompletePayload
   """document upload start arguments"""
   documentUploadStart(
-    """identifier of the document"""
-    documentId: UUID
     """identifier of the document"""
     documentIdentifier: UUID
     """filesize in bytes"""
@@ -5203,10 +5175,6 @@ type RootMutationType {
     annotationIdentifier: UUID!
     """New position of the annotation, given in (X,Y) coordinates"""
     coordinates: AnnotationCoordinatesInput!
-    """Permanent id of the artboard to which the annotation should be linked"""
-    permanentArtboardId: String
-    """Permanent id of the page to which the annotation should be linked"""
-    permanentPageId: String
     """Information about the subject of the annotation, which can be artboard or page"""
     subject: AnnotationSubjectInput
     """
@@ -5238,18 +5206,10 @@ type RootMutationType {
   ): MoveAnnotationsResponse!
   """Move a share into a project"""
   moveShareToProject(
-    """Project id (deprecated)"""
-    projectId: ShortId
     """Project identifier"""
     projectIdentifier: UUID
-    """Project short id"""
-    projectShortId: ShortId
-    """Share id (deprecated)"""
-    shareId: ShortId
     """Share identifier"""
     shareIdentifier: UUID
-    """Share short id"""
-    shareShortId: ShortId
   ): ShareMoveResult!
   """Notification mark all as read payload"""
   notificationMarkAllAsRead: NotificationMarkAllAsReadPayload
@@ -5257,8 +5217,6 @@ type RootMutationType {
   notificationMarkAllAsSeen: NotificationMarkAllAsSeenPayload @deprecated(reason: "no longer necessary. function is a noop now.")
   """Notification as read payload"""
   notificationMarkAsRead(
-    """Identifier"""
-    id: ID
     """Identifier"""
     identifier: UUID
   ): NotificationMarkAsReadPayload
@@ -5278,8 +5236,6 @@ type RootMutationType {
   ): OrganizationAcceptTosPayload! @deprecated(reason: "Use agreeToWorkspaceTermsOfService instead.")
   """Resend team membership invitation"""
   organizationResendInvite(
-    """The identifier of the membership you wish to resend the invitation for"""
-    id: UUID
     """The identifier of the membership you wish to resend the invitation for"""
     identifier: UUID
   ): OrganizationResendInvitePayload @deprecated(reason: "Use `resendWorkspaceInvite` instead")
@@ -5368,12 +5324,8 @@ type RootMutationType {
   ): RemoveProjectMemberResponse!
   """Remove a share from a project"""
   removeShareFromProject(
-    """Project id (deprecated)"""
-    projectId: ShortId
     """Project short id"""
     projectShortId: ShortId
-    """Share id (deprecated)"""
-    shareId: ShortId
     """Share short id"""
     shareShortId: ShortId
   ): ShareRemoveFromProjectResult!
@@ -5405,8 +5357,6 @@ type RootMutationType {
   renameProject(
     """New project name"""
     name: String!
-    """Project id (deprecated)"""
-    projectId: ShortId
     """Project short id"""
     projectShortId: ShortId
   ): ProjectRenamePayload!
@@ -5506,8 +5456,6 @@ type RootMutationType {
   setupMfa: SetupMfaResponse!
   """Accept access-request to a share"""
   shareAcceptRequest(
-    """(Deprecated) Use identifier instead."""
-    id: UUID
     """The identifier for the request you want to accept"""
     identifier: UUID
   ): ShareAcceptRequestPayload
@@ -5518,8 +5466,6 @@ type RootMutationType {
   ): ShareCreatePayload @deprecated(reason: "For creating shares in a workspace, use `createWorkspaceShare` instead")
   """Create share version"""
   shareCreateVersion(
-    """(Deprecated) Use identifier instead."""
-    id: UUID
     """The share you want to create a version of"""
     identifier: UUID
     """The parameters of for the new version"""
@@ -5527,8 +5473,6 @@ type RootMutationType {
   ): ShareCreateVersionPayload
   """Move share to trash"""
   shareDelete(
-    """(Deprecated) Use identifier instead."""
-    id: UUID
     """The identifier of the share you want to trash"""
     identifier: UUID
     """The shortId of the share you want to trash"""
@@ -5538,15 +5482,11 @@ type RootMutationType {
   shareDeleteMembership(
     """Indication if user has confirmed the operation"""
     confirmed: Boolean = false
-    """(Deprecated) Use membership_identifier instead."""
-    membershipId: UUID
     """The identifier for the membership you want to delete"""
     membershipIdentifier: UUID
   ): ShareDeleteMembershipPayload
   """Leave share"""
   shareLeave(
-    """(Deprecated) Use identifier instead."""
-    id: UUID
     """The share you wish to leave"""
     identifier: UUID
   ): ShareLeavePayload
@@ -5567,15 +5507,11 @@ type RootMutationType {
   ): ShareRestorePayload @deprecated(reason: "Use `restoreShare` instead")
   """Unwatch a share"""
   shareUnwatch(
-    """(Deprecated) Use identifier instead."""
-    id: UUID
     """The identifier of the share you want to unwatch"""
     identifier: UUID
   ): ShareUnwatchPayload
   """Update share"""
   shareUpdate(
-    """(Deprecated) Use identifier instead."""
-    id: UUID
     """The identifier of the share you're updating"""
     identifier: UUID
     """The fields you want to update"""
@@ -5583,8 +5519,6 @@ type RootMutationType {
   ): ShareUpdatePayload
   """Watch a share"""
   shareWatch(
-    """(Deprecated) Use identifier instead."""
-    id: UUID
     """The identifier of the share you want to watch"""
     identifier: UUID
   ): ShareWatchPayload
@@ -5948,11 +5882,6 @@ type RootMutationType {
 
 type RootQueryType {
   annotation(
-    """
-    Identifier an annotation's comment. This argument is for backward compatibility
-    purposes only. Please use `identifier` for any other usage.
-    """
-    commentIdentifier: UUID
     """Identifier of the annotation"""
     identifier: UUID
   ): Annotation
@@ -5966,9 +5895,6 @@ type RootQueryType {
     """
     includeUnprocessed: Boolean = false
     limit: Int = 20
-    permanentArtboardId: ID
-    permanentComponentId: ID
-    permanentPageId: ID
     shareIdentifier: UUID!
     sortOrder: AnnotationSortOrder = LATEST_FIRST
     """Only show annotations having particular resolution status, or all."""
@@ -6116,7 +6042,6 @@ type RootQueryType {
   project(
     """The identifier of the project you want to retrieve"""
     identifier: UUID
-    shortId: ShortId
   ): Project!
   projectMembership(
     """Token belonging to a project invite."""
@@ -6198,10 +6123,6 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
-    """Permanent Artboard Id"""
-    permanentArtboardId: String
-    """Permanent Page Id"""
-    permanentPageId: String
     """Share identifier"""
     shareIdentifier: UUID!
     """Information about the subject of the annotation, which can be component, artboard, or page"""
@@ -6217,10 +6138,6 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
-    """Permanent Artboard Id"""
-    permanentArtboardId: String
-    """Permanent Page Id"""
-    permanentPageId: String
     """Share identifier"""
     shareIdentifier: UUID
     """Information about the subject of the annotation, which can be component, artboard, or page"""
@@ -6234,10 +6151,6 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
-    """Permanent Artboard Id"""
-    permanentArtboardId: String
-    """Permanent Page Id"""
-    permanentPageId: String
     """Share identifier"""
     shareIdentifier: UUID!
     """Information about the subject of the annotation, which can be component, artboard, or page"""
@@ -6253,10 +6166,6 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
-    """Permanent Artboard Id"""
-    permanentArtboardId: String
-    """Permanent Page Id"""
-    permanentPageId: String
     """Share identifier"""
     shareIdentifier: UUID
     """Information about the subject of the annotation, which can be component, artboard, or page"""
@@ -7792,8 +7701,6 @@ type User {
   ): Shares
   """Temporary opaque token for confirming SSO account linking"""
   ssoLinkToken(
-    """Identifier for the team the user will be joining"""
-    team: UUID! = ""
     """Identifier for the workspace the user will be joining"""
     workspaceIdentifier: UUID! = ""
   ): String!
@@ -8980,8 +8887,6 @@ input ShareCreateParams {
   identifier: UUID
   """Title of the share"""
   name: String!
-  """ID of the team you want this share to be a part of"""
-  organizationId: UUID
   """The identifier of the organization this share belongs to"""
   organizationIdentifier: UUID
   """The identifier of the project this share belongs to"""
@@ -9013,8 +8918,6 @@ input ShareParams {
   commentsEnabled: Boolean
   """Edits the description given to a share"""
   description: String
-  """Enables downloading of Sketch document as library"""
-  libraryEnabled: Boolean
   """Edits the name given to a share"""
   name: String
   """Allows exporting of tokens via a public available url"""
@@ -9035,8 +8938,6 @@ input ShareSearchInput {
 
 """Shares search params"""
 input SharesSearchParams {
-  """Share filter"""
-  filter: WorkspaceShareFilterType
   """
   A list of WorkspaceShareFilterTypes to apply to the search.
   
@@ -9376,8 +9277,6 @@ input UpgradePersonalWorkspaceParams {
 input UserNotificationFilterType {
   """Allow complete filtering via search"""
   search: String
-  """The state of the notification."""
-  state: NotificationState
   """The states of the notification."""
   states: [NotificationState]
 }
@@ -9440,8 +9339,6 @@ input WorkspaceBillingInput {
 input WorkspaceMemberInput {
   """Member's access level"""
   accessLevel: WorkspaceMemberAccessLevel!
-  """Whether the member is an admin or not"""
-  admin: Boolean
   """Member's email address"""
   email: String!
   """Member's role"""
@@ -9452,8 +9349,6 @@ input WorkspaceMemberInput {
 input WorkspaceMemberInviteInput {
   """Member's access level"""
   accessLevel: WorkspaceMemberAccessLevel!
-  """Whether the member is an admin or not"""
-  admin: Boolean
   """Member's email address"""
   email: String!
   """Member's role"""
