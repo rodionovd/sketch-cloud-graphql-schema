@@ -230,6 +230,7 @@ enum EducationApplicationType {
 """The formats in which we can export assets"""
 enum ExportFormat {
   EPS
+  HEIC
   JPG
   PDF
   PNG
