@@ -5935,11 +5935,18 @@ type RootQueryType {
     """The UUID (do_objectID) of this component within the Sketch document model data"""
     uuid: String!
   ): Component!
+  curatedSketchLibraries(
+    after: String
+    before: String
+    limit: Int = 20
+    """Curated libraries search input."""
+    search: CuratedSketchLibrarySearchInput
+  ): Shares!
   curatedSketchTemplates(
     after: String
     before: String
     limit: Int = 20
-    """Search by template name"""
+    """Curated templates search input."""
     search: CuratedSketchTemplateSearchInput
   ): Shares!
   """Get a design system by its identifier"""
@@ -8691,6 +8698,12 @@ input CreateWorkspaceShareParams {
   version: ShareCreateVersionParams
   """The identifier of the workspace this share belongs to"""
   workspaceIdentifier: UUID!
+}
+
+"""Curated libraries search params"""
+input CuratedSketchLibrarySearchInput {
+  """Name"""
+  name: String
 }
 
 """Curated templates search params"""
