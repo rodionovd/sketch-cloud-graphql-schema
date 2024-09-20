@@ -391,34 +391,6 @@ enum PaymentType {
   NO_PAYMENT
 }
 
-"""
-A type representing whether a workspace member has permission to use
-personal tokens in a given workspace.
-
-SSO members can only use personal tokens in an SSO workspace if a workspace
-admin has granted them permission to do so. This allows admins to revoke
-access when a member is removed from their IDP.
-
-non-SSO members are always permitted to use personal tokens in a workspace.
-"""
-enum PersonalTokenPermissions {
-  """
-  This member is not an SSO member and so is permitted to use personal tokens
-  in the given workspace.
-  """
-  NON_SSO_MEMBER
-  """
-  The member is an SSO member and has been granted permission to use personal tokens
-  in the given workspace by a workspace admin.
-  """
-  SSO_MEMBER_ALLOW
-  """
-  The member is an SSO member and has not been granted permission to use
-  personal tokens in the given workspace by a workspace admin.
-  """
-  SSO_MEMBER_DENY
-}
-
 """The preferred state of the default version"""
 enum PreferredVersionState {
   """Any status is acceptable, in effect the most recently created version will be returned."""
@@ -522,31 +494,6 @@ enum PublicAccessLevel {
   NONE
   """View only"""
   VIEW
-}
-
-"""
-An access scope represents a set of actions in the public API.
-
-When creating a personal token, users can decide which access scopes the
-token should be allowed to use. This controls what public API resources are
-available to the token.
-
-For example, user information can only be read by tokens with the `USER_READ`
-scope.
-"""
-enum PublicApiAccessScope {
-  """Read information related to Artboards"""
-  ARTBOARD_READ
-  """Read information related to Documents"""
-  DOCUMENT_READ
-  """Read information related to Pages"""
-  PAGE_READ
-  """Export assets for Updates"""
-  UPDATE_EXPORT
-  """Read information related to Updates"""
-  UPDATE_READ
-  """Read information related to Workspaces"""
-  WORKSPACE_READ
 }
 
 """Options for enabling public export of design tokens"""
@@ -2098,12 +2045,6 @@ type DeleteWorkspaceResponse {
   deletedWorkspace: Workspace!
 }
 
-"""A deleted personal token"""
-type DeletedPersonalToken {
-  """The identifier of the deleted token"""
-  identifier: UUID!
-}
-
 """
 Event that fires when permanently deleting a trashed share
 (Deprecated) Use ShareDeletedPermanentlyEvent instead.
@@ -2112,12 +2053,6 @@ type DeletedSharePermanentlyEvent {
   """Share identifier"""
   shareIdentifier: UUID!
   """Workspace identifier"""
-  workspaceIdentifier: UUID!
-}
-
-"""A deleted webhook destination"""
-type DeletedWebhookDestination {
-  """The identifier of the workspace the deleted destination belonged to"""
   workspaceIdentifier: UUID!
 }
 
@@ -2724,30 +2659,6 @@ type File {
   url: String
   """Width of the file"""
   width: Int
-}
-
-"""
-A newly generated personal token.
-
-This type is distinct from PersonalToken as it contains the `secret` part
-of the token, which is only available in the response to
-`personalTokenCreate`. This should be noted and stored securely as it
-will not available again.
-"""
-type GeneratedPersonalToken {
-  """The newly generated personal token."""
-  personalToken: PersonalToken!
-  """
-  The secret portion of the personal token, equivalent to a password.
-  
-  This value can be used with the token's identifier to authenticate
-  requests to the public API using HTTP Basic Auth:
-  
-  ```
-  Authorization: Basic {base64Encode(identifier + ":" + secret)}
-  ```
-  """
-  secret: String!
 }
 
 """Workspace Customer's SSO identity provider configuration"""
@@ -3546,51 +3457,6 @@ type PermissionGroups {
   entries: [PermissionGroup!]!
   """Pagination information"""
   meta: PaginationMeta!
-}
-
-"""
-Personal tokens are used to authenticate requests to the public API.
-
-Personal tokens are used in place of `username:password`, offering the same
-level of access. As such they should be treated like passwords and kept
-securely.
-"""
-type PersonalToken {
-  """
-  The access scopes that this token is permitted to use.
-  
-  Access scopes control which public API resources are available to the
-  token.
-  
-  For example, workspace related information can only be read by tokens
-  with the `WORKSPACE_READ` scope.
-  """
-  accessScopes: [PublicApiAccessScope!]!
-  """The time at which the token was created."""
-  createdAt: DateTime!
-  """
-  A description of the token's purpose.
-  
-  This can be useful for identifying the token later.
-  """
-  description: String!
-  """
-  Optional expiration date for the token. This field can be set when
-  creating the token. If set, the token is no longer valid when
-  `expires_at` is in the past.
-  """
-  expiresAt: DateTime
-  """
-  An identifier for this token. The identifier is supplied along with the
-  raw token value when authenticating requests.
-  """
-  identifier: String!
-  """
-  The time at which the token was last used to interact with the Public API.
-  
-  This field is nullable as the token may not have been used yet.
-  """
-  lastUsedAt: DateTime
 }
 
 """Response from mutation pinProject"""
@@ -5263,28 +5129,6 @@ type RootMutationType {
     """Uploaded XML metadata file"""
     metadata: Upload
   ): OrganizationUpdateIdentityProviderConfigPayload @deprecated(reason: "Please use `updateWorkspaceCustomerSsoIdentityProviderConfig`")
-  """Create a personal token for the current user"""
-  personalTokenCreate(
-    """
-    The access scopes that this token should have.
-    
-    A token must have one or more access scope
-    """
-    accessScopes: [PublicApiAccessScope!]!
-    """A description given to this token so that it can be identified."""
-    description: String!
-    """
-    An optional expiration timestamp for the token.
-    
-    If set, the token is no longer valid when expires_at is in the past.
-    """
-    expiresAt: DateTime
-  ): GeneratedPersonalToken!
-  """Delete a personal token belonging to the current user"""
-  personalTokenDelete(
-    """The identifier of the token to delete"""
-    identifier: UUID!
-  ): DeletedPersonalToken!
   """Pin a project"""
   pinProject(
     """The input param to pin a project"""
@@ -5538,46 +5382,6 @@ type RootMutationType {
     """Input"""
     input: SignUpInput!
   ): SignUpPayload
-  """
-  Disable the usage of personal access tokens for the given SSO user.
-  
-  This will prevent them from using personal tokens to interact with the
-  public API in the context of their SSO workspace.
-  
-  Only admins within the SSO workspace can use this mutation.
-  """
-  ssoUserDisablePersonalTokenUsageInWorkspace(
-    """
-    The identifier of the SSO user for whom personal token usage should be
-    disabled
-    """
-    userIdentifier: UUID!
-    """
-    The identifier of the SSO workspace that the SSO user should lose
-    personal token usage permissions within
-    """
-    workspaceIdentifier: UUID!
-  ): SsoUserPublicApiSettings!
-  """
-  Enable the usage of personal access tokens for the given SSO user.
-  
-  This will allow them to use personal tokens to interact with the public
-  API in the context of their SSO workspace.
-  
-  Only admins within the SSO workspace can use this mutation.
-  """
-  ssoUserEnablePersonalTokenUsageInWorkspace(
-    """
-    The identifier of the SSO user for whom personal token usage should be
-    enabled
-    """
-    userIdentifier: UUID!
-    """
-    The identifier of the SSO workspace that the SSO user should gain
-    personal token usage permissions within
-    """
-    workspaceIdentifier: UUID!
-  ): SsoUserPublicApiSettings!
   """Transfer share to a different workspace"""
   transferShare(
     """The operation to perform on memberships when transferring the share"""
@@ -5855,25 +5659,6 @@ type RootMutationType {
     """Version identifier"""
     versionIdentifier: UUID!
   ): Version
-  """Delete the given workspace's webhook destination"""
-  webhookDestinationDelete(
-    """The workspace whose webhook destination should be deleted"""
-    workspaceIdentifier: UUID!
-  ): DeletedWebhookDestination!
-  """
-  Create or update the webhook destination for the given workspace.
-  
-  If no webhook destination exists for the given workspace, one will be
-  created.
-  
-  If one already exists, it will be updated to the given URL.
-  """
-  webhookDestinationUpdate(
-    """The URL that webhooks for this workspace should be sent to"""
-    url: String!
-    """The identifier of the workspace whose destination should be updated"""
-    workspaceIdentifier: UUID!
-  ): WebhookDestination!
   """Returns an URL to download the CSV file"""
   workspaceMembersReport(
     """The workspace identifier"""
@@ -7182,33 +6967,6 @@ type SsoStartPayload {
 }
 
 """
-Public API related settings for an SSO user.
-
-In an SSO workspace, access to the public API is controlled by workspace
-admins. They can enable usage of personal tokens on a user by user basis
-using the `canUsePersonalTokens` field.
-
-By default, SSO users are not permitted to use personal tokens. Their usage
-must be enabled on a case-by-case basis by workspace admins.
-
-This type represents the settings for a given SSO user.
-"""
-type SsoUserPublicApiSettings {
-  """
-  Whether or not the SSO user can use personal tokens, and thereby the
-  public API, in this SSO workspace.
-  
-  By default, SSO users are not permitted to use personal tokens. Their
-  usage must be enabled on a case-by-case basis by workspace admins.
-  """
-  canUsePersonalTokens: Boolean!
-  """The identifier of the SSO user"""
-  userIdentifier: UUID!
-  """The identifier of the SSO workspace"""
-  workspaceIdentifier: UUID!
-}
-
-"""
 A notification that is created when a resource that the user is subscribed
 to is starred.
 """
@@ -7662,8 +7420,6 @@ type User {
   of a single SSO team
   """
   personalIdentityEmail: String
-  """The user's personal access tokens for interacting with the Public API."""
-  personalTokens: [PersonalToken!]!
   """
   The personal workspace for the user. A personal workspace is a special type of workspace
   that doesn't provide mac app licensing, and it has no subscription. Only guests may be
@@ -7978,19 +7734,6 @@ type Versions {
   meta: PaginationMeta!
 }
 
-"""
-The destination to which webhooks for a given Workspace will be sent.
-
-We send webhooks as events occur within a workspace - such as when a new
-Document Update is created.
-
-Workspace admins can configure the webhook destination for their workspace.
-"""
-type WebhookDestination {
-  """The URL to which webhooks will be sent."""
-  url: String!
-}
-
 """A space for users to store, share and sync documents across the Sketch platform"""
 type Workspace {
   """Avatar"""
@@ -8104,13 +7847,6 @@ type Workspace {
   userIsOwner: Boolean!
   """The currently authenticated user's role within this Workspace"""
   userRole: WorkspaceMembershipRole!
-  """
-  The destination that webhooks for this Workspace will be sent to.
-  
-  Workspace admins can configure the destination via the Workspace settings
-  page.
-  """
-  webhookDestination: WebhookDestination
   """Retrieve workspace membership by identifier"""
   workspaceMembership(
     """Workspace Membership UUID"""
@@ -8247,15 +7983,6 @@ type WorkspaceMembership {
     """Search permission group by name"""
     search: String
   ): PermissionGroupMemberships!
-  """
-  Whether the member is permitted to use personal access tokens within this
-  workspace.
-  
-  SSO members must be granted permission to use personal tokens in a given
-  workspace by a workspace admin, whereas Non-SSO members are always
-  permitted to use personal tokens.
-  """
-  personalTokenPermissions: PersonalTokenPermissions!
   """Project memberships belonging to this workspace member"""
   projectMemberships(
     after: String
