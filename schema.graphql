@@ -90,6 +90,8 @@ enum AnnotationStatusFilter {
   ALL
   """Get resolved annotations only"""
   RESOLVED_ONLY
+  """Get annotations with unread comments only"""
+  UNREAD_ONLY
 }
 
 """Possible types of annotation subjects"""
@@ -6302,6 +6304,8 @@ type Share {
   commentsEnabled: Boolean!
   """The date and time the Share was created"""
   createdAt: DateTime
+  """The curated category (project name) for curated templates and libraries, null otherwise"""
+  curatedCategory: String
   """The current version of this Share"""
   currentVersion: Version @deprecated(reason: "Replaced by Share.version")
   """The data and time the Share was added to the trash"""
@@ -6471,7 +6475,7 @@ type Share {
   """The subscription status for the current user for this artboard."""
   subscriptionStatus: NotificationSubscriptionStatus!
   """The template category (project name) for curated templates, null otherwise"""
-  templateCategory: String
+  templateCategory: String @deprecated(reason: "User `curatedCategory` instead")
   """The type of the share"""
   type: ShareType!
   """Count of unread discussion items pertaining to this Share"""
