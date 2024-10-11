@@ -6142,6 +6142,8 @@ type RootSubscriptionType {
     (Deprecated) Use the shareUpdated subscription
   """
   shareDeleted: ShareDeletedEvent!
+  """Triggered whenever anything changes about a share membership."""
+  shareMembershipChanged: ShareMembershipChangedEvent!
   """
   A subscription for events of restoring shares from trash
     (Deprecated) Use the shareUpdated subscription
@@ -6759,6 +6761,12 @@ type ShareMembershipAcceptPayload {
   membership: ShareMembership
   """Indicates whether the mutation completed successfully or not."""
   successful: Boolean!
+}
+
+"""This event is dispatched every time share membership changes."""
+type ShareMembershipChangedEvent {
+  """Share membership"""
+  shareMembership: ShareMembership!
 }
 
 """Paginated list of share membership pagination items"""
