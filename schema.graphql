@@ -74,6 +74,11 @@ enum AnnotationSortOrder {
   """Sort annotation based on creation time of last comment."""
   LATEST_FIRST
   """
+  Sort annotations by resolved at (unresolved first),
+          and secondarily by creation time of last comment
+  """
+  LATEST_OPEN_FIRST
+  """
   Sort annotation based on resolution time. Can be used *only* in conjunction with
   `RESOLVED_ONLY` for status.
   """
