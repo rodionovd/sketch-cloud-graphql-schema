@@ -8392,11 +8392,11 @@ input CreateWorkspaceParams {
   """Workspace avatar file"""
   avatar: Upload
   """Billing info"""
-  billing: WorkspaceBillingInput!
+  billing: WorkspaceBillingInput
   """Workspace members"""
-  members: [WorkspaceMemberInput]!
+  members: [WorkspaceMemberInput]
   """Workspace name"""
-  name: String!
+  name: String
 }
 
 """
