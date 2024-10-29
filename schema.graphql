@@ -1288,8 +1288,6 @@ type Annotation {
   shareIdentifier: UUID! @deprecated(reason: "Use `share.identifier` instead")
   """The subscription status for the current user for this annotation."""
   subscriptionStatus: NotificationSubscriptionStatus!
-  """Annotation summary"""
-  summary: AnnotationSummary!
   """Updated at"""
   updatedAt: DateTime
   """
@@ -1347,14 +1345,6 @@ type AnnotationResolution {
   resolvedAt: DateTime
   """User that last resolved the annotation"""
   user: PublicUser
-}
-
-"""AI generated summary of the comments."""
-type AnnotationSummary {
-  """The summary of the comments"""
-  body: String!
-  """The resolution of the comments"""
-  resolution: String
 }
 
 """List of annotations with pagination info"""
@@ -1478,12 +1468,6 @@ type Artboards {
   entries: [Artboard!]!
   """Info for pagination"""
   meta: PaginationMeta!
-}
-
-"""A response from the AskAI assistant"""
-type AskAiResponse {
-  """The response from the AskAI assistant"""
-  response: String!
 }
 
 """SAML attribute mappings configuration"""
@@ -5719,7 +5703,6 @@ type RootQueryType {
     uuid: String!
   ): Artboard
   artboardRevisions(after: String, before: String, limit: Int = 20, permanentArtboardId: ID!, shareIdentifier: UUID!): ArtboardRevisions!
-  askAi(question: String!): AskAiResponse!
   """Get the latest version of a component via its UUID"""
   componentInDocumentWithUuid(
     """The ID of the document whose scope we want to limit the component lookup to"""
@@ -8397,6 +8380,8 @@ input CreateWorkspaceParams {
   members: [WorkspaceMemberInput]
   """Workspace name"""
   name: String
+  """utm_source"""
+  source: String
 }
 
 """
