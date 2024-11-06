@@ -3524,6 +3524,8 @@ type Project {
   collectionsUnpaginated(after: String, before: String, limit: Int = 20): [UnpaginatedCollection!]!
   """Date and time in which the project was moved to trash"""
   deletedAt: DateTime
+  """The description of this project."""
+  description: String
   """Identifier"""
   id: String! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
@@ -3536,6 +3538,8 @@ type Project {
   memberships(after: String, before: String, limit: Int = 20): ProjectMemberships!
   """Project name"""
   name: String!
+  """Parent project"""
+  parentProject: Project
   """List permission group assigned to the project"""
   permissionGroupRelations(
     after: String
@@ -3576,6 +3580,8 @@ type Project {
   ): Shares!
   """Project short_id"""
   shortId: ShortId!
+  """Top level project from which the nested project inherits permissions"""
+  topLevelProject: Project
   """The type of the project"""
   type: ProjectType!
   """
@@ -4729,6 +4735,12 @@ type RootMutationType {
   """Create a new project in a workspace"""
   createWorkspaceProject(
     """
+    Description of the new project.
+    
+    Description cannot be longer than 255 characters.
+    """
+    description: String
+    """
     A list of email addresses of users that will be added to the project.
     
     If the email address belongs to a user who is not a workspace member,
@@ -4740,6 +4752,8 @@ type RootMutationType {
     guestsToInvite: [CreateWorkspaceProjectGuestToInvite!]
     """Project name"""
     name: String!
+    """Parent project identifier"""
+    parentProjectIdentifier: UUID
     """
     A list of identifiers/access level of permission groups that will be added to
     the project.
@@ -7367,6 +7381,8 @@ type User {
   avatar: Avatar
   """created_at"""
   createdAt: NaiveDateTime!
+  """Whether the user is eligible to create a workspace with a trial period or not"""
+  eligibleForWorkspaceTrial: Boolean
   """User email"""
   email: String
   """Lists feature flags"""
