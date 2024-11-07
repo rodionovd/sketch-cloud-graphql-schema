@@ -3552,6 +3552,19 @@ type Project {
   pinnedByCurrentUserAt: DateTime
   """The privacy icon to be displayed"""
   privacyIcon: ProjectPrivacyIcon!
+  """List of first-level nested projects."""
+  projects(
+    after: String
+    """Filter if a project has been archived or not. Defaults to unarchived projects."""
+    archived: ProjectArchivedStatus = UNARCHIVED
+    before: String
+    limit: Int = 20
+  ): Projects!
+  """Unpaginated list of first-level nested projects."""
+  projectsUnpaginated(
+    """Filter if a project has been archived or not. Defaults to unarchived projects."""
+    archived: ProjectArchivedStatus = UNARCHIVED
+  ): [UnpaginatedProject!]!
   """Shares"""
   shares(
     after: String
@@ -7218,6 +7231,14 @@ type UnpaginatedCollectionShare {
   updatedAt: DateTime!
 }
 
+"""A minimalist version of a project aimed at being used for unpaginated queries."""
+type UnpaginatedProject {
+  """The identifier of the project."""
+  identifier: UUID!
+  """The name of the project."""
+  name: String!
+}
+
 """Response from mutation unpinProject"""
 type UnpinProjectResponse {
   """The unpinned project"""
@@ -7807,7 +7828,7 @@ type Workspace {
   """List of projects that belong to this workspace"""
   projects(
     after: String
-    """Filter if a project has been archived or not. Defaults to all projects."""
+    """Filter if a project has been archived or not. Defaults to unarchived projects."""
     archived: ProjectArchivedStatus = UNARCHIVED
     before: String
     limit: Int = 20
