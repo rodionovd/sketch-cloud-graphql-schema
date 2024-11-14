@@ -8419,8 +8419,14 @@ input CreateWorkspaceParams {
   members: [WorkspaceMemberInput]
   """Workspace name"""
   name: String
+  """Payment method for Stripe"""
+  paymentMethod: String
+  """Plan ID, can be fetched from the `availablePlans` query on payments"""
+  planId: String
   """utm_source"""
   source: String
+  """Whether the workspace will have a trial period or not"""
+  trial: Boolean
 }
 
 """
