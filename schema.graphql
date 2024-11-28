@@ -7965,8 +7965,10 @@ type WorkspaceFeatures {
   restrictedPublicLinks: Boolean!
   """Is the SSO feature available for this workspace?"""
   ssoEnabled: Boolean!
-  """Is the Unlimited Storage feature for this workspace?"""
+  """Is the Unlimited Storage feature available for this workspace?"""
   unlimitedStorageEnabled: Boolean!
+  """Is the Unlimited Trial feature available for this workspace?"""
+  unlimitedTrialEnabled: Boolean!
   """Is the User Permissions Directory feature available for this workspace?"""
   userDirectoryEnabled: Boolean!
   """Is the workspace profile feature enabled in this workspace?"""
@@ -8413,16 +8415,20 @@ input CreateTeacherApplicationParams {
 input CreateWorkspaceParams {
   """Workspace avatar file"""
   avatar: Upload
-  """Billing info"""
+  """Billing info. Requires payment_method to be set too."""
   billing: WorkspaceBillingInput
   """Workspace members"""
   members: [WorkspaceMemberInput]
   """Workspace name"""
   name: String
-  """Payment method for Stripe"""
+  """Payment method for Stripe. Requires billing to be set too."""
   paymentMethod: String
   """Plan ID, can be fetched from the `availablePlans` query on payments"""
   planId: String
+  """Promo code"""
+  promotionCode: String
+  """Amount of seats, defaults to 1"""
+  seats: Int
   """utm_source"""
   source: String
   """Whether the workspace will have a trial period or not"""
