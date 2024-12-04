@@ -3540,6 +3540,8 @@ type Project {
   name: String!
   """Parent project"""
   parentProject: Project
+  """Identifier of the parent project"""
+  parentProjectIdentifier: UUID
   """Unpaginated list of all parent projects of this project."""
   parentProjects: [Project!]!
   """List permission group assigned to the project"""
