@@ -7961,6 +7961,8 @@ type WorkspaceFeatures {
   archiveEnabled: Boolean!
   """Are Design Systems enabled for this workspace?"""
   designSystemsEnabled: Boolean!
+  """Is the encryption enabled for this workspace?"""
+  encryptionEnabled: Boolean!
   """Is the Permission Group feature available for this workspace?"""
   permissionGroupsEnabled: Boolean!
   """Are public links restricted in this workspace?"""
