@@ -5226,7 +5226,7 @@ type RootMutationType {
     name: String!
     """Project short id"""
     projectShortId: ShortId
-  ): ProjectRenamePayload!
+  ): ProjectRenamePayload! @deprecated(reason: "Use updateProject instead")
   """Creates a RenderFarm job to render downloadable assets for the given document"""
   renderDownloadableAssets(
     """The input for our mutation, which is just the document identifier"""
@@ -5515,6 +5515,19 @@ type RootMutationType {
     """The input param to update a permission group relation"""
     input: UpdatePermissionGroupRelationParams!
   ): UpdatePermissionGroupRelationResponse!
+  """Update project's properties"""
+  updateProject(
+    """
+    Description of the project.
+    
+    Description cannot be longer than 255 characters.
+    """
+    description: String
+    """Project identifier"""
+    identifier: UUID!
+    """New project name"""
+    name: String
+  ): UpdateProjectResponse!
   """Update a project membership"""
   updateProjectMembership(
     """Indicate if the guest can comment shares"""
@@ -7310,6 +7323,12 @@ type UpdateProjectMembershipResponse {
 """API response for updateProjectPermission"""
 type UpdateProjectPermissionResponse {
   """The updated project"""
+  project: Project!
+}
+
+"""API response for updateProject"""
+type UpdateProjectResponse {
+  """The edited project"""
   project: Project!
 }
 
