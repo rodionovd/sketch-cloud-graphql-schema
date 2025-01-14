@@ -3630,6 +3630,13 @@ type Project {
   ): Shares!
   """Project short_id"""
   shortId: ShortId!
+  """
+  The number of Storage Items in the Project.
+  
+  This field is optimised for bulk look up, so should be used when querying
+  for multiple Projects.
+  """
+  storageItemsCount: Int!
   """Top level project from which the nested project inherits permissions"""
   topLevelProject: Project
   """The type of the project"""
