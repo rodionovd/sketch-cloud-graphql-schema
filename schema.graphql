@@ -1068,6 +1068,20 @@ interface ShareOwner {
   name: String
 }
 
+"""Interface for storage item."""
+interface StorageItem {
+  """The date and time the storage item was moved to the trash."""
+  deletedAt: DateTime
+  """The encrypted name of the storage item."""
+  extName: ExtText
+  """The identifier of the storage item."""
+  identifier: UUID!
+  """The name of the storage item."""
+  name: String!
+  """The last date and time the storage item was updated."""
+  updatedAt: DateTime
+}
+
 """
 A `UserNotification` is a notification intended to be used to show users notifications in the
 designated "notifications" section at the top right of the nav bar (indicated by the little
@@ -3526,7 +3540,7 @@ type PresentationFile {
 }
 
 """Project"""
-type Project {
+type Project implements StorageItem {
   """Date and time in which the project was archived"""
   archivedAt: DateTime
   """
@@ -3630,6 +3644,8 @@ type Project {
   ): Shares!
   """Project short_id"""
   shortId: ShortId!
+  """Get the list of all storage items that are part of this project."""
+  storageItems(after: String, before: String, limit: Int = 20): StorageItems!
   """
   The number of Storage Items in the Project.
   
@@ -3641,6 +3657,8 @@ type Project {
   topLevelProject: Project
   """The type of the project"""
   type: ProjectType!
+  """Date and time in which the project was last updated"""
+  updatedAt: DateTime
   """
   Whether or not the current user can leave this `Project`.
   This property will be true for all workspace guests that can access the project,
@@ -6348,7 +6366,7 @@ type SetupMfaResponse {
 }
 
 """A Share/Cloud Document"""
-type Share {
+type Share implements StorageItem {
   """Allowed Parent Access Levels"""
   allowedParentAccessLevels: [ParentAccessLevel!]!
   """Allowed Private Access Levels"""
@@ -7093,6 +7111,14 @@ type StarNotification implements UserNotification {
   version: Version
   """Workspace"""
   workspace: PublicWorkspace
+}
+
+"""Paginated list of storage items currently in the archive."""
+type StorageItems {
+  """List of storage items in the archive."""
+  entries: [StorageItem!]!
+  """Pagination information"""
+  meta: PaginationMeta!
 }
 
 """Symbol component"""
