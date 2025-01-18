@@ -3585,6 +3585,13 @@ type Project implements StorageItem {
   memberships(after: String, before: String, limit: Int = 20): ProjectMemberships!
   """Project name"""
   name: String!
+  """
+  The number of first level nested projects in the Project.
+  
+  This field is optimised for bulk look up, so should be used when querying
+  for multiple Projects.
+  """
+  nestedProjectsCount: Int!
   """Parent project"""
   parentProject: Project
   """Identifier of the parent project"""
@@ -3601,6 +3608,25 @@ type Project implements StorageItem {
   ): PermissionGroupRelationProjects!
   """If current user pinned the project, this field will have the date when it was pinned"""
   pinnedByCurrentUserAt: DateTime
+  """
+  Returns a preview of the first 4 Shares in the Project.
+  
+  Each preview contains some basic information about the Share (e.g. its
+  name and identifier) along with the Share's preview thumbnail File.
+  
+  This field provides an optimized way to lookup the preview files for the
+  Shares in the Project in bulk.
+  
+  If the Project is not trashed and not archived, then only non-trashed and
+  non-archived Shares are included in the list.
+  
+  If the Project is archived, then only non-trashed Shares are included
+  in the list.
+  
+  If the Project is trashed, then all Shares are included. A trashed Project
+  can contain only trashed Shares.
+  """
+  previews: [ProjectSharePreview!]!
   """The privacy icon to be displayed"""
   privacyIcon: ProjectPrivacyIcon!
   """List of first-level nested projects."""
@@ -3642,6 +3668,13 @@ type Project implements StorageItem {
     """
     sortOrder: ShareSortOrder = LAST_MODIFIED_DESC
   ): Shares!
+  """
+  The number of shares in the project.
+  
+  This field is optimised for bulk look up, so should be used when querying
+  for multiple Projects.
+  """
+  sharesCount: Int!
   """Project short_id"""
   shortId: ShortId!
   """Get the list of all storage items that are part of this project."""
@@ -3652,7 +3685,7 @@ type Project implements StorageItem {
   This field is optimised for bulk look up, so should be used when querying
   for multiple Projects.
   """
-  storageItemsCount: Int!
+  storageItemsCount: Int! @deprecated(reason: "Use sharesCount and nestedProjectsCount instead")
   """Top level project from which the nested project inherits permissions"""
   topLevelProject: Project
   """The type of the project"""
@@ -3843,6 +3876,27 @@ type ProjectRestoredEvent implements BaseProjectChangedEvent {
   projectIdentifier: UUID! @deprecated(reason: "Use project instead")
   """Identifier of the workspace to which the project belongs"""
   workspaceIdentifier: UUID!
+}
+
+"""
+A preview of a Share within a Project.
+
+This is a slimmed down version of the Share type to make querying
+Projects in bulk more efficient.
+"""
+type ProjectSharePreview {
+  """
+  The preview thumbnail File for the Share.
+  
+  Note: this field is nullable as the Share might still be processing, in
+  which case a thumbnail File is not ready yet. Clients should show a
+  loading placeholder in such circumstances.
+  """
+  file: File
+  """The name of the Share."""
+  name: String!
+  """The identifier of the Share."""
+  shareIdentifier: UUID!
 }
 
 """This event defines when a project is unarchived"""
