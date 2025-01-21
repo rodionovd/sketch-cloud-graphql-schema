@@ -3679,13 +3679,6 @@ type Project implements StorageItem {
   shortId: ShortId!
   """Get the list of all storage items that are part of this project."""
   storageItems(after: String, before: String, limit: Int = 20): StorageItems!
-  """
-  The number of Storage Items in the Project.
-  
-  This field is optimised for bulk look up, so should be used when querying
-  for multiple Projects.
-  """
-  storageItemsCount: Int! @deprecated(reason: "Use sharesCount and nestedProjectsCount instead")
   """Top level project from which the nested project inherits permissions"""
   topLevelProject: Project
   """The type of the project"""
