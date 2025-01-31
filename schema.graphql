@@ -1,3 +1,5 @@
+directive @encryptionSupported on ARGUMENT_DEFINITION | FIELD_DEFINITION
+
 """Exposes a URL that specifies the behavior of this scalar."""
 directive @specifiedBy(
   """The URL that specifies the behavior of this scalar."""
@@ -264,6 +266,14 @@ enum FileType {
   FULL
   """Image file for the layers in an artboard without fix position when scrolling"""
   SCROLLABLE
+}
+
+"""Frame filter"""
+enum FrameFilterType {
+  """All"""
+  ALL
+  """Prototype"""
+  PROTOTYPE
 }
 
 """The status of the inspector data."""
@@ -1058,6 +1068,54 @@ interface Component {
   uuid: UUID!
 }
 
+"""FrameGroup"""
+interface FrameGroup {
+  """Annotation count"""
+  annotationCount: Int!
+  """
+  Associated component. Only symbol frames are associated with components.
+  For other frames the value is always null.
+  """
+  component: Component
+  """Document order number"""
+  documentOrder: Int!
+  """Version short identifier"""
+  documentVersionShortId: ShortId!
+  """Encrypted name"""
+  extName: ExtText!
+  """List of files"""
+  files(
+    """File type"""
+    type: FileType
+  ): [File!]!
+  """Whether the document was rendered with fonts missing"""
+  hasMissingFonts: Boolean
+  """Height"""
+  height: Float!
+  """identifier"""
+  identifier: UUID!
+  """Flow home?"""
+  isFlowHome: Boolean!
+  """Name"""
+  name: String!
+  """Next FrameGroup"""
+  next: FrameGroup
+  """Order"""
+  order: Int!
+  """Page"""
+  page: Page
+  """Previous FrameGroup"""
+  previous: FrameGroup
+  """The subscription status for the current user for this frame."""
+  subscriptionStatus: NotificationSubscriptionStatus!
+  """Unread count of comments"""
+  unreadCount: Int!
+  """Unique identifier"""
+  uuid: UUID!
+  """Width"""
+  width: Float!
+}
+
 """Workspace that owns the Share."""
 interface ShareOwner {
   """(Deprecated) Use identifier instead"""
@@ -1381,7 +1439,7 @@ type ArchiveProjectResponse {
 }
 
 """Artboard"""
-type Artboard {
+type Artboard implements FrameGroup {
   """Annotation count"""
   annotationCount: Int!
   """Artboard base"""
@@ -1434,7 +1492,9 @@ type Artboard {
   """Name"""
   name: String!
   """Next artboard"""
-  nextArtboard: Artboard
+  next: Artboard
+  """Next artboard"""
+  nextArtboard: Artboard @deprecated(reason: "Use `next` instead")
   """Order"""
   order: Int!
   """Page"""
@@ -1442,7 +1502,9 @@ type Artboard {
   """Discussion identifier"""
   permanentArtboardShortId: ShortId!
   """Previous artboard"""
-  previousArtboard: Artboard
+  previous: Artboard
+  """Previous artboard"""
+  previousArtboard: Artboard @deprecated(reason: "Use `previous` instead")
   """Revision identifier"""
   revisionId: ShortId @deprecated(reason: "Use revision_short_id instead")
   """Revision UUID"""
@@ -1451,8 +1513,6 @@ type Artboard {
   revisionShortId: ShortId!
   """Short identifier"""
   shortId: ShortId!
-  """Artboard slug"""
-  slug: String @deprecated(reason: "Not used in artboard URLs anymore")
   """The subscription status for the current user for this artboard."""
   subscriptionStatus: NotificationSubscriptionStatus!
   """Unread count of comments"""
@@ -2197,7 +2257,7 @@ type Document {
   artboard(
     """Short_id"""
     shortId: ShortId
-  ): Artboard
+  ): Artboard @deprecated(reason: "Use frame instead")
   """Artboard count"""
   artboardCount: Int!
   """List of artboards"""
@@ -2209,7 +2269,7 @@ type Document {
     limit: Int = 20
     """Search"""
     search: String
-  ): Artboards
+  ): Artboards @deprecated(reason: "Use frames instead")
   """Has assets"""
   assetStatus: StatusEnum!
   """Does the document support editing of component descriptions?"""
@@ -2264,6 +2324,21 @@ type Document {
   downloadableAssets: [DownloadableAsset!]!
   """The encrypted or the plain name (supersedes the description field)"""
   extName: ExtText!
+  """Frame"""
+  frame(
+    """Frame identifier"""
+    uuid: UUID
+  ): FrameGroup!
+  """List of frames"""
+  frames(
+    after: String
+    before: String
+    """Filter, default is all"""
+    filter: FrameFilterType = ALL
+    limit: Int = 20
+    """Search"""
+    search: String
+  ): Frames!
   """Document was rendered with fonts missing"""
   hasMissingFonts: Boolean
   """Identifier"""
@@ -2687,6 +2762,62 @@ type File {
   url: String
   """Width of the file"""
   width: Int
+}
+
+"""Frame"""
+type Frame implements FrameGroup {
+  """Annotation count"""
+  annotationCount: Int!
+  """
+  Associated component. Only symbol frames are associated with components.
+  For other frames the value is always null.
+  """
+  component: Component
+  """Document order number"""
+  documentOrder: Int!
+  """Version short identifier"""
+  documentVersionShortId: ShortId!
+  """Encrypted name"""
+  extName: ExtText!
+  """List of files"""
+  files(
+    """File type"""
+    type: FileType
+  ): [File!]!
+  """Whether the document was rendered with fonts missing"""
+  hasMissingFonts: Boolean
+  """Height"""
+  height: Float!
+  """identifier"""
+  identifier: UUID!
+  """Flow home?"""
+  isFlowHome: Boolean!
+  """Name"""
+  name: String!
+  """Next frame"""
+  next: Frame
+  """Order"""
+  order: Int!
+  """Page"""
+  page: Page!
+  """Previous frame"""
+  previous: Frame
+  """The subscription status for the current user for this frame."""
+  subscriptionStatus: NotificationSubscriptionStatus!
+  """Unread count of comments"""
+  unreadCount: Int!
+  """Unique identifier"""
+  uuid: UUID!
+  """Width"""
+  width: Float!
+}
+
+"""List of frames with pagination info"""
+type Frames {
+  """List of frames"""
+  entries: [FrameGroup!]!
+  """Info for pagination"""
+  meta: PaginationMeta!
 }
 
 """Workspace Customer's SSO identity provider configuration"""
@@ -4535,7 +4666,11 @@ type RootMutationType {
     This value determines which Sketch releases can edit the Share.
     """
     coeditCompatibilityVersion: Int!
-    """The name of the share and initial document."""
+    """
+    @encryptionSupported
+    
+    The name of the share and initial document.
+    """
     name: String!
     """
     The identifier of the organization that should own the share.
@@ -4724,7 +4859,11 @@ type RootMutationType {
   Also, for floating annotations coordinates must be passed.
   """
   createAnnotation(
-    """Text of the first annotation comment"""
+    """
+    @encryptionSupported
+    
+    Text of the first annotation comment
+    """
     body: String!
     """
     (For floating annotations only)
@@ -4746,7 +4885,11 @@ type RootMutationType {
   createAnnotationReply(
     """Annotation identifier"""
     annotationIdentifier: UUID!
-    """Text of the reply"""
+    """
+    @encryptionSupported
+    
+    Text of the reply
+    """
     body: String!
   ): CreateAnnotationReplyResponse!
   """Create a new collection within the given project"""
@@ -4764,12 +4907,16 @@ type RootMutationType {
     """
     addAllProjectShares: Boolean
     """
+    @encryptionSupported
+    
     Description of the new collection.
     
     Description cannot be longer than 255 characters.
     """
     description: String
     """
+    @encryptionSupported
+    
     Name of the new collection.
     
     The name must be unique within the context of the Project.
@@ -4814,7 +4961,11 @@ type RootMutationType {
   ): CreateEducationApplicationResponse!
   """Create a new project in an organization"""
   createOrganizationProject(
-    """Project name"""
+    """
+    @encryptionSupported
+    
+    Project name
+    """
     name: String!
     """Organization short id"""
     organizationShortId: ShortId
@@ -4841,7 +4992,11 @@ type RootMutationType {
   ): CreateEducationApplicationResponse!
   """Create a new project in the user namespace"""
   createUserProject(
-    """Project name"""
+    """
+    @encryptionSupported
+    
+    Project name
+    """
     name: String!
   ): ProjectCreatePayload! @deprecated(reason: "Use createWorkspaceProject with the user's personal workspace")
   """Create a workspace"""
@@ -4857,6 +5012,8 @@ type RootMutationType {
   """Create a new project in a workspace"""
   createWorkspaceProject(
     """
+    @encryptionSupported
+    
     Description of the new project.
     
     Description cannot be longer than 255 characters.
@@ -4872,7 +5029,11 @@ type RootMutationType {
     accept it.
     """
     guestsToInvite: [CreateWorkspaceProjectGuestToInvite!]
-    """Project name"""
+    """
+    @encryptionSupported
+    
+    Project name
+    """
     name: String!
     """Parent project identifier"""
     parentProjectIdentifier: UUID
@@ -5027,6 +5188,8 @@ type RootMutationType {
     """
     addAllProjectShares: Boolean
     """
+    @encryptionSupported
+    
     New description of the new collection.
     
     Description cannot be longer than 255 characters.
@@ -5034,7 +5197,11 @@ type RootMutationType {
     description: String
     """Collection identifier"""
     identifier: UUID!
-    """New name of the collection, which must be unique within the context of the Project."""
+    """
+    @encryptionSupported
+    
+    New name of the collection, which must be unique within the context of the Project.
+    """
     name: String!
     """
     The identifiers of Shares that should make up the collection.
@@ -5054,6 +5221,8 @@ type RootMutationType {
   """Edit the description of a collection."""
   editCollectionDescription(
     """
+    @encryptionSupported
+    
     New description of the new collection.
     
     Description cannot be longer than 255 characters.
@@ -5064,7 +5233,11 @@ type RootMutationType {
   ): EditCollectionDescriptionResponse!
   """Edit the body of a comment"""
   editComment(
-    """Updated text of the comment"""
+    """
+    @encryptionSupported
+    
+    Updated text of the comment
+    """
     body: String!
     """Comment identifier"""
     commentIdentifier: UUID!
@@ -5322,12 +5495,20 @@ type RootMutationType {
   renameCollection(
     """Collection identifier"""
     identifier: UUID!
-    """New name of the collection, which must be unique within the context of the Project."""
+    """
+    @encryptionSupported
+    
+    New name of the collection, which must be unique within the context of the Project.
+    """
     name: String!
   ): RenameCollectionResponse!
   """Rename a project"""
   renameProject(
-    """New project name"""
+    """
+    @encryptionSupported
+    
+    New project name
+    """
     name: String!
     """Project short id"""
     projectShortId: ShortId
@@ -5623,6 +5804,8 @@ type RootMutationType {
   """Update project's properties"""
   updateProject(
     """
+    @encryptionSupported
+    
     Description of the project.
     
     Description cannot be longer than 255 characters.
@@ -5630,7 +5813,11 @@ type RootMutationType {
     description: String
     """Project identifier"""
     identifier: UUID!
-    """New project name"""
+    """
+    @encryptionSupported
+    
+    New project name
+    """
     name: String
   ): UpdateProjectResponse!
   """Update a project membership"""
@@ -5695,7 +5882,11 @@ type RootMutationType {
   ): UpdateUserPreferencesResponse!
   """Update the description of share's version"""
   updateVersionDescription(
-    """New description for version"""
+    """
+    @encryptionSupported
+    
+    New description for version
+    """
     description: String!
     """Share identifier"""
     shareIdentifier: UUID!
@@ -5894,6 +6085,12 @@ type RootQueryType {
     identifier: UUID!
   ): DesignSystemPage!
   documentUploadParts(documentId: UUID!, multipartSessionTicket: String!, parts: [Int]!): MultipartUpload
+  frame(
+    documentVersionShortId: ShortId
+    """The UUID of the Share under which this frame belongs."""
+    shareIdentifier: UUID!
+    uuid: String
+  ): FrameGroup
   """Get the public workspace info corresponding to the membership in the invite token"""
   getPublicWorkspaceFromToken(membershipToken: String!): PublicWorkspace!
   """Fetch the inspector JSON data. Pass in either a page_id or an artboard_id."""
@@ -8619,7 +8816,11 @@ input CreateWorkspaceShareParams {
   (If left empty a value will be automatically generated)
   """
   identifier: UUID
-  """Title of the share"""
+  """
+  @encryptionSupported
+  
+  Title of the share
+  """
   name: String!
   """The identifier of the project this share should be added to"""
   projectIdentifier: UUID
@@ -8828,7 +9029,11 @@ input ShareCreateParams {
   (If left empty a value will be automatically generated)
   """
   identifier: UUID
-  """Title of the share"""
+  """
+  @encryptionSupported
+  
+  Title of the share
+  """
   name: String!
   """The identifier of the organization this share belongs to"""
   organizationIdentifier: UUID
@@ -8845,7 +9050,11 @@ input ShareCreateVersionParams {
   (If left empty a value will be automatically generated)
   """
   identifier: UUID
-  """Title of the document"""
+  """
+  @encryptionSupported
+  
+  Title of the document
+  """
   name: String!
 }
 
@@ -8859,9 +9068,17 @@ input ShareMemberAccessSearchParams {
 input ShareParams {
   """Enables comments"""
   commentsEnabled: Boolean
-  """Edits the description given to a share"""
+  """
+  @encryptionSupported
+  
+  Edits the description given to a share
+  """
   description: String
-  """Edits the name given to a share"""
+  """
+  @encryptionSupported
+  
+  Edits the name given to a share
+  """
   name: String
   """Allows exporting of tokens via a public available url"""
   publicTokenExport: PublicTokenExport
