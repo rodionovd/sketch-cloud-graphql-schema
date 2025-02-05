@@ -3438,7 +3438,7 @@ type Page {
   artboard(
     """Slug"""
     slug: String
-  ): Artboard
+  ): Artboard @deprecated(reason: "Use frame instead")
   """Artboard count"""
   artboardCount: Int!
   """Artboards"""
@@ -3450,9 +3450,24 @@ type Page {
     limit: Int = 20
     """Search term"""
     search: String
-  ): Artboards
+  ): Artboards @deprecated(reason: "Use frames instead")
   """Encryption name"""
   extName: ExtText
+  """Frame"""
+  frame(
+    """Frame identifier"""
+    uuid: UUID
+  ): FrameGroup
+  """List of frames"""
+  frames(
+    after: String
+    before: String
+    """Filter, default is all"""
+    filter: FrameFilterType = ALL
+    limit: Int = 20
+    """Search"""
+    search: String
+  ): Frames!
   """True if there is at least one unread comment"""
   hasUnreadComments: Boolean!
   """Identifier"""
