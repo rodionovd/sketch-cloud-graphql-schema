@@ -2327,7 +2327,7 @@ type Document {
   """Frame"""
   frame(
     """Frame identifier"""
-    uuid: UUID
+    uuid: String
   ): FrameGroup!
   """List of frames"""
   frames(
