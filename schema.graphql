@@ -1106,6 +1106,8 @@ interface FrameGroup {
   page: Page
   """Previous FrameGroup"""
   previous: FrameGroup
+  """Revisions"""
+  revisions: FrameRevisions!
   """The subscription status for the current user for this frame."""
   subscriptionStatus: NotificationSubscriptionStatus!
   """Unread count of comments"""
@@ -1511,6 +1513,8 @@ type Artboard implements FrameGroup {
   revisionIdentifier: UUID!
   """Revision short identifier"""
   revisionShortId: ShortId!
+  """Revisions"""
+  revisions: FrameRevisions!
   """Short identifier"""
   shortId: ShortId!
   """The subscription status for the current user for this artboard."""
@@ -2802,6 +2806,8 @@ type Frame implements FrameGroup {
   page: Page!
   """Previous frame"""
   previous: Frame
+  """Revisions"""
+  revisions: FrameRevisions!
   """The subscription status for the current user for this frame."""
   subscriptionStatus: NotificationSubscriptionStatus!
   """Unread count of comments"""
@@ -2810,6 +2816,14 @@ type Frame implements FrameGroup {
   uuid: UUID!
   """Width"""
   width: Float!
+}
+
+"""List of frame revisions with pagination info"""
+type FrameRevisions {
+  """List of revisions"""
+  entries: [FrameRevisionItem!]!
+  """Pagination metadata"""
+  meta: PaginationMeta!
 }
 
 """List of frames with pagination info"""
@@ -4421,17 +4435,19 @@ type RestoreShareResponse {
 """Revision object"""
 type Revision {
   """Associated artboard"""
-  artboard: Artboard
+  artboard: Artboard @deprecated(reason: "Use frame instead")
   """Artboard id"""
   artboardId: ShortId @deprecated(reason: "Use artboard_short_id instead.")
   """Artboard id"""
-  artboardShortId: ShortId
+  artboardShortId: ShortId @deprecated(reason: "use frame instead")
   """Is versioning enabled? Or is created after versioning date?"""
   createdAfterVersioning: Boolean
   """Created at"""
   createdAt: DateTime!
   """Revision creator"""
   creator: PublicUser!
+  """Associated frame"""
+  frame: FrameGroup
   """Identifier"""
   id: ID @deprecated(reason: "Use identifier instead.")
   """Identifier"""
@@ -4457,13 +4473,15 @@ type Revision {
 """Revision Deleted object"""
 type RevisionDeleted {
   """Artboard identifier"""
-  artboardIdentifier: UUID!
+  artboardIdentifier: UUID! @deprecated(reason: "Use frame_identifier instead.")
   """Created at"""
   createdAt: DateTime!
   """Revision creator"""
   creator: PublicUser!
   """Deleted at"""
   deletedAt: DateTime!
+  """Frame identifier"""
+  frameIdentifier: UUID!
   """Identifier"""
   identifier: UUID!
   """
@@ -4481,7 +4499,9 @@ type RevisionDeleted {
 """Event that fires when revision is moved due to version deletion"""
 type RevisionMovedEvent {
   """Previous artboard identifier"""
-  previousArtboardIdentifier: UUID!
+  previousArtboardIdentifier: UUID! @deprecated(reason: "Use previous_frame_identifier instead.")
+  """Previous frame identifier"""
+  previousFrameIdentifier: UUID!
   """Revision"""
   revision: Revision!
 }
@@ -6069,7 +6089,7 @@ type RootQueryType {
     """The UUID (do_objectID) of this artboard within the Sketch document model data"""
     uuid: String!
   ): Artboard
-  artboardRevisions(after: String, before: String, limit: Int = 20, permanentArtboardId: ID!, shareIdentifier: UUID!): ArtboardRevisions!
+  artboardRevisions(after: String, before: String, limit: Int = 20, permanentArtboardId: ID!, shareIdentifier: UUID!): ArtboardRevisions! @deprecated(reason: "Use `Frame.revisions` query instead")
   """Get the latest version of a component via its UUID"""
   componentInDocumentWithUuid(
     """The ID of the document whose scope we want to limit the component lookup to"""
@@ -8545,6 +8565,9 @@ union CurrentSubject = Artboard | ColorVariable | LayerStyle | Page | Symbol | T
 
 """The encrypted data or plain text, when no encryption was used"""
 union ExtText = EncText | PlainText
+
+"""Different states of Revisions"""
+union FrameRevisionItem = Revision | RevisionDeleted | RevisionUnavailable
 
 """Union between workspace membership and permission group"""
 union InvitableUserOrPermissionGroup = PermissionGroup | WorkspaceMembership
