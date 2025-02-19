@@ -711,6 +711,14 @@ enum StatusEnum {
   UNKNOWN
 }
 
+"""Type of the storage item"""
+enum StorageItemType {
+  """The storage item is a project."""
+  PROJECT
+  """The storage item is a share."""
+  SHARE
+}
+
 """[WILL BE REMOVED] Subscription status"""
 enum SubscriptionStatus {
   """Active"""
@@ -4052,6 +4060,20 @@ type ProjectSharePreview {
   shareIdentifier: UUID!
 }
 
+"""This event is dispatched when a project is transferred"""
+type ProjectTransferredEvent implements BaseProjectChangedEvent {
+  """The old parent project identifier."""
+  oldParentProjectIdentifier: UUID
+  """Identifier of the workspace to which the project belonged before the transfer."""
+  oldWorkspaceIdentifier: UUID
+  """The transferred project."""
+  project: Project!
+  """Identifier of the transferred project"""
+  projectIdentifier: UUID! @deprecated(reason: "Use project instead")
+  """Identifier of the workspace to which the project has been transferred."""
+  workspaceIdentifier: UUID!
+}
+
 """This event defines when a project is unarchived"""
 type ProjectUnarchivedEvent implements BaseProjectChangedEvent {
   """The affected project"""
@@ -5748,6 +5770,24 @@ type RootMutationType {
     """The workspace you want to transfer the share to"""
     workspaceIdentifier: UUID!
   ): TransferShareResponse!
+  """Mutation to transfer a storage item."""
+  transferStorageItem(
+    """The identifier of the storage item that will be transferred."""
+    identifier: UUID!
+    """
+    The identifier of the new parent project.
+    If not provided, the storage item will be transferred to the root.
+    """
+    parentProjectIdentifier: UUID
+    """The type of the storage item that will be transferred."""
+    type: StorageItemType!
+    """
+    The identifier of the workspace in which the item to be transferred.
+    Not needed if parent_project_identifier is provided. If neither are provided,
+    the item will be transferred to the root of its current workspace.
+    """
+    workspaceIdentifier: UUID
+  ): TransferStorageItemResponse!
   """Unarchive a project and all its shares"""
   unarchiveProject(
     """Project identifier"""
@@ -7518,6 +7558,12 @@ type TransferShareResponse {
   share: Share!
   """The target workspace to which the share was transferred"""
   workspace: Workspace!
+}
+
+"""API response for transferStorageItem mutation"""
+type TransferStorageItemResponse {
+  """The transferred storage item"""
+  storageItem: StorageItem!
 }
 
 """Paginated list of items currently in the trash"""
