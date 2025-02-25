@@ -1115,7 +1115,7 @@ interface FrameGroup {
   """Previous FrameGroup"""
   previous: FrameGroup
   """Revisions"""
-  revisions: FrameRevisions!
+  revisions(after: String, before: String, limit: Int = 20): FrameRevisions!
   """The subscription status for the current user for this frame."""
   subscriptionStatus: NotificationSubscriptionStatus!
   """Unread count of comments"""
@@ -1522,7 +1522,7 @@ type Artboard implements FrameGroup {
   """Revision short identifier"""
   revisionShortId: ShortId!
   """Revisions"""
-  revisions: FrameRevisions!
+  revisions(after: String, before: String, limit: Int = 20): FrameRevisions!
   """Short identifier"""
   shortId: ShortId!
   """The subscription status for the current user for this artboard."""
@@ -2815,7 +2815,7 @@ type Frame implements FrameGroup {
   """Previous frame"""
   previous: Frame
   """Revisions"""
-  revisions: FrameRevisions!
+  revisions(after: String, before: String, limit: Int = 20): FrameRevisions!
   """The subscription status for the current user for this frame."""
   subscriptionStatus: NotificationSubscriptionStatus!
   """Unread count of comments"""
@@ -3846,7 +3846,18 @@ type Project implements StorageItem {
   """Project short_id"""
   shortId: ShortId!
   """Get the list of all storage items that are part of this project."""
-  storageItems(after: String, before: String, limit: Int = 20): StorageItems!
+  storageItems(
+    after: String
+    before: String
+    """
+    If true, storage items from all nested levels of the project will be included.
+    Otherwise, only direct children will be included.
+    """
+    includeAllNestedLevels: Boolean = false
+    limit: Int = 20
+    """Available params for searching storage items of this project."""
+    search: StorageItemsSearchParams
+  ): StorageItems!
   """Top level project from which the nested project inherits permissions"""
   topLevelProject: Project
   """The type of the project"""
@@ -9273,6 +9284,12 @@ input SignupMetadata {
   source: String
   """utm_term"""
   term: String
+}
+
+"""Workspace storage items search params"""
+input StorageItemsSearchParams {
+  """Allows to search workspace storage items by name."""
+  name: String
 }
 
 """The input type for subscriptions"""
