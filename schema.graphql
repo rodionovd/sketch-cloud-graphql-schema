@@ -5678,8 +5678,8 @@ type RootMutationType {
   setNotificationSubscription(
     """Annotation identifier"""
     annotationIdentifier: UUID
-    """Permanent artboard identifier"""
-    permanentArtboardId: String
+    """Frame UUID"""
+    frameUuid: UUID
     """Share identifier"""
     shareIdentifier: UUID
     """Subscription state"""
@@ -6696,7 +6696,9 @@ type SetNotificationSubscriptionResponse {
   """Annotation resource"""
   annotation: Annotation
   """Artboard resource"""
-  artboard: Artboard
+  artboard: Artboard @deprecated(reason: "use `frame` instead")
+  """FrameGroup resource"""
+  frame: FrameGroup
   """Share resource"""
   share: Share
 }
