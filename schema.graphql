@@ -1148,6 +1148,8 @@ interface StorageItem {
   name: String!
   """The last date and time the storage item was updated."""
   updatedAt: DateTime
+  """The public workspace which owns this storage item."""
+  workspace: PublicWorkspace!
 }
 
 """
@@ -1358,7 +1360,7 @@ type Annotation {
   subscriptions). The field is not optimized for resolving in annotations
   in batch (as a part of a paginated list, for example).
   """
-  latestVisibleVersion: LatestVisibleVersion!
+  latestVisibleVersion: LatestVisibleVersion! @deprecated(reason: "Annotations are not version-aware anymore")
   """Permanent id of the artboard across all revisions"""
   permanentArtboardId: String @deprecated(reason: "Use `currentSubject.uuid` instead")
   """Discussion ID related to permanent artboard ID"""
@@ -1393,7 +1395,7 @@ type Annotation {
   visibleInVersion(
     """Version identifier to check annotation's visibility for"""
     versionIdentifier: String
-  ): Boolean!
+  ): Boolean! @deprecated(reason: "Annotations are not version-aware anymore")
 }
 
 """
@@ -3797,6 +3799,8 @@ type Project implements StorageItem {
   previews: [ProjectSharePreview!]!
   """The privacy icon to be displayed"""
   privacyIcon: ProjectPrivacyIcon!
+  """The type of the project."""
+  projectType: ProjectType!
   """List of first-level nested projects."""
   projects(
     after: String
@@ -3860,8 +3864,8 @@ type Project implements StorageItem {
   ): StorageItems!
   """Top level project from which the nested project inherits permissions"""
   topLevelProject: Project
-  """The type of the project"""
-  type: ProjectType!
+  """(Deprecated) Please migrate to projectType."""
+  type: ProjectType! @deprecated(reason: "Use projectType instead")
   """Date and time in which the project was last updated"""
   updatedAt: DateTime
   """
@@ -3874,6 +3878,8 @@ type Project implements StorageItem {
   userCanLeave: Boolean!
   """The project membership of the current user if the user belongs to the project"""
   userMembership: ProjectMembership
+  """The public workspace which owns this project."""
+  workspace: PublicWorkspace!
   """The workspace access level of the project"""
   workspaceAccessLevel: ProjectWorkspaceAccessLevel!
 }
@@ -4933,7 +4939,7 @@ type RootMutationType {
   """
   Create a new annotation with its first comment.
   
-  Annotations must be linked to either a component, an artboard, or a page (so one of the
+  Annotations must be linked to either an artboard, or a page (so one of the
   three permanent ids must be passed, and only one).
   
   Also, for floating annotations coordinates must be passed.
@@ -4952,7 +4958,7 @@ type RootMutationType {
     coordinates: AnnotationCoordinatesInput
     """Share identifier"""
     shareIdentifier: UUID!
-    """Information about the subject of the annotation, which can be component, artboard, or page"""
+    """Information about the subject of the annotation, which can be artboard or page"""
     subject: AnnotationSubjectInput
     """
     Version identifier which was open for editing when the annotation was created.
@@ -6116,12 +6122,6 @@ type RootQueryType {
     status: AnnotationStatusFilter = ACTIVE_ONLY
     subject: AnnotationSubjectInput
     subjects: [AnnotationSubjectInput]
-    """
-    Only annotations linked to subjects present in the given version of the
-    share are returned. By default, the share's last version is used so this option is
-    only needed when querying annotations for older versions.
-    """
-    versionIdentifier: UUID
   ): Annotations!
   artboard(
     documentVersionShortId: ShortId
@@ -6784,7 +6784,7 @@ type Share implements StorageItem {
   isSharedWithGuests: Boolean!
   """Identifier of share's latest processed version."""
   latestVersionIdentifier: UUID
-  """(Deprecated) Please migrate to type"""
+  """(Deprecated) Please migrate to shareType."""
   libraryEnabled: Boolean! @deprecated(reason: "Please migrate to type")
   """List of members of this share."""
   members(after: String, before: String, limit: Int = 20): ShareMembershipPaginationItems!
@@ -6910,14 +6910,16 @@ type Share implements StorageItem {
   publicUrl: String!
   """If NOT null, then share is published to the Community."""
   publication: Publication
+  """The type of the share."""
+  shareType: ShareType!
   """The shortId of the Share"""
   shortId: ShortId!
   """The subscription status for the current user for this artboard."""
   subscriptionStatus: NotificationSubscriptionStatus!
   """The template category (project name) for curated templates, null otherwise"""
   templateCategory: String @deprecated(reason: "User `curatedCategory` instead")
-  """The type of the share"""
-  type: ShareType!
+  """(Deprecated) Please migrate to shareType."""
+  type: ShareType! @deprecated(reason: "Use shareType instead")
   """Count of unread discussion items pertaining to this Share"""
   unreadCount: Int
   """The date and time the Share was last updated"""
@@ -7597,6 +7599,8 @@ type TrashedProject {
   identifier: UUID!
   """The name of the trashed project"""
   name: String!
+  """The type of the project"""
+  projectType: ProjectType!
   """Trashed shares that belong to this project"""
   shares(after: String, before: String, limit: Int = 20): TrashedShares!
   """Project short_id"""
@@ -7611,8 +7615,8 @@ type TrashedShare {
   extName: ExtText!
   """Identifier of the trashed share"""
   identifier: UUID!
-  """(Deprecated) Please migrate to type"""
-  libraryEnabled: Boolean @deprecated(reason: "Please migrate to type")
+  """(Deprecated) Please migrate to shareType."""
+  libraryEnabled: Boolean @deprecated(reason: "Please migrate to shareType.")
   """The name of the trashed share"""
   name: String!
   """Privacy icon type for this trashed share"""
@@ -7620,7 +7624,9 @@ type TrashedShare {
   """The project this share belongs to"""
   project: Project
   """The type of the share"""
-  type: ShareType!
+  shareType: ShareType!
+  """(Deprecated) Please migrate to shareType."""
+  type: ShareType! @deprecated(reason: "Use shareType instead")
   """The date and time the share was last updated"""
   updatedAt: DateTime
   """User access level"""
@@ -7695,7 +7701,7 @@ type UnpinShareResponse {
 """Subject that has not yet been processed and can only be seen in the Mac app"""
 type UnprocessedSubject {
   """The type of the component annotation, if any"""
-  componentType: AnnotationComponentType
+  componentType: AnnotationComponentType @deprecated(reason: "Not in use")
   """The type of the subject"""
   type: AnnotationSubjectType!
   """The uuid (permanentId) of the subject"""
@@ -8740,10 +8746,8 @@ input AnnotationCoordinatesInput {
   y: Float!
 }
 
-"""Information about the subject of the annotation, which can be component, artboard, or page."""
+"""Information about the subject of the annotation, which can be artboard or page."""
 input AnnotationSubjectInput {
-  """The type of the component annotation, if any"""
-  componentType: AnnotationComponentType
   """The permanentId of the subject"""
   permanentId: String!
   """The type of the subject"""
