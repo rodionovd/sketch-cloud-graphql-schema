@@ -5686,6 +5686,8 @@ type RootMutationType {
     annotationIdentifier: UUID
     """Frame UUID"""
     frameUuid: UUID
+    """Permanent artboard identifier"""
+    permanentArtboardId: String
     """Share identifier"""
     shareIdentifier: UUID
     """Subscription state"""
