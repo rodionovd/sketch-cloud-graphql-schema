@@ -5685,7 +5685,7 @@ type RootMutationType {
     """Annotation identifier"""
     annotationIdentifier: UUID
     """Frame UUID"""
-    frameUuid: UUID
+    frameUuid: String
     """Permanent artboard identifier"""
     permanentArtboardId: String
     """Share identifier"""
@@ -7472,11 +7472,13 @@ type StorageItems {
 """Symbol component"""
 type Symbol implements Component {
   """Symbol's artboard"""
-  artboard: Artboard
+  artboard: Artboard @deprecated(reason: "Use `frame` instead")
   """Symbol depth"""
   depth: Int!
   """Symbol description"""
   description: String
+  """Symbol's artboard"""
+  frame: FrameGroup
   """Symbol identifier"""
   identifier: UUID!
   """Symbol name"""
