@@ -777,11 +777,6 @@ enum TaxIdType {
   ZA_VAT
 }
 
-"""The method used to encode the binary value into string."""
-enum TextEncoding {
-  BASE64
-}
-
 """Horizontal alignment type"""
 enum TextStyleAlignment {
   """Center alignment"""
@@ -1089,8 +1084,6 @@ interface FrameGroup {
   documentOrder: Int!
   """Version short identifier"""
   documentVersionShortId: ShortId!
-  """Encrypted name"""
-  extName: ExtText!
   """List of files"""
   files(
     """File type"""
@@ -1140,8 +1133,6 @@ interface ShareOwner {
 interface StorageItem {
   """The date and time the storage item was moved to the trash."""
   deletedAt: DateTime
-  """The encrypted name of the storage item."""
-  extName: ExtText
   """The identifier of the storage item."""
   identifier: UUID!
   """The name of the storage item."""
@@ -1469,8 +1460,6 @@ type Artboard implements FrameGroup {
   documentOrder: Int!
   """Version short identifier"""
   documentVersionShortId: ShortId!
-  """Encrypted name"""
-  extName: ExtText!
   """List of files"""
   files(
     """File type"""
@@ -1663,10 +1652,6 @@ type CollaborativeShareCreatePayload {
 type Collection {
   """The description of this Collection."""
   description: String
-  """Encrypted description of this collection"""
-  extDescription: ExtText
-  """Encrypted name of this collection"""
-  extName: ExtText
   """A unique identifier for this Collection."""
   identifier: UUID!
   """
@@ -1851,8 +1836,6 @@ type Comment {
   body: String!
   """Created at"""
   createdAt: DateTime!
-  """Encrypted body"""
-  extBody: ExtText
   """Identifier"""
   id: ID @deprecated(reason: "Use identifier instead.")
   """Identifier"""
@@ -2336,8 +2319,6 @@ type Document {
     be individual files or a zip file of all files in this document.
   """
   downloadableAssets: [DownloadableAsset!]!
-  """The encrypted or the plain name (supersedes the description field)"""
-  extName: ExtText!
   """Frame"""
   frame(
     """Frame identifier"""
@@ -2732,14 +2713,6 @@ type EnableSupportAccessResponse {
   workspace: Workspace!
 }
 
-"""An encrypted text."""
-type EncText {
-  """The encrypted data encoded according to the `encoding` method"""
-  contents: String!
-  """the method used to encode the binary contents into string"""
-  encoding: TextEncoding!
-}
-
 """Context information for the error"""
 type ErrorContext {
   """Error key"""
@@ -2791,8 +2764,6 @@ type Frame implements FrameGroup {
   documentOrder: Int!
   """Version short identifier"""
   documentVersionShortId: ShortId!
-  """Encrypted name"""
-  extName: ExtText!
   """List of files"""
   files(
     """File type"""
@@ -3475,8 +3446,6 @@ type Page {
     """Search term"""
     search: String
   ): Artboards @deprecated(reason: "Use frames instead")
-  """Encryption name"""
-  extName: ExtText
   """Frame"""
   frame(
     """Frame identifier"""
@@ -3671,12 +3640,6 @@ type PinShareResponse {
   share: Share!
 }
 
-"""A plain string"""
-type PlainText {
-  """The plain string"""
-  contents: String!
-}
-
 """[WILL BE REMOVED] Plan"""
 type Plan {
   """Plan amount"""
@@ -3741,8 +3704,6 @@ type Project implements StorageItem {
   deletedAt: DateTime
   """The description of this project."""
   description: String
-  """Encrypted Project name"""
-  extName: ExtText
   """Identifier"""
   id: String! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
@@ -6757,10 +6718,6 @@ type Share implements StorageItem {
   ): [DesignSystem!]!
   """Whether or not downloading the document is enabled"""
   downloadEnabled: Boolean! @deprecated(reason: "(Deprecated) Please migrate to userCanInspect")
-  """Encrypted share's description"""
-  extDescription: ExtText
-  """Encrypted share's name"""
-  extName: ExtText
   """(Deprecated) User identifier instead"""
   id: String @deprecated(reason: "Use identifier instead.")
   """The identifier of the Share"""
@@ -7597,8 +7554,6 @@ type TrashedItems {
 type TrashedProject {
   """The data and time the project was moved to the trash"""
   deletedAt: DateTime
-  """The encrypted name of the project"""
-  extName: ExtText!
   """Identifier of the trashed project"""
   identifier: UUID!
   """The name of the trashed project"""
@@ -7615,8 +7570,6 @@ type TrashedProject {
 type TrashedShare {
   """The data and time the share was moved to the trash"""
   deletedAt: DateTime
-  """The encrypted name of the share"""
-  extName: ExtText!
   """Identifier of the trashed share"""
   identifier: UUID!
   """(Deprecated) Please migrate to shareType."""
@@ -8111,8 +8064,6 @@ type Version {
   description: String
   """Document"""
   document: Document
-  """The encrypted or the plain description (supersedes the description field)"""
-  extDescription: ExtText
   """If the version has a component manifest. False means components hasn't been processed"""
   hasComponentManifest: Boolean!
   """IDentifier"""
@@ -8631,9 +8582,6 @@ union ArtboardRevisionItem = Revision | RevisionDeleted | RevisionUnavailable
 
 """Object representing current subject of the Annotation"""
 union CurrentSubject = Artboard | ColorVariable | LayerStyle | Page | Symbol | TextStyle | UnprocessedSubject
-
-"""The encrypted data or plain text, when no encryption was used"""
-union ExtText = EncText | PlainText
 
 """Different states of Revisions"""
 union FrameRevisionItem = Revision | RevisionDeleted | RevisionUnavailable
