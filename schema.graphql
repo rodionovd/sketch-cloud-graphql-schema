@@ -1328,9 +1328,11 @@ type Annotation {
   associated. It can be either `Page`, `Artboard` or `Component` from latest version
   of the document.
   """
-  currentSubject: CurrentSubject!
+  currentSubject: CurrentSubject! @deprecated(reason: "use `page` and `frameUuid` instead")
   """Annotation's initial comment"""
   firstComment: Comment!
+  """UUID of the frame to which this annotation is linked (if any)"""
+  frameUuid: String
   """Whether annotation has new comments for current user"""
   hasNewComments: Boolean
   """Identifier"""
@@ -1352,6 +1354,8 @@ type Annotation {
   in batch (as a part of a paginated list, for example).
   """
   latestVisibleVersion: LatestVisibleVersion! @deprecated(reason: "Annotations are not version-aware anymore")
+  """Page to which this annotation is linked, either directly or via the frame"""
+  page: AnnotationPage
   """Permanent id of the artboard across all revisions"""
   permanentArtboardId: String @deprecated(reason: "Use `currentSubject.uuid` instead")
   """Discussion ID related to permanent artboard ID"""
@@ -4917,10 +4921,12 @@ type RootMutationType {
     Position of the annotation, given in (X,Y) coordinates
     """
     coordinates: AnnotationCoordinatesInput
+    """UUID of the frame to which the annotation should be linked"""
+    frameUuid: String
+    """UUID of the page to which the annotation should be linked"""
+    pageUuid: String
     """Share identifier"""
     shareIdentifier: UUID!
-    """Information about the subject of the annotation, which can be artboard or page"""
-    subject: AnnotationSubjectInput
     """
     Version identifier which was open for editing when the annotation was created.
     Should be only populated by real-time clients when wanting to hide the annotation
@@ -7655,6 +7661,12 @@ type UnpinShareResponse {
   share: Share!
 }
 
+"""Page that has not yet been processed and can only be seen in the Mac app"""
+type UnprocessedPage {
+  """The uuid (permanentId) of the subject"""
+  uuid: String!
+}
+
 """Subject that has not yet been processed and can only be seen in the Mac app"""
 type UnprocessedSubject {
   """The type of the component annotation, if any"""
@@ -8576,6 +8588,9 @@ type Workspaces {
   """Pagination information"""
   meta: PaginationMeta!
 }
+
+"""Object representing the page an Annotation is pinned to"""
+union AnnotationPage = Page | UnprocessedPage
 
 """Artboard Revision Item - Different states of Revisions"""
 union ArtboardRevisionItem = Revision | RevisionDeleted | RevisionUnavailable
