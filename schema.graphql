@@ -3762,8 +3762,10 @@ type Project implements StorageItem {
   can contain only trashed Shares.
   """
   previews: [ProjectSharePreview!]!
+  """(Deprecated) Please migrate to projectPrivacyIcon."""
+  privacyIcon: ProjectPrivacyIcon! @deprecated(reason: "Use projectPrivacyIcon instead.")
   """The privacy icon to be displayed"""
-  privacyIcon: ProjectPrivacyIcon!
+  projectPrivacyIcon: ProjectPrivacyIcon!
   """The type of the project."""
   projectType: ProjectType!
   """List of first-level nested projects."""
@@ -5395,6 +5397,10 @@ type RootMutationType {
     annotationIdentifier: UUID!
     """New position of the annotation, given in (X,Y) coordinates"""
     coordinates: AnnotationCoordinatesInput!
+    """UUID of the frame to which the annotation should be linked"""
+    frameUuid: String
+    """UUID of the page to which the annotation should be linked"""
+    pageUuid: String
     """Information about the subject of the annotation, which can be artboard or page"""
     subject: AnnotationSubjectInput
     """
@@ -6840,8 +6846,8 @@ type Share implements StorageItem {
   ): [File] @deprecated(reason: "Use Version.previewFiles instead")
   """(Deprecated) Thumbnails of the `previewFiles`"""
   previewThumbnails: [Thumbnail] @deprecated(reason: "Use Version.previewThumbnails instead")
-  """Privacy icon type to show in the document card badge"""
-  privacyIcon: SharePrivacyIconType!
+  """(Deprecated) Please migrate to sharePrivacyIcon."""
+  privacyIcon: SharePrivacyIconType! @deprecated(reason: "Use sharePrivacyIcon instead.")
   """The project this Share belongs to"""
   project: Project
   """Public Access Level"""
@@ -6875,6 +6881,8 @@ type Share implements StorageItem {
   publicUrl: String!
   """If NOT null, then share is published to the Community."""
   publication: Publication
+  """Privacy icon type to show in the document card badge"""
+  sharePrivacyIcon: SharePrivacyIconType!
   """The type of the share."""
   shareType: ShareType!
   """The shortId of the Share"""
@@ -7564,6 +7572,8 @@ type TrashedProject {
   identifier: UUID!
   """The name of the trashed project"""
   name: String!
+  """Privacy icon type for this trashed project."""
+  projectPrivacyIcon: ProjectPrivacyIcon!
   """The type of the project"""
   projectType: ProjectType!
   """Trashed shares that belong to this project"""
@@ -7582,10 +7592,12 @@ type TrashedShare {
   libraryEnabled: Boolean @deprecated(reason: "Please migrate to shareType.")
   """The name of the trashed share"""
   name: String!
-  """Privacy icon type for this trashed share"""
-  privacyIcon: SharePrivacyIconType!
+  """(Deprecated) Please migrate to sharePrivacyIcon."""
+  privacyIcon: SharePrivacyIconType! @deprecated(reason: "Use sharePrivacyIcon instead.")
   """The project this share belongs to"""
   project: Project
+  """Privacy icon type for this trashed share"""
+  sharePrivacyIcon: SharePrivacyIconType!
   """The type of the share"""
   shareType: ShareType!
   """(Deprecated) Please migrate to shareType."""
@@ -8972,8 +8984,12 @@ input MoveAnnotationsInput {
   annotationIdentifier: UUID!
   """New position of the annotation, given in (X,Y) coordinates"""
   coordinates: AnnotationCoordinatesInput!
+  """UUID of the frame to which the annotation should be linked"""
+  frameUuid: String
+  """UUID of the page to which the annotation should be linked"""
+  pageUuid: String
   """Information about the subject of the annotation, which can be artboard or page"""
-  subject: AnnotationSubjectInput!
+  subject: AnnotationSubjectInput
 }
 
 """multipart uploaded etag"""
