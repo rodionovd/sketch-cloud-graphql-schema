@@ -3824,10 +3824,18 @@ type Project implements StorageItem {
     If true, storage items from all nested levels of the project will be included.
     Otherwise, only direct children will be included.
     """
-    includeAllNestedLevels: Boolean = false
+    includeAllNestedLevels: Boolean! = false
     limit: Int = 20
     """Available params for searching storage items of this project."""
     search: StorageItemsSearchParams
+    """
+    The order in which Shares should be sorted.
+    
+    See the ShareSortOrder enum for a list of supported values.
+    
+    Defaults to LAST_MODIFIED_DESC.
+    """
+    sharesSortOrder: ShareSortOrder! = LAST_MODIFIED_DESC
   ): StorageItems!
   """Top level project from which the nested project inherits permissions"""
   topLevelProject: Project
