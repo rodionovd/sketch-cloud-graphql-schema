@@ -2260,7 +2260,7 @@ type Document {
     shortId: ShortId
   ): Artboard @deprecated(reason: "Use frame instead")
   """Artboard count"""
-  artboardCount: Int!
+  artboardCount: Int! @deprecated(reason: "Use frame_count instead")
   """List of artboards"""
   artboards(
     after: String
@@ -2328,6 +2328,8 @@ type Document {
     """Frame identifier"""
     uuid: String
   ): FrameGroup!
+  """Frame count"""
+  frameCount: Int!
   """List of frames"""
   frames(
     after: String
@@ -3439,7 +3441,7 @@ type Page {
     slug: String
   ): Artboard @deprecated(reason: "Use frame instead")
   """Artboard count"""
-  artboardCount: Int!
+  artboardCount: Int! @deprecated(reason: "Use frame_count instead")
   """Artboards"""
   artboards(
     after: String
@@ -3455,6 +3457,8 @@ type Page {
     """Frame identifier"""
     uuid: UUID
   ): FrameGroup
+  """Artboard count"""
+  frameCount: Int! @deprecated(reason: "Use frame_count instead")
   """List of frames"""
   frames(
     after: String
@@ -4057,7 +4061,7 @@ type ProjectTransferredEvent implements BaseProjectChangedEvent {
   """The old parent project identifier."""
   oldParentProjectIdentifier: UUID
   """Identifier of the workspace to which the project belonged before the transfer."""
-  oldWorkspaceIdentifier: UUID
+  oldWorkspaceIdentifier: UUID!
   """The transferred project."""
   project: Project!
   """Identifier of the transferred project"""
@@ -7440,12 +7444,28 @@ type StarNotification implements UserNotification {
   workspace: PublicWorkspace
 }
 
-"""Paginated list of storage items currently in the archive."""
+"""Paginated list of storage items."""
 type StorageItems {
-  """List of storage items in the archive."""
+  """List of storage items."""
   entries: [StorageItem!]!
   """Pagination information"""
-  meta: PaginationMeta!
+  meta: StorageItemsPaginationMeta!
+}
+
+"""Metadata for paginated storage items."""
+type StorageItemsPaginationMeta {
+  """Cursor for the next page."""
+  after: String
+  """Cursor for the previous page."""
+  before: String
+  """Limit of storage items per page."""
+  limit: Int!
+  """Total count of nested projects."""
+  nestedProjectsCount: Int!
+  """Total count of shares."""
+  sharesCount: Int!
+  """Total count of storage items."""
+  totalCount: Int!
 }
 
 """Symbol component"""
