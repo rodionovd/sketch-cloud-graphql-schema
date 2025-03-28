@@ -711,6 +711,30 @@ enum StatusEnum {
   UNKNOWN
 }
 
+"""
+An enum representing the different filters that can be used when querying
+Storage items.
+"""
+enum StorageItemFilterType {
+  """
+  Filter for Shares that contain at least one Prototype.
+  
+  i.e. At least one Artboard in the latest Version of the Share has
+  `is_flow_home=true`.
+  """
+  HAS_PROTOTYPES
+  """Filter for Shares that the current user can edit."""
+  I_CAN_EDIT
+  """Filter for Shares that are Libraries."""
+  LIBRARY
+  """Filter for Storage Items that do not belong to a Project."""
+  NO_PROJECT
+  """Filter for Storage Items that have been shared with you."""
+  SHARED_WITH_ME
+  """Filter for Shares that are Templates."""
+  TEMPLATE
+}
+
 """Type of the storage item"""
 enum StorageItemType {
   """The storage item is a project."""
@@ -9305,6 +9329,15 @@ input SignupMetadata {
 
 """Workspace storage items search params"""
 input StorageItemsSearchParams {
+  """
+  A list of StorageItemFilterTypes to apply to the search.
+  
+  Clients can optionally provide one or more filters to apply to the
+  search. See StorageItemFilterTypes for a list of supported filters.
+  
+  Defaults to an empty list.
+  """
+  filters: [StorageItemFilterType!] = []
   """Allows to search workspace storage items by name."""
   name: String
 }
