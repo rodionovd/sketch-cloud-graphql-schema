@@ -1229,6 +1229,12 @@ type AcceptWorkspaceInviteResponse {
   membership: WorkspaceMembership!
 }
 
+"""Response for checking if an account exists"""
+type AccountExistsResponse {
+  """Whether the account exists"""
+  exists: Boolean!
+}
+
 """The activity status for a workspace member"""
 type ActivityStatus {
   """How many days ago was this user online on the app"""
@@ -6113,6 +6119,11 @@ type RootMutationType {
 }
 
 type RootQueryType {
+  """Check if an account exists"""
+  accountExists(
+    """Email address"""
+    email: String!
+  ): AccountExistsResponse!
   annotation(
     """Identifier of the annotation"""
     identifier: UUID
