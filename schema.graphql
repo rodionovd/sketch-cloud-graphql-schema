@@ -1,3 +1,5 @@
+directive @allowUnverifiedUsers on FIELD_DEFINITION
+
 directive @encryptionSupported on ARGUMENT_DEFINITION | FIELD_DEFINITION
 
 """Exposes a URL that specifies the behavior of this scalar."""
