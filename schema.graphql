@@ -3040,6 +3040,8 @@ type MarkCommentsAsReadResponse {
 type MembershipCount {
   """Admin count"""
   admin: Int!
+  """Group count"""
+  group: Int!
   """Guest count"""
   guest: Int!
   """Member count"""
