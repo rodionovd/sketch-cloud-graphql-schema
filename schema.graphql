@@ -1612,6 +1612,15 @@ type Avatar {
 
 """Billing information for customers"""
 type Billing {
+  """
+  Returns if the subscription is active. Currently, the subscription is
+  considered active if the subscription status is one of the following:
+   - active
+   - trialing
+   - incomplete
+   - past_due
+  """
+  isSubscriptionActive: Boolean
   """Seats information for a subscription"""
   seats: BillingSeatsInfo!
   """Customer's subscription status"""
