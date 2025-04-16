@@ -6817,6 +6817,8 @@ type Share implements StorageItem {
   latestVersionIdentifier: UUID
   """(Deprecated) Please migrate to shareType."""
   libraryEnabled: Boolean! @deprecated(reason: "Please migrate to type")
+  """If set, this field contains the license agreement for this document"""
+  licenseAgreement: ShareLicenseAgreement
   """List of members of this share."""
   members(after: String, before: String, limit: Int = 20): ShareMembershipPaginationItems!
   """
@@ -7190,6 +7192,12 @@ type ShareLeavePayload {
   share: Share
   """Indicates whether the mutation completed successfully or not."""
   successful: Boolean!
+}
+
+"""License agreement details"""
+type ShareLicenseAgreement {
+  """Content of the license agreement"""
+  body: String!
 }
 
 """Share Membership"""
