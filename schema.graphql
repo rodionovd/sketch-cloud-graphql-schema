@@ -5152,6 +5152,11 @@ type RootMutationType {
     the project.
     """
     permissionGroups: [PermissionGroupParam!]
+    """
+    The identifiers of storage items that should be added to the project when
+    it is created.
+    """
+    storageItems: [MinimalStorageItem!]! = []
     """Workspace access level of the project"""
     workspaceAccessLevel: ProjectWorkspaceAccessLevel = DEFAULT
     """Workspace identifier"""
@@ -9060,6 +9065,14 @@ input InviteWorkspacePartnerParams {
   email: Email!
   """Workspace identifier"""
   workspaceIdentifier: UUID!
+}
+
+"""A minimalist version of a storage item."""
+input MinimalStorageItem {
+  """The identifier of the storage item."""
+  identifier: UUID!
+  """The type of the storage item."""
+  type: StorageItemType!
 }
 
 """Input for moving annotations in batch"""
