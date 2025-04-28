@@ -6369,6 +6369,16 @@ type RootQueryType {
     """The workspace identifier"""
     identifier: UUID!
   ): WorkspaceStorage
+  """Get the list of transfer destinations for a workspace"""
+  workspaceTransferDestinations(
+    after: String
+    before: String
+    limit: Int = 20
+    """Available params for searching transfer destinations."""
+    search: TransferDestinationSearchParams
+    """Workspace identifier"""
+    workspaceIdentifier: UUID!
+  ): TransferDestinations!
   """Get the list of trashed items for a workspace"""
   workspaceTrash(
     after: String
@@ -7631,6 +7641,14 @@ type TokenExport {
   downloadUrl: String!
 }
 
+"""Paginated list of possible transfer destinations."""
+type TransferDestinations {
+  """List of transfer destinations."""
+  entries: [TransferDestination!]!
+  """Pagination information"""
+  meta: PaginationMeta!
+}
+
 """API response for transferShare"""
 type TransferShareResponse {
   """The transferred share"""
@@ -8720,6 +8738,9 @@ union ShareCollectionChangedEvent = ShareAddedToCollectionEvent | ShareRemovedFr
 """Union type for membership pagination items for shares"""
 union ShareMembershipPaginationItem = PermissionGroupRelationShare | ShareMembership
 
+"""Union between workspace and project."""
+union TransferDestination = Project | Workspace
+
 """Union type for trashed items (shares and projects)"""
 union TrashedItem = Project | Share | TrashedProject | TrashedShare
 
@@ -9391,6 +9412,12 @@ input StorageItemsSearchParams {
 input SubscriptionInput {
   """The state of the subscription"""
   status: NotificationSubscriptionStatus!
+}
+
+"""Transfer destinations search params"""
+input TransferDestinationSearchParams {
+  """Allows to search possible destinations by name."""
+  name: String
 }
 
 """Trash search params"""
