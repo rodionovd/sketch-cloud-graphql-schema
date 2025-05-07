@@ -1477,6 +1477,12 @@ type ArchiveProjectResponse {
   project: Project!
 }
 
+"""API response for archiveShare"""
+type ArchiveShareResponse {
+  """The archived share"""
+  share: Share!
+}
+
 """Artboard"""
 type Artboard implements FrameGroup {
   """Annotation count"""
@@ -4751,6 +4757,11 @@ type RootMutationType {
     """Project identifier"""
     identifier: UUID!
   ): ArchiveProjectResponse!
+  """Archive a share"""
+  archiveShare(
+    """The identifier of the share to archive"""
+    identifier: UUID!
+  ): ArchiveShareResponse!
   """Cancel scheduled seats update"""
   cancelScheduledBillingSeats(
     """Cancel scheduled seats update parameters"""
@@ -7125,6 +7136,16 @@ type ShareAddedToCollectionEvent {
   projectIdentifier: UUID!
   """The Share that has been added to the Collection."""
   share: Share!
+}
+
+"""Event that fires when share is archived"""
+type ShareArchivedEvent implements BaseShareChangedEvent {
+  """Share identifier"""
+  shareIdentifier: UUID!
+  """Explicit field to know the type of event"""
+  type: String
+  """Workspace"""
+  workspace: Workspace!
 }
 
 """Response when creating a new share"""
