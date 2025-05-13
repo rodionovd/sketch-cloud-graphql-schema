@@ -1157,6 +1157,8 @@ interface ShareOwner {
 
 """Interface for storage item."""
 interface StorageItem {
+  """Date and time in which the storage item was archived."""
+  archivedAt: DateTime
   """The date and time the storage item was moved to the trash."""
   deletedAt: DateTime
   """The identifier of the storage item."""
@@ -1477,10 +1479,10 @@ type ArchiveProjectResponse {
   project: Project!
 }
 
-"""API response for archiveShare"""
-type ArchiveShareResponse {
-  """The archived share"""
-  share: Share!
+"""API response for archiveStorageItem mutation"""
+type ArchiveStorageItemResponse {
+  """The archived storage item"""
+  storageItem: StorageItem!
 }
 
 """Artboard"""
@@ -4757,11 +4759,13 @@ type RootMutationType {
     """Project identifier"""
     identifier: UUID!
   ): ArchiveProjectResponse!
-  """Archive a share"""
-  archiveShare(
-    """The identifier of the share to archive"""
+  """Mutation to archive a storage item."""
+  archiveStorageItem(
+    """The identifier of the storage item that will be archived."""
     identifier: UUID!
-  ): ArchiveShareResponse!
+    """The type of the storage item that will be archived."""
+    type: StorageItemType!
+  ): ArchiveStorageItemResponse!
   """Cancel scheduled seats update"""
   cancelScheduledBillingSeats(
     """Cancel scheduled seats update parameters"""
