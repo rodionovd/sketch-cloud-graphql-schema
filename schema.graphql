@@ -6217,6 +6217,13 @@ type RootQueryType {
     """Curated templates search input."""
     search: CuratedSketchTemplateSearchInput
   ): Shares!
+  curatedThirdPartyLibraries(
+    after: String
+    before: String
+    limit: Int = 20
+    """Curated libraries search input."""
+    search: CuratedThirdPartyLibrarySearchInput
+  ): Shares!
   """Get a design system by its identifier"""
   designSystem(
     """Identifier of the design system"""
@@ -8621,7 +8628,7 @@ type WorkspaceMembership {
 type WorkspaceMembershipUpdatedEvent {
   """Workspace membership status after update"""
   status: WorkspaceMembershipStatus!
-  """The worskpace the updated membership belongs to"""
+  """The workspace the updated membership belongs to"""
   workspaceIdentifier: UUID!
 }
 
@@ -9065,6 +9072,12 @@ input CuratedSketchLibrarySearchInput {
 
 """Curated templates search params"""
 input CuratedSketchTemplateSearchInput {
+  """Name"""
+  name: String
+}
+
+"""Curated libraries search params"""
+input CuratedThirdPartyLibrarySearchInput {
   """Name"""
   name: String
 }
