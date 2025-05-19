@@ -6407,6 +6407,11 @@ type RootQueryType {
     before: String
     """Workspace identifier"""
     identifier: UUID!
+    """
+    If true, trashed storage items from all nested levels of the project will be included.
+    Otherwise, only direct children will be included.
+    """
+    includeAllNestedLevels: Boolean! = false
     limit: Int = 20
     """Available params for searching trash items in this workspace"""
     search: TrashSearchParams
