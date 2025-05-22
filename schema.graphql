@@ -7156,6 +7156,8 @@ type ShareAddedToCollectionEvent {
 
 """Event that fires when share is archived"""
 type ShareArchivedEvent implements BaseShareChangedEvent {
+  """Archived share"""
+  share: Share!
   """Share identifier"""
   shareIdentifier: UUID!
   """Explicit field to know the type of event"""
