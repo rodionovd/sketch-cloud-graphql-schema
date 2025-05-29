@@ -185,6 +185,14 @@ enum CreditType {
   UNKNOWN
 }
 
+"""Supported currencies"""
+enum Currency {
+  """Euro"""
+  EUR
+  """US Dollar"""
+  USD
+}
+
 """State of components in a document"""
 enum DocumentComponentsState {
   """Components cannot be processed"""
@@ -9767,6 +9775,8 @@ input WorkspaceBillingAddressInput {
 input WorkspaceBillingInput {
   """Billing address"""
   address: WorkspaceBillingAddressInput
+  """The currency in which the workspace will be billed"""
+  currency: Currency
   """Billing email"""
   email: String!
   """Billing name"""
