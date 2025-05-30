@@ -7260,6 +7260,8 @@ type ShareLeavePayload {
 type ShareLicenseAgreement {
   """Content of the license agreement"""
   body: String!
+  """The date and time that the license agreement was last updated"""
+  updatedAt: DateTime!
 }
 
 """Share Membership"""
