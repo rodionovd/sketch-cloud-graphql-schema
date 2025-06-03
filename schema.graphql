@@ -1,7 +1,5 @@
 directive @allowUnverifiedUsers on FIELD_DEFINITION
 
-directive @encryptionSupported on ARGUMENT_DEFINITION | FIELD_DEFINITION
-
 """Exposes a URL that specifies the behavior of this scalar."""
 directive @specifiedBy(
   """The URL that specifies the behavior of this scalar."""
@@ -4797,11 +4795,7 @@ type RootMutationType {
     This value determines which Sketch releases can edit the Share.
     """
     coeditCompatibilityVersion: Int!
-    """
-    @encryptionSupported
-    
-    The name of the share and initial document.
-    """
+    """The name of the share and initial document."""
     name: String!
     """
     The identifier of the organization that should own the share.
@@ -4990,11 +4984,7 @@ type RootMutationType {
   Also, for floating annotations coordinates must be passed.
   """
   createAnnotation(
-    """
-    @encryptionSupported
-    
-    Text of the first annotation comment
-    """
+    """Text of the first annotation comment"""
     body: String!
     """
     (For floating annotations only)
@@ -5018,11 +5008,7 @@ type RootMutationType {
   createAnnotationReply(
     """Annotation identifier"""
     annotationIdentifier: UUID!
-    """
-    @encryptionSupported
-    
-    Text of the reply
-    """
+    """Text of the reply"""
     body: String!
   ): CreateAnnotationReplyResponse!
   """Create a new collection within the given project"""
@@ -5040,16 +5026,12 @@ type RootMutationType {
     """
     addAllProjectShares: Boolean
     """
-    @encryptionSupported
-    
     Description of the new collection.
     
     Description cannot be longer than 255 characters.
     """
     description: String
     """
-    @encryptionSupported
-    
     Name of the new collection.
     
     The name must be unique within the context of the Project.
@@ -5094,11 +5076,7 @@ type RootMutationType {
   ): CreateEducationApplicationResponse!
   """Create a new project in an organization"""
   createOrganizationProject(
-    """
-    @encryptionSupported
-    
-    Project name
-    """
+    """Project name"""
     name: String!
     """Organization short id"""
     organizationShortId: ShortId
@@ -5125,11 +5103,7 @@ type RootMutationType {
   ): CreateEducationApplicationResponse!
   """Create a new project in the user namespace"""
   createUserProject(
-    """
-    @encryptionSupported
-    
-    Project name
-    """
+    """Project name"""
     name: String!
   ): ProjectCreatePayload! @deprecated(reason: "Use createWorkspaceProject with the user's personal workspace")
   """Create a workspace"""
@@ -5145,8 +5119,6 @@ type RootMutationType {
   """Create a new project in a workspace"""
   createWorkspaceProject(
     """
-    @encryptionSupported
-    
     Description of the new project.
     
     Description cannot be longer than 255 characters.
@@ -5162,11 +5134,7 @@ type RootMutationType {
     accept it.
     """
     guestsToInvite: [CreateWorkspaceProjectGuestToInvite!]
-    """
-    @encryptionSupported
-    
-    Project name
-    """
+    """Project name"""
     name: String!
     """Parent project identifier"""
     parentProjectIdentifier: UUID
@@ -5326,8 +5294,6 @@ type RootMutationType {
     """
     addAllProjectShares: Boolean
     """
-    @encryptionSupported
-    
     New description of the new collection.
     
     Description cannot be longer than 255 characters.
@@ -5335,11 +5301,7 @@ type RootMutationType {
     description: String
     """Collection identifier"""
     identifier: UUID!
-    """
-    @encryptionSupported
-    
-    New name of the collection, which must be unique within the context of the Project.
-    """
+    """New name of the collection, which must be unique within the context of the Project."""
     name: String!
     """
     The identifiers of Shares that should make up the collection.
@@ -5359,8 +5321,6 @@ type RootMutationType {
   """Edit the description of a collection."""
   editCollectionDescription(
     """
-    @encryptionSupported
-    
     New description of the new collection.
     
     Description cannot be longer than 255 characters.
@@ -5371,11 +5331,7 @@ type RootMutationType {
   ): EditCollectionDescriptionResponse!
   """Edit the body of a comment"""
   editComment(
-    """
-    @encryptionSupported
-    
-    Updated text of the comment
-    """
+    """Updated text of the comment"""
     body: String!
     """Comment identifier"""
     commentIdentifier: UUID!
@@ -5637,20 +5593,12 @@ type RootMutationType {
   renameCollection(
     """Collection identifier"""
     identifier: UUID!
-    """
-    @encryptionSupported
-    
-    New name of the collection, which must be unique within the context of the Project.
-    """
+    """New name of the collection, which must be unique within the context of the Project."""
     name: String!
   ): RenameCollectionResponse!
   """Rename a project"""
   renameProject(
-    """
-    @encryptionSupported
-    
-    New project name
-    """
+    """New project name"""
     name: String!
     """Project short id"""
     projectShortId: ShortId
@@ -5966,8 +5914,6 @@ type RootMutationType {
   """Update project's properties"""
   updateProject(
     """
-    @encryptionSupported
-    
     Description of the project.
     
     Description cannot be longer than 255 characters.
@@ -5975,11 +5921,7 @@ type RootMutationType {
     description: String
     """Project identifier"""
     identifier: UUID!
-    """
-    @encryptionSupported
-    
-    New project name
-    """
+    """New project name"""
     name: String
   ): UpdateProjectResponse!
   """Update a project membership"""
@@ -6044,11 +5986,7 @@ type RootMutationType {
   ): UpdateUserPreferencesResponse!
   """Update the description of share's version"""
   updateVersionDescription(
-    """
-    @encryptionSupported
-    
-    New description for version
-    """
+    """New description for version"""
     description: String!
     """Share identifier"""
     shareIdentifier: UUID!
@@ -9067,11 +9005,7 @@ input CreateWorkspaceShareParams {
   (If left empty a value will be automatically generated)
   """
   identifier: UUID
-  """
-  @encryptionSupported
-  
-  Title of the share
-  """
+  """Title of the share"""
   name: String!
   """The identifier of the project this share should be added to"""
   projectIdentifier: UUID
@@ -9298,11 +9232,7 @@ input ShareCreateParams {
   (If left empty a value will be automatically generated)
   """
   identifier: UUID
-  """
-  @encryptionSupported
-  
-  Title of the share
-  """
+  """Title of the share"""
   name: String!
   """The identifier of the organization this share belongs to"""
   organizationIdentifier: UUID
@@ -9319,11 +9249,7 @@ input ShareCreateVersionParams {
   (If left empty a value will be automatically generated)
   """
   identifier: UUID
-  """
-  @encryptionSupported
-  
-  Title of the document
-  """
+  """Title of the document"""
   name: String!
 }
 
@@ -9337,17 +9263,9 @@ input ShareMemberAccessSearchParams {
 input ShareParams {
   """Enables comments"""
   commentsEnabled: Boolean
-  """
-  @encryptionSupported
-  
-  Edits the description given to a share
-  """
+  """Edits the description given to a share"""
   description: String
-  """
-  @encryptionSupported
-  
-  Edits the name given to a share
-  """
+  """Edits the name given to a share"""
   name: String
   """Allows exporting of tokens via a public available url"""
   publicTokenExport: PublicTokenExport
