@@ -743,12 +743,80 @@ enum StorageItemFilterType {
   TEMPLATE
 }
 
+"""Source of the storage item"""
+enum StorageItemSource {
+  """The storage item is neither archived, nor deleted."""
+  ACTIVE
+  """The storage item is in the Archive."""
+  ARCHIVE
+  """The storage item is in the Trash."""
+  TRASH
+}
+
 """Type of the storage item"""
 enum StorageItemType {
   """The storage item is a project."""
   PROJECT
   """The storage item is a share."""
   SHARE
+}
+
+"""Storage items group by"""
+enum StorageItemsGroupBy {
+  """Storage items will not be grouped by any field."""
+  NONE
+  """Group storage items by their type (i.e. Projects and Shares)."""
+  TYPE
+}
+
+"""Storage items sort order"""
+enum StorageItemsSortBy {
+  """
+  Sort by when the storage item was created, in ascending order (i.e. oldest
+  storage item first).
+  """
+  CREATED_AT_ASC
+  """
+  Sort by when the storage item was created, in descending order (i.e. newest
+  storage item first).
+  """
+  CREATED_AT_DESC
+  """
+  In case of shares, sort by creation date of the latest version of the share,
+  in ascending order (i.e. least recent save first).
+  Shares with no versions will appear last in the list.
+  
+  In case of projects, sort by last modified date of the project,
+  in ascending order.
+  """
+  LAST_MODIFIED_ASC
+  """
+  In case of shares, sort by creation date of the latest version of the share,
+  in descending order (i.e. most recent save first).
+  Shares with no versions will appear last in the list.
+  
+  In case of projects, sort by last modified date of the project,
+  in descending order.
+  """
+  LAST_MODIFIED_DESC
+  """Sort by the storage item's name, alphabetically in ascending order."""
+  NAME_ASC
+  """Sort by the storage item's name, alphabetically in descending order."""
+  NAME_DESC
+  """
+  Sort by when the storage item was archived or trashed, in ascending order
+  (i.e. least recent archived or deleted storage item first).
+  
+  In case the storage item is not archived or trashed, an error will be raised.
+  """
+  STASHED_AT_ASC
+  """
+  Sort by when the storage item was archived or trashed, in descending order
+  (i.e. most recent archived or deleted storage item first).
+  
+  In case the storage item is not archived or trashed, an error will be raised.
+  """
+  STASHED_AT_DESC
 }
 
 """[WILL BE REMOVED] Subscription status"""
@@ -3882,6 +3950,14 @@ type Project implements StorageItem {
     after: String
     before: String
     """
+    The field by which to group Storage items.
+    
+    See StorageItemsGroupBy enum for a list of supported values.
+    
+    Defaults to `none`, which means no grouping.
+    """
+    groupBy: StorageItemsGroupBy! = NONE
+    """
     If true, storage items from all nested levels of the project will be included.
     Otherwise, only direct children will be included.
     """
@@ -3890,13 +3966,13 @@ type Project implements StorageItem {
     """Available params for searching storage items of this project."""
     search: StorageItemsSearchParams
     """
-    The order in which Shares should be sorted.
+    The order in which Storage items should be sorted.
     
-    See the ShareSortOrder enum for a list of supported values.
+    See the StorageItemsSortBy enum for a list of supported values.
     
     Defaults to LAST_MODIFIED_DESC.
     """
-    sharesSortOrder: ShareSortOrder! = LAST_MODIFIED_DESC
+    sortBy: StorageItemsSortBy! = LAST_MODIFIED_DESC
   ): StorageItems!
   """Top level project from which the nested project inherits permissions"""
   topLevelProject: Project
@@ -8383,6 +8459,42 @@ type Workspace {
   ): Shares!
   """The status of the workspace"""
   status: WorkspaceStatus!
+  """List of storage items that belong to this workspace"""
+  storageItems(
+    after: String
+    before: String
+    """
+    The field by which to group Storage items.
+    
+    See StorageItemsGroupBy enum for a list of supported values.
+    
+    Defaults to `none`, which means no grouping.
+    """
+    groupBy: StorageItemsGroupBy! = NONE
+    """
+    If true, storage items from all nested levels of the workspace will be included.
+    Otherwise, only items that are not in projects will be included.
+    
+    Defaults to false.
+    """
+    includeAllNestedLevels: Boolean! = false
+    limit: Int = 20
+    """Search params for storage items in this workspace"""
+    search: StorageItemsSearchParams
+    """
+    The order in which Storage items should be sorted.
+    
+    See the StorageItemsSortBy enum for a list of supported values.
+    
+    Defaults to LAST_MODIFIED_DESC.
+    """
+    sortBy: StorageItemsSortBy! = LAST_MODIFIED_DESC
+    """
+    Filter storage items by their source. Can be one of `active`, `archive`, or `trash`.
+    `active` is used for non-archived, non-trashed items. Defaults to active storage items.
+    """
+    source: StorageItemSource! = ACTIVE
+  ): StorageItems!
   """
   If Support Access is enabled, this field indicates its expiration (UTC) date.
   `null` otherwise.
