@@ -749,6 +749,8 @@ enum StorageItemSource {
   ARCHIVE
   """The storage item is in the Trash."""
   TRASH
+  """The storage item is in the Workspace."""
+  WORKSPACE
 }
 
 """Type of the storage item"""
@@ -3946,6 +3948,8 @@ type ProjectAccessRevokedEvent implements BaseProjectAccessChangedEvent {
 
 """This event defines when a project is archived"""
 type ProjectArchivedEvent implements BaseProjectChangedEvent {
+  """Identifier of the parent project of the project before archiving"""
+  oldParentProjectIdentifier: UUID
   """The affected project"""
   project: Project!
   """Identifier of the affected project"""
@@ -4125,6 +4129,8 @@ type ProjectSharePreview {
 type ProjectTransferredEvent implements BaseProjectChangedEvent {
   """The old parent project identifier."""
   oldParentProjectIdentifier: UUID
+  """The old source of the project before the transfer."""
+  oldSource: StorageItemSource!
   """Identifier of the workspace to which the project belonged before the transfer."""
   oldWorkspaceIdentifier: UUID!
   """The transferred project."""
@@ -7110,6 +7116,8 @@ type ShareAddedToCollectionEvent {
 
 """Event that fires when share is archived"""
 type ShareArchivedEvent implements BaseShareChangedEvent {
+  """Identifier of the project the share was before archiving"""
+  oldProjectIdentifier: UUID
   """Archived share"""
   share: Share!
   """Share identifier"""
