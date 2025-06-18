@@ -7367,6 +7367,24 @@ type ShareRestoredEvent implements BaseShareChangedEvent {
   workspace: Workspace!
 }
 
+"""Event that fires when share is transferred"""
+type ShareTransferredEvent implements BaseShareChangedEvent {
+  """Identifier of the project of the share before transferring"""
+  oldProjectIdentifier: UUID
+  """The source of the share before transferring."""
+  oldSource: StorageItemSource
+  """Identifier of the workspace of the share before transferring"""
+  oldWorkspaceIdentifier: UUID!
+  """Transferred share"""
+  share: Share!
+  """Share identifier"""
+  shareIdentifier: UUID!
+  """Explicit field to know the type of event"""
+  type: String
+  """Workspace of the share"""
+  workspace: Workspace!
+}
+
 """Response when unwatching a share"""
 type ShareUnwatchPayload {
   """A list of errors, raised when executing this migrations."""
@@ -7974,6 +7992,8 @@ type User {
   isSuperadmin: Boolean
   """Has verified the account?"""
   isVerified: Boolean!
+  """Was the user created via web signup?"""
+  isWebSignup: Boolean
   """[WILL BE REMOVED] Licenses for the user"""
   licenses: [License]
   """The user's MFA configuration state"""
@@ -8916,6 +8936,8 @@ input CreateInstitutionApplicationParams {
 input CreatePartnerWorkspaceParams {
   """Workspace avatar file"""
   avatar: Upload
+  """The currency in which the workspace will be billed, defaults to USD"""
+  currency: Currency = USD
   """Workspace name"""
   name: String!
   """The customer email that will become the workspace owner"""
