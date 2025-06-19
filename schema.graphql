@@ -2177,6 +2177,12 @@ type DeleteSharePermanentlyResponse {
   workspace: Workspace!
 }
 
+"""API response for deleteStorageItem mutation"""
+type DeleteStorageItemResponse {
+  """The deleted storage item"""
+  storageItem: StorageItem!
+}
+
 """API response for deleteWorkspaceAvatar"""
 type DeleteWorkspaceAvatarResponse {
   """The associated workspace"""
@@ -5229,6 +5235,13 @@ type RootMutationType {
     """The identifier of the workspace the trashed share belongs to"""
     workspaceIdentifier: UUID!
   ): DeleteSharePermanentlyResponse!
+  """Mutation to delete a storage item."""
+  deleteStorageItem(
+    """The identifier of the storage item that will be deleted."""
+    identifier: UUID!
+    """The type of the storage item that will be deleted."""
+    type: StorageItemType!
+  ): DeleteStorageItemResponse!
   """Delete a workspace"""
   deleteWorkspace(
     """The identifier of the workspace to delete."""
