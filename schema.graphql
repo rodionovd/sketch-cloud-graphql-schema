@@ -6066,6 +6066,11 @@ type RootMutationType {
     """Workspace Profile URL details"""
     input: UpdateWorkspaceProfileShortUrlParams!
   ): UpdateWorkspaceProfileShortUrlResponse!
+  """Update a workspace security email"""
+  updateWorkspaceSecurityEmail(
+    """Update workspace security email parameters"""
+    input: UpdateWorkspaceSecurityEmailParams!
+  ): UpdateWorkspaceSecurityEmailResponse!
   """Upgrade a personal workspace to a standard one"""
   upgradePersonalWorkspace(
     """UpgradePersonalWorkspace parameters"""
@@ -7961,6 +7966,12 @@ type UpdateWorkspaceResponse {
   workspace: Workspace!
 }
 
+"""API response for updateWorkspaceSecurityEmail"""
+type UpdateWorkspaceSecurityEmailResponse {
+  """The associated workspace"""
+  workspace: Workspace!
+}
+
 """API response for upgradePersonalWorkspace"""
 type UpgradePersonalWorkspaceResponse {
   """Pending SCA token"""
@@ -8263,7 +8274,7 @@ type Version {
   """Short id"""
   shortId: ShortId!
   """Updated timestamp"""
-  updatedAt: DateTime
+  updatedAt: DateTime!
   """Determines if the user is the creator of the version"""
   userIsCreator: Boolean!
   """(Deprecated) Please migrate to userIsCreator"""
@@ -8418,6 +8429,8 @@ type Workspace {
   ): Projects!
   """Is SCIM enabled for this workspace?"""
   scimEnabled: Boolean!
+  """The security email for the workspace."""
+  securityEmail: Email
   """List of shares that belong to this workspace"""
   shares(
     after: String
@@ -9688,6 +9701,14 @@ input UpdateWorkspaceProfileShortUrlParams {
   identifier: UUID!
   """Profile's unique short URL name"""
   shortUrlName: String!
+}
+
+"""Parameters to update a workspace security email"""
+input UpdateWorkspaceSecurityEmailParams {
+  """Workspace identifier"""
+  identifier: UUID!
+  """The security email to set for the workspace"""
+  securityEmail: Email
 }
 
 """Parameters to upgrade a personal workspace to a standard one"""
