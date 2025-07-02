@@ -1109,6 +1109,8 @@ interface Component {
   path: String!
   """Component path groups"""
   pathGroups: [String!]!
+  """Structured path representation"""
+  pathInfo: [PathComponentInfo!]!
   """Component identifier from the sketch document"""
   uuid: UUID!
 }
@@ -1889,6 +1891,8 @@ type ColorVariable implements Component {
   path: String!
   """Color variable path groups"""
   pathGroups: [String!]!
+  """Structured path representation"""
+  pathInfo: [PathComponentInfo!]!
   """Color value as RGBA"""
   rgbaValue: RGBAColor!
   """Color variable identifier from the sketch document"""
@@ -2999,6 +3003,8 @@ type LayerStyle implements Component {
   path: String!
   """Layer style path groups"""
   pathGroups: [String!]!
+  """Structured path representation"""
+  pathInfo: [PathComponentInfo!]!
   """Layer style identifier from the sketch document"""
   uuid: UUID!
 }
@@ -3605,6 +3611,14 @@ type Partner {
   identifier: UUID!
   """Partner User name"""
   name: String
+}
+
+"""A component of the component's path"""
+type PathComponentInfo {
+  """Component identifier"""
+  id: String!
+  """Component name"""
+  name: String!
 }
 
 """PermissionGroup"""
@@ -7596,6 +7610,8 @@ type Symbol implements Component {
   path: String!
   """Symbol path groups"""
   pathGroups: [String!]!
+  """Structured path representation"""
+  pathInfo: [PathComponentInfo!]!
   """Symbol identifier from the sketch document"""
   uuid: UUID!
 }
@@ -7636,6 +7652,8 @@ type TextStyle implements Component {
   path: String!
   """Text style path groups"""
   pathGroups: [String!]!
+  """Structured path representation"""
+  pathInfo: [PathComponentInfo!]!
   """Text style identifier from the sketch document"""
   uuid: UUID!
 }
