@@ -5852,6 +5852,22 @@ type RootMutationType {
     """
     workspaceIdentifier: UUID
   ): TransferStorageItemResponse!
+  """Mutation to transfer multiple storage items."""
+  transferStorageItems(
+    """
+    The identifier of the new parent project.
+    If not provided, the storage item will be transferred to the root.
+    """
+    parentProjectIdentifier: UUID
+    """The storage items that will be transferred."""
+    storageItems: [MinimalStorageItem!]!
+    """
+    The identifier of the workspace in which the items to be transferred.
+    Not needed if parentProjectIdentifier is provided. If neither are provided,
+    the items will be transferred to the root of their current workspace.
+    """
+    workspaceIdentifier: UUID
+  ): TransferStorageItemsResponse!
   """Unarchive a project and all its shares"""
   unarchiveProject(
     """Project identifier"""
@@ -7718,6 +7734,12 @@ type TransferShareResponse {
 type TransferStorageItemResponse {
   """The transferred storage item"""
   storageItem: StorageItem!
+}
+
+"""API response for transferStorageItems mutation"""
+type TransferStorageItemsResponse {
+  """The transferred storage items."""
+  storageItems: [StorageItem!]!
 }
 
 """Paginated list of items currently in the trash"""
