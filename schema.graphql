@@ -5149,6 +5149,8 @@ type RootMutationType {
   ): CreateWorkspaceResponse!
   """Mutation for creating a workspace profile"""
   createWorkspaceProfile(
+    """Workspace Profile details"""
+    input: CreateWorkspaceProfileParams
     """Workspace identifier"""
     workspaceIdentifier: UUID!
   ): CreateWorkspaceProfileResponse!
@@ -9090,6 +9092,18 @@ input CreateWorkspaceParams {
   source: String
   """Whether the workspace will have a trial period or not"""
   trial: Boolean
+}
+
+"""Parameters for creating a Workspace Profile"""
+input CreateWorkspaceProfileParams {
+  """Profile's description"""
+  description: String
+  """Shares to publish alongside creating the profile"""
+  shares: [UUID]
+  """Profile's unique short URL name"""
+  shortUrlName: String
+  """Website URL"""
+  websiteUrl: String
 }
 
 """
