@@ -8751,6 +8751,8 @@ type WorkspaceProfile {
   donateUrl: String
   """Workspace profile's unique identifier"""
   identifier: UUID!
+  """Is this profile officially representing someone or an organization?"""
+  isOfficial: Boolean!
   """Is this profile available to the public?"""
   isPublic: Boolean!
   """List of publications with pagination info"""
