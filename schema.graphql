@@ -1019,6 +1019,8 @@ An enum representing the different filters that can be used when querying
 Shares.
 """
 enum WorkspaceShareFilterType {
+  """Filter for Shares that do not belong to a users drafts"""
+  EXCLUDE_PERSONAL_DRAFTS
   """
   Filter for Shares that contain at least one Prototype.
   
