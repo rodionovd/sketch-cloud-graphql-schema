@@ -9745,12 +9745,14 @@ input UpdateWorkspaceParams {
 input UpdateWorkspaceProfileParams {
   """Profile's description"""
   description: String
-  """Donate URL"""
-  donateUrl: String
-  """Workspace profile's unique identifier"""
+  """Identifier for the workspace profile to update"""
   identifier: UUID!
   """Is this profile available to the public?"""
   isPublic: Boolean
+  """Shares to publish alongside creating the profile"""
+  shares: [UUID]
+  """Profile's unique short URL name"""
+  shortUrlName: String
   """Website URL"""
   websiteUrl: String
 }
