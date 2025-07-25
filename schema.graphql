@@ -839,8 +839,6 @@ enum ThumbnailSizeType {
   M
   """Size S"""
   S
-  """Size W400P"""
-  W400P
   """Size XL"""
   XL @deprecated(reason: "Do not use")
 }
