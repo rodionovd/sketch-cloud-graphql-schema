@@ -1034,6 +1034,8 @@ enum WorkspaceShareFilterType {
   NO_COLLECTION
   """Filter for Shares that do not belong to a Project."""
   NO_PROJECT
+  """Filter for Shares that have been published to a profile."""
+  PUBLISHED
   """Filter for Shares that have been shared with you."""
   SHARED_WITH_ME
   """Filter for Shares that are templates."""
@@ -9514,9 +9516,16 @@ input StorageItemsSearchParams {
   
   Defaults to an empty list.
   """
-  filters: [StorageItemFilterType!] = []
+  filters: [StorageItemFilterType!]! = []
   """Allows to search workspace storage items by name."""
   name: String
+  """
+  A list of StorageItemTypes to apply to the search.
+  
+  Clients can optionally provide one or more types to apply to the
+  search. Defaults to both project and share.
+  """
+  types: [StorageItemType!]! = [PROJECT, SHARE]
 }
 
 """The input type for subscriptions"""
