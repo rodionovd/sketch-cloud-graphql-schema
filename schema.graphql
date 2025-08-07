@@ -1179,6 +1179,8 @@ interface ShareOwner {
 interface StorageItem {
   """Date and time in which the storage item was archived."""
   archivedAt: DateTime
+  """The date and time in which the storage item was created."""
+  createdAt: DateTime
   """The date and time the storage item was moved to the trash."""
   deletedAt: DateTime
   """The identifier of the storage item."""
@@ -3797,6 +3799,8 @@ type Project implements StorageItem {
   ): Collections!
   """Unpaginated list of Collections within this Project."""
   collectionsUnpaginated(after: String, before: String, limit: Int = 20): [UnpaginatedCollection!]!
+  """The date and time in which the project was created"""
+  createdAt: DateTime
   """Date and time in which the project was moved to trash"""
   deletedAt: DateTime
   """The description of this project."""
