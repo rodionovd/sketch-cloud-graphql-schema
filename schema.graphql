@@ -579,6 +579,23 @@ enum ReorderPosition {
   BELOW
 }
 
+"""
+An access scope represents a set of actions in the SCIM API.
+
+When creating a personal token, users can decide which access scopes the
+token should be allowed to use. This controls what SCIM API resources are
+available to the token.
+
+For example, information can only be read by tokens with the `SCIM_READ`
+scope.
+"""
+enum ScimApiAccessScope {
+  """Read access to the SCIM API"""
+  SCIM_READ
+  """Write access to the SCIM API"""
+  SCIM_WRITE
+}
+
 """Session types"""
 enum SessionType {
   """Mac App"""
@@ -2203,6 +2220,12 @@ type DeleteWorkspaceResponse {
   deletedWorkspace: Workspace!
 }
 
+"""A deleted SCIM personal access token"""
+type DeletedScimPersonalAccessToken {
+  """The identifier of the deleted token"""
+  identifier: UUID!
+}
+
 """
 Event that fires when permanently deleting a trashed share
 (Deprecated) Use ShareDeletedPermanentlyEvent instead.
@@ -2898,6 +2921,30 @@ type Frames {
   entries: [FrameGroup!]!
   """Info for pagination"""
   meta: PaginationMeta!
+}
+
+"""
+A newly generated SCIM personal access token.
+
+This type is distinct from ScimPersonalAccessToken as it contains the
+`secret` part of the token, which is only available in the response to
+`scimPersonalAccessTokenCreate`. This should be noted and stored securely
+as it will not available again.
+"""
+type GeneratedScimPersonalAccessToken {
+  """The newly generated SCIM personal access token."""
+  personalAccessToken: ScimPersonalAccessToken!
+  """
+  The secret portion of the personal token, equivalent to a password.
+  
+  This value can be used with the token's identifier to authenticate
+  requests to the SCIM API using HTTP Basic Auth:
+  
+  ```
+  Authorization: Basic {base64Encode(identifier + ":" + secret)}
+  ```
+  """
+  secret: String!
 }
 
 """Workspace Customer's SSO identity provider configuration"""
@@ -3866,13 +3913,7 @@ type Project implements StorageItem {
   """The type of the project."""
   projectType: ProjectType!
   """List of first-level nested projects."""
-  projects(
-    after: String
-    """Filter if a project has been archived or not. Defaults to unarchived projects."""
-    archived: ProjectArchivedStatus = UNARCHIVED
-    before: String
-    limit: Int = 20
-  ): Projects!
+  projects(after: String, before: String, limit: Int = 20): Projects!
   """Unpaginated list of first-level nested projects."""
   projectsUnpaginated(
     """Filter if a project has been archived or not. Defaults to unarchived projects."""
@@ -5724,6 +5765,28 @@ type RootMutationType {
     """Session's identifier"""
     id: UUID!
   ): RevokeSessionPayload!
+  """Create a SCIM personal access token for the current user."""
+  scimPersonalAccessTokenCreate(
+    """
+    The access scopes that this token should have.
+    
+    A token must have one or more access scope
+    """
+    accessScopes: [ScimApiAccessScope!]!
+    """A description given to this token so that it can be identified."""
+    description: String!
+    """
+    An optional expiration timestamp for the token.
+    
+    If set, the token is no longer valid when expires_at is in the past.
+    """
+    expiresAt: DateTime
+  ): GeneratedScimPersonalAccessToken!
+  """Delete a SCIM personal access token belonging to the current user."""
+  scimPersonalAccessTokenDelete(
+    """The identifier of the token to delete"""
+    identifier: UUID!
+  ): DeletedScimPersonalAccessToken!
   """Sends a email to the user with the sketch download link"""
   sendDownloadSketchEmail: SendDownloadSketchEmailResponse!
   """
@@ -6741,6 +6804,44 @@ type SamlAttribute {
   mapping: String
   """Update value on each login"""
   updateOnLogin: Boolean!
+}
+
+"""
+SCIM personal access tokens are used to authenticate requests to the SCIM
+API.
+
+Personal tokens are used in place of `username:password`, offering the same
+level of access. As such they should be treated like passwords and kept
+securely.
+"""
+type ScimPersonalAccessToken {
+  """The access scopes that this token is permitted to use."""
+  accessScopes: [ScimApiAccessScope!]!
+  """The time at which the token was created."""
+  createdAt: DateTime!
+  """
+  A description of the token's purpose.
+  
+  This can be useful for identifying the token later.
+  """
+  description: String!
+  """
+  Optional expiration date for the token. This field can be set when
+  creating the token. If set, the token is no longer valid when
+  `expires_at` is in the past.
+  """
+  expiresAt: DateTime
+  """
+  An identifier for this token. The identifier is supplied along with the
+  raw token value when authenticating requests.
+  """
+  identifier: String!
+  """
+  The time at which the token was last used to interact with the Public API.
+  
+  This field is nullable as the token may not have been used yet.
+  """
+  lastUsedAt: DateTime
 }
 
 """API response for sendDownloadSketchEMail"""
@@ -8113,6 +8214,13 @@ type User {
   projects(after: String, before: String, limit: Int = 20): Projects! @deprecated(reason: "Projects can only belong to workspaces. Use the user's personal workspace\nto query the user's projects instead.\n")
   """Does the user receive email notifications?"""
   receiveEmailNotifications: Boolean
+  """
+  Personal access tokens for the SCIM API.
+  
+  These tokens are genereated via `scimPersonalAccessTokenCreate` and can
+  be used to interact with the SCIM API.
+  """
+  scimPersonalAccessTokens: [ScimPersonalAccessToken!]!
   """
   Shares this user can access (optionally you can filter them, without filter it returns
   the shares the user owns)
