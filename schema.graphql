@@ -8582,6 +8582,13 @@ type Workspace {
     pinned: ProjectPinnedStatus = ALL
     """Filter projects"""
     search: WorkspaceProjectsSearchInput
+    """
+    If true, only top-level projects will be returned.
+    If false, nested projects will also be included.
+    
+    Defaults to true.
+    """
+    topLevel: Boolean! = true
     """Project type to filter by. Defaults to all types."""
     type: ProjectType
   ): Projects!
