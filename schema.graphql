@@ -459,6 +459,14 @@ enum PresentationFileStatus {
   PENDING
 }
 
+"""Type of the preview content item"""
+enum PreviewItemType {
+  """The preview item is a page."""
+  PAGE
+  """The preview item is a prototype."""
+  PROTOTYPE
+}
+
 """Private access level"""
 enum PrivateAccessLevel {
   """View and inspect and download and upload"""
@@ -716,6 +724,11 @@ enum ShareType {
   STANDARD
   """A template"""
   TEMPLATE
+}
+
+"""Social sign-in authentication providers"""
+enum SocialSigninProvider {
+  APPLE
 }
 
 """SSO Binding Types"""
@@ -2098,6 +2111,12 @@ type CreatePartnerWorkspaceResponse {
 type CreatePermissionGroupResponse {
   """The created permission group"""
   permissionGroup: PermissionGroup!
+}
+
+"""API response for createPreview"""
+type CreatePreviewResponse {
+  """The newly created preview"""
+  preview: Preview!
 }
 
 """API response for createWorkspaceProfile"""
@@ -3818,6 +3837,22 @@ type PresentationFile {
   manifestUrl: String
 }
 
+"""Preview of a document"""
+type Preview {
+  """Whether or not comments are enabled for this preview"""
+  commentsEnabled: Boolean!
+  """The preview's description"""
+  description: String
+  """The identifier of the Preview"""
+  identifier: UUID!
+  """Whether or not inspect is enabled for this preview"""
+  inspectEnabled: Boolean!
+  """The preview's name"""
+  name: String!
+  """List of pages in this preview"""
+  pages(after: String, before: String, limit: Int = 20): Pages!
+}
+
 """Project"""
 type Project implements StorageItem {
   """Date and time in which the project was archived"""
@@ -5174,6 +5209,21 @@ type RootMutationType {
     """The input param to create a permission group"""
     input: CreatePermissionGroupParams!
   ): CreatePermissionGroupResponse!
+  """Create a new preview for a given share"""
+  createPreview(
+    """Whether comments functionality should be enabled for this preview."""
+    commentsEnabled: Boolean = false
+    """List of preview content items representing the pages configuration for this preview."""
+    content: [PreviewContentItem!]
+    """Description of the new preview."""
+    description: String
+    """Whether inspect functionality should be enabled for this preview."""
+    inspectEnabled: Boolean = false
+    """Name of the new preview."""
+    name: String!
+    """Share identifier"""
+    shareIdentifier: UUID!
+  ): CreatePreviewResponse!
   """Create a student application"""
   createStudentApplication(
     """Input for creating a student application"""
@@ -6409,6 +6459,11 @@ type RootQueryType {
   ): PermissionGroup!
   """[WILL BE REMOVED] Legacy plans"""
   plans: Plans!
+  """Get a preview by its identifier"""
+  preview(
+    """Identifier of the preview"""
+    identifier: UUID!
+  ): Preview!
   project(
     """The identifier of the project you want to retrieve"""
     identifier: UUID
@@ -6453,6 +6508,11 @@ type RootQueryType {
     shareShortId: ShortId
     token: String
   ): ShareMembership
+  """Request a URL to authentication against a known provider"""
+  socialSigninStartUrl(
+    """The authentication provider"""
+    provider: SocialSigninProvider!
+  ): SocialSigninStartUrlPayload!
   """Request SSO redirect URL for a given team"""
   ssoStartUrl(
     """Team name"""
@@ -7069,6 +7129,8 @@ type Share implements StorageItem {
   ): [File] @deprecated(reason: "Use Version.previewFiles instead")
   """(Deprecated) Thumbnails of the `previewFiles`"""
   previewThumbnails: [Thumbnail] @deprecated(reason: "Use Version.previewThumbnails instead")
+  """List of previews for this share"""
+  previews: [Preview]!
   """(Deprecated) Please migrate to sharePrivacyIcon."""
   privacyIcon: SharePrivacyIconType! @deprecated(reason: "Use sharePrivacyIcon instead.")
   """The project this Share belongs to"""
@@ -7638,6 +7700,14 @@ type SketchSubscription {
   status: SubscriptionStatus!
   """Trial end"""
   trialEnd: DateTime
+}
+
+"""The response to start a social authentication"""
+type SocialSigninStartUrlPayload {
+  """An opaque string that must be stored in the device and presented at the end of the authentication process"""
+  state: String
+  """The authentication URL"""
+  url: String!
 }
 
 """[WILL BE REMOVED] Payment source"""
@@ -9410,6 +9480,14 @@ input PinProjectParams {
 input PinShareParams {
   """The UUID of the share to pin"""
   shareIdentifier: UUID!
+}
+
+"""A minimalist version of a preview content item."""
+input PreviewContentItem {
+  """The identifier of the preview content item."""
+  identifier: UUID!
+  """The type of the preview content item."""
+  type: PreviewItemType!
 }
 
 """Allowed parameters to filter project memberships within workspace membership query"""
