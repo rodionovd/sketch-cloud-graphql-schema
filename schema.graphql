@@ -1049,6 +1049,8 @@ Shares.
 enum WorkspaceShareFilterType {
   """Filter for Shares that do not belong to a users drafts"""
   EXCLUDE_PERSONAL_DRAFTS
+  """Filter for Shares that have associated previews."""
+  HAS_PREVIEWS
   """
   Filter for Shares that contain at least one Prototype.
   
@@ -3851,6 +3853,8 @@ type Preview {
   name: String!
   """List of pages in this preview"""
   pages(after: String, before: String, limit: Int = 20): Pages!
+  """List of prototypes in this preview"""
+  prototypes(after: String, before: String, limit: Int = 20): Frames!
 }
 
 """Project"""
