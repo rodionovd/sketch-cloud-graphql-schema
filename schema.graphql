@@ -2485,7 +2485,13 @@ type Document {
   """Page count"""
   pageCount: Int!
   """List of pages"""
-  pages(after: String, before: String, limit: Int = 20): Pages
+  pages(
+    after: String
+    before: String
+    limit: Int = 20
+    """Search pages by name"""
+    search: String
+  ): Pages
   """Path"""
   path: String
   """Thumbnail of the document"""
