@@ -2207,6 +2207,12 @@ type DeletePermissionGroupResponse {
   permissionGroupIdentifier: UUID!
 }
 
+"""API response for deletePreview"""
+type DeletePreviewResponse {
+  """The deleted preview"""
+  preview: Preview!
+}
+
 """API response for deleteProjectPermanently"""
 type DeleteProjectPermanentlyResponse {
   """The identifier of the deleted project"""
@@ -5343,6 +5349,11 @@ type RootMutationType {
     """The input param to delete a permission group"""
     input: DeletePermissionGroupParams!
   ): DeletePermissionGroupResponse!
+  """Delete a preview by its identifier"""
+  deletePreview(
+    """Preview identifier"""
+    identifier: UUID!
+  ): DeletePreviewResponse!
   """Delete a project"""
   deleteProject(
     """Project short id"""
