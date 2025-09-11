@@ -726,6 +726,14 @@ enum ShareType {
   TEMPLATE
 }
 
+"""Available signin options for the user."""
+enum SigninOptionType {
+  """User can sign in with email and password"""
+  PASSWORD
+  """User can sign in with social authentication (Apple, etc.)"""
+  SOCIAL
+}
+
 """Social sign-in authentication providers"""
 enum SocialSigninProvider {
   APPLE
@@ -8337,6 +8345,8 @@ type User {
     """Share search input"""
     search: ShareSearchInput
   ): Shares
+  """Available signin options for this user"""
+  signinOptions: [SigninOptionType!]!
   """Temporary opaque token for confirming SSO account linking"""
   ssoLinkToken(
     """Identifier for the workspace the user will be joining"""
