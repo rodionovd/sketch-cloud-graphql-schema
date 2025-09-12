@@ -5236,13 +5236,13 @@ type RootMutationType {
   """Create a new preview for a given share"""
   createPreview(
     """Whether comments functionality should be enabled for this preview."""
-    commentsEnabled: Boolean = false
+    commentsEnabled: Boolean! = false
     """List of preview content items representing the pages configuration for this preview."""
     content: [PreviewContentItem!]
     """Description of the new preview."""
     description: String
     """Whether inspect functionality should be enabled for this preview."""
-    inspectEnabled: Boolean = false
+    inspectEnabled: Boolean! = false
     """Name of the new preview."""
     name: String!
     """Share identifier"""
@@ -5717,6 +5717,15 @@ type RootMutationType {
     """The identifier of the share you want to publish"""
     shareIdentifier: UUID!
   ): PublishShareResponse
+  """
+  Refresh the preview identifier and return the updated preview.
+  Once the preview identifier is refreshed, any existing links to
+  the preview will no longer work.
+  """
+  refreshPreview(
+    """Preview identifier"""
+    identifier: UUID!
+  ): UpdatePreviewResponse!
   """Revove a member from a permission group"""
   removePermissionGroupMember(
     """The input param to remove a member from a permission group"""
@@ -6120,6 +6129,26 @@ type RootMutationType {
     """The input param to update a permission group relation"""
     input: UpdatePermissionGroupRelationParams!
   ): UpdatePermissionGroupRelationResponse!
+  """
+  Update an existing preview by its identifier.
+  All preview fields will be updated with the provided values.
+  If values for fields are not provided, they will be set to nil.
+  Fields for this mutation do not have default values.
+  """
+  updatePreview(
+    """Whether comments functionality should be enabled for this preview."""
+    commentsEnabled: Boolean!
+    """List of preview content items representing the pages configuration for this preview."""
+    content: [PreviewContentItem!]
+    """Description of the preview."""
+    description: String
+    """Preview identifier"""
+    identifier: UUID!
+    """Whether inspect functionality should be enabled for this preview."""
+    inspectEnabled: Boolean!
+    """Name of the preview."""
+    name: String!
+  ): UpdatePreviewResponse!
   """Update project's properties"""
   updateProject(
     """
@@ -6539,6 +6568,8 @@ type RootQueryType {
   ): ShareMembership
   """Request a URL to authentication against a known provider"""
   socialSigninStartUrl(
+    """An optional URL to redirect the user to after authentication"""
+    destinationUrl: String
     """The authentication provider"""
     provider: SocialSigninProvider!
   ): SocialSigninStartUrlPayload!
@@ -8119,6 +8150,12 @@ type UpdatePermissionGroupRelationResponse {
 type UpdatePermissionGroupResponse {
   """The updated permission group"""
   permissionGroup: PermissionGroup!
+}
+
+"""API response for updatePreview"""
+type UpdatePreviewResponse {
+  """The updated preview"""
+  preview: Preview!
 }
 
 """Response from mutation updateProjectMembership"""
