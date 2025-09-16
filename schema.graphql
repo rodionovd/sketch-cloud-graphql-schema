@@ -3865,12 +3865,19 @@ type Preview {
   commentsEnabled: Boolean!
   """The preview's description"""
   description: String
+  """UTC expiry date for this preview. After this date, preview is no longer available."""
+  expiryDate: DateTime
   """The identifier of the Preview"""
   identifier: UUID!
   """Whether or not inspect is enabled for this preview"""
   inspectEnabled: Boolean!
   """The preview's name"""
   name: String!
+  """Get a specific page from this preview by uuid"""
+  page(
+    """The uuid of the page to retrieve"""
+    uuid: UUID!
+  ): Page
   """List of pages in this preview"""
   pages(after: String, before: String, limit: Int = 20): Pages!
   """List of prototypes in this preview"""
@@ -5241,6 +5248,8 @@ type RootMutationType {
     content: [PreviewContentItem!]
     """Description of the new preview."""
     description: String
+    """UTC expiry date for this preview. After this date, preview is no longer available."""
+    expiryDate: DateTime
     """Whether inspect functionality should be enabled for this preview."""
     inspectEnabled: Boolean! = false
     """Name of the new preview."""
@@ -6142,6 +6151,8 @@ type RootMutationType {
     content: [PreviewContentItem!]
     """Description of the preview."""
     description: String
+    """UTC expiry date for this preview. After this date, preview is no longer available."""
+    expiryDate: DateTime
     """Preview identifier"""
     identifier: UUID!
     """Whether inspect functionality should be enabled for this preview."""
