@@ -3880,6 +3880,8 @@ type Preview {
   ): Page
   """List of pages in this preview"""
   pages(after: String, before: String, limit: Int = 20): Pages!
+  """Whether the preview is protected with a password"""
+  passwordProtected: Boolean!
   """List of prototypes in this preview"""
   prototypes(after: String, before: String, limit: Int = 20): Frames!
 }
@@ -5254,6 +5256,11 @@ type RootMutationType {
     inspectEnabled: Boolean! = false
     """Name of the new preview."""
     name: String!
+    """
+    Password to protect the preview. If set, users will
+    need to enter this password to access the preview.
+    """
+    password: String
     """Share identifier"""
     shareIdentifier: UUID!
   ): CreatePreviewResponse!
@@ -6159,6 +6166,11 @@ type RootMutationType {
     inspectEnabled: Boolean!
     """Name of the preview."""
     name: String!
+    """
+    Password to protect the preview. If set, users will
+    need to enter this password to access the preview.
+    """
+    password: String
   ): UpdatePreviewResponse!
   """Update project's properties"""
   updateProject(
@@ -6532,6 +6544,8 @@ type RootQueryType {
   preview(
     """Identifier of the preview"""
     identifier: UUID!
+    """Password for password-protected previews"""
+    password: String
   ): Preview!
   project(
     """The identifier of the project you want to retrieve"""
@@ -6579,6 +6593,8 @@ type RootQueryType {
   ): ShareMembership
   """Request a URL to authentication against a known provider"""
   socialSigninStartUrl(
+    """Whether or not to create a new workspace"""
+    createWorkspace: Boolean
     """An optional URL to redirect the user to after authentication"""
     destinationUrl: String
     """The authentication provider"""
