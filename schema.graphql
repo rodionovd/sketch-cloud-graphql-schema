@@ -6000,6 +6000,11 @@ type RootMutationType {
     """Input"""
     input: SignUpInput!
   ): SignUpPayload
+  """Request an authentication URL for the given provider. The account will be deleted if the authentication succeeds"""
+  socialSigninDeleteAccountUrl(
+    """The authentication provider"""
+    provider: SocialSigninProvider!
+  ): SocialSigninStartUrlPayload!
   """Transfer share to a different workspace"""
   transferShare(
     """The operation to perform on memberships when transferring the share"""
@@ -6591,7 +6596,7 @@ type RootQueryType {
     shareShortId: ShortId
     token: String
   ): ShareMembership
-  """Request a URL to authentication against a known provider"""
+  """Request an authentication URL for the given provider"""
   socialSigninStartUrl(
     """Whether or not to create a new workspace"""
     createWorkspace: Boolean
@@ -7207,6 +7212,11 @@ type Share implements StorageItem {
   ): PermissionGroupRelationShares!
   """If current user pinned the share, this field will have the date when it was pinned"""
   pinnedByCurrentUserAt: DateTime
+  """Get share preview by identifier"""
+  preview(
+    """The identifier of the preview"""
+    identifier: UUID!
+  ): Preview
   """(Deprecated) The preview images for this Share"""
   previewFiles(
     """The scale of the image (Retina or not)"""
