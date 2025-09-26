@@ -728,15 +728,20 @@ enum ShareType {
 
 """Available signin options for the user."""
 enum SigninOptionType {
+  """User can sign in with Apple"""
+  APPLE
+  """User can sign in with Google"""
+  GOOGLE
   """User can sign in with email and password"""
   PASSWORD
   """User can sign in with social authentication (Apple, etc.)"""
-  SOCIAL
+  SOCIAL @deprecated(reason: "Use specific provider values (APPLE, GOOGLE) instead")
 }
 
 """Social sign-in authentication providers"""
 enum SocialSigninProvider {
   APPLE
+  GOOGLE
 }
 
 """SSO Binding Types"""
@@ -2189,6 +2194,12 @@ type Credits {
   entries: [Credit!]!
   """Pagination informations"""
   meta: PaginationMeta!
+}
+
+"""API response for deleteAllPreviews"""
+type DeleteAllPreviewsResponse {
+  """The updated workspace"""
+  workspace: Workspace!
 }
 
 """API response for deleteAnnotationReply"""
@@ -4553,6 +4564,12 @@ type RecoveryCodes {
   entries: [String!]!
 }
 
+"""API response for refreshAllPreviews"""
+type RefreshAllPreviewsResponse {
+  """The updated workspace"""
+  workspace: Workspace!
+}
+
 """Response from mutation removePermissionGroupMembers"""
 type RemovePermissionGroupMemberResponse {
   """The permission group"""
@@ -5338,6 +5355,11 @@ type RootMutationType {
     """The input params for the share you're creating"""
     input: CreateWorkspaceShareParams!
   ): CreateWorkspaceShareResponse
+  """Delete all previews in a workspace"""
+  deleteAllPreviews(
+    """Workspace identifier"""
+    identifier: UUID!
+  ): DeleteAllPreviewsResponse!
   """Delete annotation along with replies"""
   deleteAnnotation(
     """Annotation identifier"""
@@ -5733,6 +5755,11 @@ type RootMutationType {
     """The identifier of the share you want to publish"""
     shareIdentifier: UUID!
   ): PublishShareResponse
+  """Refresh identifiers of all workspace previews"""
+  refreshAllPreviews(
+    """Workspace identifier"""
+    identifier: String!
+  ): RefreshAllPreviewsResponse
   """
   Refresh the preview identifier and return the updated preview.
   Once the preview identifier is refreshed, any existing links to
@@ -6005,6 +6032,15 @@ type RootMutationType {
     """The authentication provider"""
     provider: SocialSigninProvider!
   ): SocialSigninStartUrlPayload!
+  """Enable / disable password protected previews setting for a workspace"""
+  togglePasswordProtectedPreviews(
+    """Whether password protected previews should be enabled"""
+    enabled: Boolean!
+    """Password for previews without a password"""
+    password: String
+    """The workspace identifier"""
+    workspaceIdentifier: UUID!
+  ): TogglePasswordProtectedPreviewsResponse!
   """Transfer share to a different workspace"""
   transferShare(
     """The operation to perform on memberships when transferring the share"""
@@ -7984,6 +8020,12 @@ type Thumbnail {
   width: Int @deprecated(reason: "Do not use")
 }
 
+"""Response for enabling / disabling password protected previews setting"""
+type TogglePasswordProtectedPreviewsResponse {
+  """The updated workspace"""
+  workspace: Workspace!
+}
+
 """Design Token export result"""
 type TokenExport {
   """Contents of the token export as a string"""
@@ -8905,6 +8947,8 @@ type WorkspaceFeatures {
   designSystemsEnabled: Boolean!
   """Is the encryption enabled for this workspace?"""
   encryptionEnabled: Boolean!
+  """Is the mandatory password protection for previews enabled for this workspace?"""
+  passwordProtectedPreviewsEnabled: Boolean!
   """Is the Permission Group feature available for this workspace?"""
   permissionGroupsEnabled: Boolean!
   """Are public links restricted in this workspace?"""
