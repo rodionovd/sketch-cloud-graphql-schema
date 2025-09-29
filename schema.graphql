@@ -6032,6 +6032,16 @@ type RootMutationType {
     """The authentication provider"""
     provider: SocialSigninProvider!
   ): SocialSigninStartUrlPayload!
+  """
+  Request an authentication URL for the given provider. The workspace provided
+  in the arguments will be deleted if the authentication succeeds
+  """
+  socialSigninDeleteWorkspaceUrl(
+    """The authentication provider"""
+    provider: SocialSigninProvider!
+    """The workspace identifier"""
+    workspaceIdentifier: UUID!
+  ): SocialSigninStartUrlPayload!
   """Enable / disable password protected previews setting for a workspace"""
   togglePasswordProtectedPreviews(
     """Whether password protected previews should be enabled"""
