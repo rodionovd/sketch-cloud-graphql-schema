@@ -6650,6 +6650,8 @@ type RootQueryType {
     destinationUrl: String
     """The authentication provider"""
     provider: SocialSigninProvider!
+    """Whether to sign in only without creating a workspace"""
+    signinOnly: Boolean
   ): SocialSigninStartUrlPayload!
   """Request SSO redirect URL for a given team"""
   ssoStartUrl(
