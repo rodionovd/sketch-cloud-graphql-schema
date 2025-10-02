@@ -727,6 +727,16 @@ enum ShareType {
 }
 
 """Available signin options for the user."""
+enum SignInOptionType {
+  """User can sign in with Apple"""
+  APPLE
+  """User can sign in with Google"""
+  GOOGLE
+  """User can sign in with email and password"""
+  PASSWORD
+}
+
+"""Available signin options for the user."""
 enum SigninOptionType {
   """User can sign in with Apple"""
   APPLE
@@ -736,6 +746,12 @@ enum SigninOptionType {
   PASSWORD
   """User can sign in with social authentication (Apple, etc.)"""
   SOCIAL @deprecated(reason: "Use specific provider values (APPLE, GOOGLE) instead")
+}
+
+"""Social sign-in authentication providers"""
+enum SocialSignInProvider {
+  APPLE
+  GOOGLE
 }
 
 """Social sign-in authentication providers"""
@@ -6028,10 +6044,25 @@ type RootMutationType {
     input: SignUpInput!
   ): SignUpPayload
   """Request an authentication URL for the given provider. The account will be deleted if the authentication succeeds"""
+  socialSignInDeleteAccountUrl(
+    """The authentication provider"""
+    provider: SocialSignInProvider!
+  ): SocialSignInStartUrlPayload!
+  """
+  Request an authentication URL for the given provider. The workspace provided
+  in the arguments will be deleted if the authentication succeeds
+  """
+  socialSignInDeleteWorkspaceUrl(
+    """The authentication provider"""
+    provider: SocialSignInProvider!
+    """The workspace identifier"""
+    workspaceIdentifier: UUID!
+  ): SocialSignInStartUrlPayload!
+  """Request an authentication URL for the given provider. The account will be deleted if the authentication succeeds"""
   socialSigninDeleteAccountUrl(
     """The authentication provider"""
     provider: SocialSigninProvider!
-  ): SocialSigninStartUrlPayload!
+  ): SocialSigninStartUrlPayload! @deprecated(reason: "use socialSignInDeleteAccountUrl")
   """
   Request an authentication URL for the given provider. The workspace provided
   in the arguments will be deleted if the authentication succeeds
@@ -6041,7 +6072,7 @@ type RootMutationType {
     provider: SocialSigninProvider!
     """The workspace identifier"""
     workspaceIdentifier: UUID!
-  ): SocialSigninStartUrlPayload!
+  ): SocialSigninStartUrlPayload! @deprecated(reason: "use socialSignInDeleteWorkspaceUrl")
   """Enable / disable password protected previews setting for a workspace"""
   togglePasswordProtectedPreviews(
     """Whether password protected previews should be enabled"""
@@ -6643,6 +6674,17 @@ type RootQueryType {
     token: String
   ): ShareMembership
   """Request an authentication URL for the given provider"""
+  socialSignInStartUrl(
+    """Whether or not to create a new workspace"""
+    createWorkspace: Boolean
+    """An optional URL to redirect the user to after authentication"""
+    destinationUrl: String
+    """The authentication provider"""
+    provider: SocialSignInProvider!
+    """Whether to sign in only without creating a workspace"""
+    signInOnly: Boolean
+  ): SocialSignInStartUrlPayload!
+  """Request an authentication URL for the given provider"""
   socialSigninStartUrl(
     """Whether or not to create a new workspace"""
     createWorkspace: Boolean
@@ -6652,7 +6694,7 @@ type RootQueryType {
     provider: SocialSigninProvider!
     """Whether to sign in only without creating a workspace"""
     signinOnly: Boolean
-  ): SocialSigninStartUrlPayload!
+  ): SocialSigninStartUrlPayload! @deprecated(reason: "use socialSignInStartUrl")
   """Request SSO redirect URL for a given team"""
   ssoStartUrl(
     """Team name"""
@@ -7129,7 +7171,8 @@ type Share implements StorageItem {
   """
   The Collection that this Share belongs to.
   
-  Null if the Share does not belong to any collection
+  Null if the Share does not belong to any collection or if the collection
+  has been migrated to a nested project.
   """
   collection: Collection
   """Whether or not the current user can comment on the share"""
@@ -7848,6 +7891,14 @@ type SketchSubscription {
 }
 
 """The response to start a social authentication"""
+type SocialSignInStartUrlPayload {
+  """An opaque string that must be stored in the device and presented at the end of the authentication process"""
+  state: String
+  """The authentication URL"""
+  url: String!
+}
+
+"""The response to start a social authentication"""
 type SocialSigninStartUrlPayload {
   """An opaque string that must be stored in the device and presented at the end of the authentication process"""
   state: String
@@ -8474,7 +8525,9 @@ type User {
     search: ShareSearchInput
   ): Shares
   """Available signin options for this user"""
-  signinOptions: [SigninOptionType!]!
+  signInOptions: [SignInOptionType!]!
+  """Available signin options for this user"""
+  signinOptions: [SigninOptionType!]! @deprecated(reason: "use signInOptions")
   """Temporary opaque token for confirming SSO account linking"""
   ssoLinkToken(
     """Identifier for the workspace the user will be joining"""
