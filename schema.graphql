@@ -1131,6 +1131,12 @@ enum WorkspaceType {
   STUDENT
 }
 
+"""This event is dispatched every time preview state changes."""
+interface BasePreviewChangedEvent {
+  """The preview that changed"""
+  preview: Preview!
+}
+
 """This event is dispatched every time project membership changes."""
 interface BaseProjectAccessChangedEvent {
   """Identifier of the workspace to which the project belongs"""
@@ -3913,6 +3919,24 @@ type Preview {
   prototypes(after: String, before: String, limit: Int = 20): Frames!
 }
 
+"""Event fired when a preview is created"""
+type PreviewCreatedEvent implements BasePreviewChangedEvent {
+  """The preview that changed"""
+  preview: Preview!
+}
+
+"""Event fired when a preview is deleted"""
+type PreviewDeletedEvent implements BasePreviewChangedEvent {
+  """The preview that changed"""
+  preview: Preview!
+}
+
+"""Event fired when a preview is updated"""
+type PreviewUpdatedEvent implements BasePreviewChangedEvent {
+  """The preview that changed"""
+  preview: Preview!
+}
+
 """Project"""
 type Project implements StorageItem {
   """Date and time in which the project was archived"""
@@ -6629,6 +6653,16 @@ type RootQueryType {
     """Password for password-protected previews"""
     password: String
   ): Preview!
+  previewAnnotations(
+    after: String
+    before: String
+    limit: Int = 20
+    previewIdentifier: UUID!
+    sortOrder: AnnotationSortOrder = LATEST_FIRST
+    """Only show annotations having particular resolution status."""
+    status: AnnotationStatusFilter = ACTIVE_ONLY
+    subjects: [AnnotationSubjectInput]
+  ): Annotations!
   project(
     """The identifier of the project you want to retrieve"""
     identifier: UUID
@@ -6910,6 +6944,22 @@ type RootSubscriptionType {
   emptiedWorkspaceTrash: EmptiedWorkspaceTrashEvent!
   """Notification created"""
   notificationCreated: UserNotification
+  """
+  Triggered whenever anything changes about a preview
+  belonging to a share the current user has access to.
+  """
+  previewChanged(
+    """
+    Optional share identifier to scope subscription
+    (mutually exclusive with workspaceIdentifier)
+    """
+    shareIdentifier: UUID
+    """
+    Optional workspace identifier to scope subscription
+    (mutually exclusive with shareIdentifier)
+    """
+    workspaceIdentifier: UUID
+  ): BasePreviewChangedEvent!
   """
   Triggered when access to a project (project membership)
   changes for the current user.
