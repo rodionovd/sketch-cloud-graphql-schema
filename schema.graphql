@@ -736,26 +736,8 @@ enum SignInOptionType {
   PASSWORD
 }
 
-"""Available signin options for the user."""
-enum SigninOptionType {
-  """User can sign in with Apple"""
-  APPLE
-  """User can sign in with Google"""
-  GOOGLE
-  """User can sign in with email and password"""
-  PASSWORD
-  """User can sign in with social authentication (Apple, etc.)"""
-  SOCIAL @deprecated(reason: "Use specific provider values (APPLE, GOOGLE) instead")
-}
-
 """Social sign-in authentication providers"""
 enum SocialSignInProvider {
-  APPLE
-  GOOGLE
-}
-
-"""Social sign-in authentication providers"""
-enum SocialSigninProvider {
   APPLE
   GOOGLE
 }
@@ -5960,6 +5942,8 @@ type RootMutationType {
   ): DeletedScimPersonalAccessToken!
   """Sends a email to the user with the sketch download link"""
   sendDownloadSketchEmail: SendDownloadSketchEmailResponse!
+  """Send password setup email for social-only users"""
+  sendPasswordSetupEmail: SendPasswordSetupEmailResponse!
   """
   Set current user's subscription state for a given share, permanent
   artboard or annoation.
@@ -6082,21 +6066,6 @@ type RootMutationType {
     """The workspace identifier"""
     workspaceIdentifier: UUID!
   ): SocialSignInStartUrlPayload!
-  """Request an authentication URL for the given provider. The account will be deleted if the authentication succeeds"""
-  socialSigninDeleteAccountUrl(
-    """The authentication provider"""
-    provider: SocialSigninProvider!
-  ): SocialSigninStartUrlPayload! @deprecated(reason: "use socialSignInDeleteAccountUrl")
-  """
-  Request an authentication URL for the given provider. The workspace provided
-  in the arguments will be deleted if the authentication succeeds
-  """
-  socialSigninDeleteWorkspaceUrl(
-    """The authentication provider"""
-    provider: SocialSigninProvider!
-    """The workspace identifier"""
-    workspaceIdentifier: UUID!
-  ): SocialSigninStartUrlPayload! @deprecated(reason: "use socialSignInDeleteWorkspaceUrl")
   """Enable / disable password protected previews setting for a workspace"""
   togglePasswordProtectedPreviews(
     """Whether password protected previews should be enabled"""
@@ -6718,17 +6687,6 @@ type RootQueryType {
     """Whether to sign in only without creating a workspace"""
     signInOnly: Boolean
   ): SocialSignInStartUrlPayload!
-  """Request an authentication URL for the given provider"""
-  socialSigninStartUrl(
-    """Whether or not to create a new workspace"""
-    createWorkspace: Boolean
-    """An optional URL to redirect the user to after authentication"""
-    destinationUrl: String
-    """The authentication provider"""
-    provider: SocialSigninProvider!
-    """Whether to sign in only without creating a workspace"""
-    signinOnly: Boolean
-  ): SocialSigninStartUrlPayload! @deprecated(reason: "use socialSignInStartUrl")
   """Request SSO redirect URL for a given team"""
   ssoStartUrl(
     """Team name"""
@@ -7140,6 +7098,12 @@ type ScimPersonalAccessToken {
 type SendDownloadSketchEmailResponse {
   """Whether or not the email was sent"""
   sent: Boolean!
+}
+
+"""Response for sendPasswordSetupEmail mutation"""
+type SendPasswordSetupEmailResponse {
+  """The user for whom the password setup email was sent"""
+  user: User!
 }
 
 """OAuth session"""
@@ -7940,16 +7904,16 @@ type SketchSubscription {
   trialEnd: DateTime
 }
 
-"""The response to start a social authentication"""
-type SocialSignInStartUrlPayload {
-  """An opaque string that must be stored in the device and presented at the end of the authentication process"""
-  state: String
-  """The authentication URL"""
-  url: String!
+"""A social account linked to the user"""
+type SocialAccount {
+  """The email address associated with this social account"""
+  email: String!
+  """The social authentication provider"""
+  provider: SocialSignInProvider!
 }
 
 """The response to start a social authentication"""
-type SocialSigninStartUrlPayload {
+type SocialSignInStartUrlPayload {
   """An opaque string that must be stored in the device and presented at the end of the authentication process"""
   state: String
   """The authentication URL"""
@@ -8576,8 +8540,8 @@ type User {
   ): Shares
   """Available signin options for this user"""
   signInOptions: [SignInOptionType!]!
-  """Available signin options for this user"""
-  signinOptions: [SigninOptionType!]! @deprecated(reason: "use signInOptions")
+  """Social accounts linked to this user"""
+  socialAccounts: [SocialAccount!]!
   """Temporary opaque token for confirming SSO account linking"""
   ssoLinkToken(
     """Identifier for the workspace the user will be joining"""
@@ -8926,6 +8890,8 @@ type Workspace {
   ): Projects!
   """Is SCIM enabled for this workspace?"""
   scimEnabled: Boolean!
+  """The SCIM endpoint for this workspace"""
+  scimEndpoint: String
   """The security email for the workspace."""
   securityEmail: Email
   """List of shares that belong to this workspace"""
