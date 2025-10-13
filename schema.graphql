@@ -6125,6 +6125,11 @@ type RootMutationType {
     """Project identifier"""
     identifier: UUID!
   ): UnarchiveProjectResponse!
+  """Unlink a social account from the current user"""
+  unlinkSocialAccount(
+    """The identifier of the social account to unlink"""
+    identifier: UUID!
+  ): UnlinkSocialAccountResponse!
   """Unpin a project"""
   unpinProject(
     """The input param to unpin a project"""
@@ -7908,6 +7913,8 @@ type SketchSubscription {
 type SocialAccount {
   """The email address associated with this social account"""
   email: String!
+  """Unique identifier for this social account"""
+  identifier: UUID!
   """The social authentication provider"""
   provider: SocialSignInProvider!
 }
@@ -8209,6 +8216,12 @@ type TrashedShares {
 type UnarchiveProjectResponse {
   """The unarchived project"""
   project: Project!
+}
+
+"""Response for unlinkSocialAccount mutation"""
+type UnlinkSocialAccountResponse {
+  """The user with updated social accounts"""
+  user: User!
 }
 
 """A minimalist version of Collection aimed at being used for unpaginated queries."""
