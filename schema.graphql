@@ -2067,6 +2067,12 @@ type Components {
   status: DocumentComponentsState!
 }
 
+"""Response for configuring workspace encryption keys"""
+type ConfigureWorkspaceEncryptionKeysResponse {
+  """The updated workspace"""
+  workspace: Workspace!
+}
+
 """[WILL BE REMOVED] Cost of adding a contributor to a license"""
 type ContributorCost {
   """Monthly cost"""
@@ -2875,6 +2881,12 @@ type EnableScimResponse {
 type EnableSupportAccessResponse {
   """Modified workspace"""
   workspace: Workspace!
+}
+
+"""Encryption config for the workspace"""
+type EncryptionConfig {
+  """The kms keys used to encrypt/decrypt data"""
+  kmsArns: [String]
 }
 
 """Context information for the error"""
@@ -5160,6 +5172,11 @@ type RootMutationType {
     """The size of the document in bytes"""
     filesize: Int!
   ): MultipartUpload!
+  """Configure encryption keys for a workspace"""
+  configureWorkspaceEncryptionKeys(
+    """Configure workspace encryption keys parameters"""
+    input: ConfigureWorkspaceEncryptionKeysParams!
+  ): ConfigureWorkspaceEncryptionKeysResponse!
   """Confirm Multi-Factor Authentication Setup in user's account"""
   confirmMfaSetup(
     """Time-based One Time Password for MFA"""
@@ -8845,6 +8862,8 @@ type Workspace {
     """Search params"""
     search: DesignSystemSearchParams
   ): DesignSystems!
+  """The encryption config, if any, for the workspace"""
+  encryptionConfig: EncryptionConfig
   """List of feature flags"""
   featureFlags: [String!]!
   """Features enabled and configured for this workspace"""
@@ -9398,6 +9417,14 @@ input AttributeMappingEntryParams {
 
 """Input parameters for canceling the scheduled update of seats for a Workspace"""
 input CancelScheduledBillingSeatsParams {
+  """Workspace identifier"""
+  workspaceIdentifier: UUID!
+}
+
+"""Parameters to configure workspace encryption keys"""
+input ConfigureWorkspaceEncryptionKeysParams {
+  """Complete list of AWS KMS ARNs to configure (replaces existing keys, if any)"""
+  kmsArns: [String]!
   """Workspace identifier"""
   workspaceIdentifier: UUID!
 }
