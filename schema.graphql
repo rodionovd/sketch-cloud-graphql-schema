@@ -5320,6 +5320,28 @@ type RootMutationType {
     """Share identifier"""
     shareIdentifier: UUID!
   ): CreatePreviewResponse!
+  """
+  Create a new annotation with its first comment for a preview.
+  
+  Annotations must be linked to either an artboard, or a page.
+  
+  Also, for floating annotations coordinates must be passed.
+  """
+  createPreviewAnnotation(
+    """Text of the first annotation comment"""
+    body: String!
+    """
+    (For floating annotations only)
+    Position of the annotation, given in (X,Y) coordinates
+    """
+    coordinates: AnnotationCoordinatesInput
+    """UUID of the frame to which the annotation should be linked"""
+    frameUuid: String
+    """UUID of the page to which the annotation should be linked"""
+    pageUuid: String
+    """Preview identifier"""
+    previewIdentifier: UUID!
+  ): CreateAnnotationResponse!
   """Create a student application"""
   createStudentApplication(
     """Input for creating a student application"""
@@ -6621,6 +6643,11 @@ type RootQueryType {
     """The identifier of the workspace"""
     workspaceIdentifier: UUID!
   ): WorkspaceMemberships! @deprecated(reason: "Use `invitableUsersAndGroups` query instead")
+  """Request an authentication URL for linking a social account to the current user's account"""
+  linkAccountStartUrl(
+    """The authentication provider"""
+    provider: SocialSignInProvider!
+  ): SocialSignInStartUrlPayload!
   me: User!
   organization(customerId: ID, id: ID, shortId: ShortId): Organization! @deprecated(reason: "Use workspace instead")
   """Partner"""
