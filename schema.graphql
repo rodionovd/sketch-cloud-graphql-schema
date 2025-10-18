@@ -2887,6 +2887,8 @@ type EnableSupportAccessResponse {
 type EncryptionConfig {
   """The kms keys used to encrypt/decrypt data"""
   kmsArns: [String]
+  """The (user-supplied) aws role to assume when interacting with the kms keys"""
+  roleArn: String
 }
 
 """Context information for the error"""
@@ -7234,8 +7236,7 @@ type Share implements StorageItem {
   """
   The Collection that this Share belongs to.
   
-  Null if the Share does not belong to any collection or if the collection
-  has been migrated to a nested project.
+  Null if the Share does not belong to any collection
   """
   collection: Collection
   """Whether or not the current user can comment on the share"""
@@ -9452,6 +9453,8 @@ input CancelScheduledBillingSeatsParams {
 input ConfigureWorkspaceEncryptionKeysParams {
   """Complete list of AWS KMS ARNs to configure (replaces existing keys, if any)"""
   kmsArns: [String]!
+  """The aws role to assume when requesting the kms service"""
+  roleArn: String
   """Workspace identifier"""
   workspaceIdentifier: UUID!
 }
