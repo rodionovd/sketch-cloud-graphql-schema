@@ -736,6 +736,20 @@ enum SignInOptionType {
   PASSWORD
 }
 
+"""Actions that can be performed with social authentication"""
+enum SocialAuthAction {
+  """Delete the current user's account"""
+  DELETE_ACCOUNT
+  """Delete a workspace"""
+  DELETE_WORKSPACE
+  """Link a social account to the current user"""
+  LINK_ACCOUNT
+  """Sign in only (no account creation)"""
+  SIGN_IN
+  """Sign in or sign up with a social provider"""
+  SIGN_ON
+}
+
 """Social sign-in authentication providers"""
 enum SocialSignInProvider {
   APPLE
@@ -6092,11 +6106,28 @@ type RootMutationType {
     """Input"""
     input: SignUpInput!
   ): SignUpPayload
+  """
+  Request an authentication URL for the given provider and action. This unified
+  mutation handles sign-on, sign-in, account linking, account deletion, and
+  workspace deletion flows
+  """
+  socialAuthStartUrl(
+    """The action to perform with social authentication"""
+    action: SocialAuthAction!
+    """Whether or not to create a new workspace (sign_on only)"""
+    createWorkspace: Boolean
+    """An optional URL to redirect the user to after authentication (sign_on/sign_in only)"""
+    destinationUrl: String
+    """The authentication provider"""
+    provider: SocialSignInProvider!
+    """The workspace identifier (required for delete_workspace action)"""
+    workspaceIdentifier: UUID
+  ): SocialSignInStartUrlPayload!
   """Request an authentication URL for the given provider. The account will be deleted if the authentication succeeds"""
   socialSignInDeleteAccountUrl(
     """The authentication provider"""
     provider: SocialSignInProvider!
-  ): SocialSignInStartUrlPayload!
+  ): SocialSignInStartUrlPayload! @deprecated(reason: "Use socialAuthStartUrl with action: DELETE_ACCOUNT instead")
   """
   Request an authentication URL for the given provider. The workspace provided
   in the arguments will be deleted if the authentication succeeds
@@ -6106,7 +6137,7 @@ type RootMutationType {
     provider: SocialSignInProvider!
     """The workspace identifier"""
     workspaceIdentifier: UUID!
-  ): SocialSignInStartUrlPayload!
+  ): SocialSignInStartUrlPayload! @deprecated(reason: "Use socialAuthStartUrl with action: DELETE_WORKSPACE instead")
   """Enable / disable password protected previews setting for a workspace"""
   togglePasswordProtectedPreviews(
     """Whether password protected previews should be enabled"""
@@ -6649,7 +6680,7 @@ type RootQueryType {
   linkAccountStartUrl(
     """The authentication provider"""
     provider: SocialSignInProvider!
-  ): SocialSignInStartUrlPayload!
+  ): SocialSignInStartUrlPayload! @deprecated(reason: "Use socialAuthStartUrl mutation with action: LINK_ACCOUNT instead")
   me: User!
   organization(customerId: ID, id: ID, shortId: ShortId): Organization! @deprecated(reason: "Use workspace instead")
   """Partner"""
@@ -6737,7 +6768,7 @@ type RootQueryType {
     provider: SocialSignInProvider!
     """Whether to sign in only without creating a workspace"""
     signInOnly: Boolean
-  ): SocialSignInStartUrlPayload!
+  ): SocialSignInStartUrlPayload! @deprecated(reason: "Use socialAuthStartUrl mutation with action: SIGN_ON or SIGN_IN instead")
   """Request SSO redirect URL for a given team"""
   ssoStartUrl(
     """Team name"""
