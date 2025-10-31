@@ -1115,7 +1115,7 @@ enum WorkspaceType {
   """A business workspace. This type of workspace is granted for business plans."""
   BUSINESS
   """A essential workspace. This type of workspace is granted for the essential plans."""
-  ESSENTIAL
+  ESSENTIAL @deprecated(reason: "The essential workspace type is deprecated.")
   """
   A personal workspace. This type of workspace is limited in functionality.
   For more information see `User.personalWorkspace`
