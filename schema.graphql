@@ -292,6 +292,12 @@ enum InspectorStatus {
   READY
 }
 
+"""Supported integration providers"""
+enum IntegrationProvider {
+  """Slack integration"""
+  SLACK
+}
+
 """Invite status"""
 enum InviteStatus {
   """The membership has been accepted by the owner or the requested user."""
@@ -3059,6 +3065,12 @@ type InspectorDataPayload {
   successful: Boolean!
 }
 
+"""Response containing an OAuth connection URL"""
+type IntegrationConnectUrlPayload {
+  """The OAuth authorization URL"""
+  url: String!
+}
+
 """API response for inviteWorkspaceMembers"""
 type InviteWorkspaceMembersResponse {
   """List of members that had been already invited to the workspace"""
@@ -5658,6 +5670,17 @@ type RootMutationType {
     """User password"""
     password: String!
   ): MfaConfig!
+  """
+  Request an OAuth connection URL for the given integration provider.
+  This URL can be used to initiate the OAuth flow to connect a workspace
+  to a third-party service.
+  """
+  getIntegrationConnectUrl(
+    """The integration provider (e.g., Slack)"""
+    provider: IntegrationProvider!
+    """The workspace to connect to the integration"""
+    workspaceIdentifier: UUID!
+  ): IntegrationConnectUrlPayload!
   """Mutation for inviting members to a workspace"""
   inviteWorkspaceMembers(
     """Invitation details"""
@@ -6629,6 +6652,13 @@ type RootQueryType {
     """The UUID of the page. If this is used then the artboard_id can be left out."""
     pageId: UUID
   ): InspectorDataPayload
+  """Get a specific integration for a workspace by provider"""
+  integration(
+    """The integration provider to retrieve (e.g., SLACK)"""
+    integrationProvider: IntegrationProvider!
+    """The workspace identifier"""
+    workspaceIdentifier: UUID!
+  ): WorkspaceIntegration
   invitableUsers(
     after: String
     before: String
@@ -8929,6 +8959,8 @@ type Workspace {
   features: WorkspaceFeatures!
   """Workspace's unique identifier"""
   identifier: UUID!
+  """List of third-party integrations configured for this workspace"""
+  integrations: [WorkspaceIntegration!]!
   """
   A list of members in this workspace.
   Note: This field is restricted and certain roles cannot access the `list` field.
@@ -9135,6 +9167,18 @@ type WorkspaceFeatures {
   userDirectoryEnabled: Boolean!
   """Is the workspace profile feature enabled in this workspace?"""
   workspaceProfileEnabled: Boolean!
+}
+
+"""A workspace integration represents a connection to a third-party service"""
+type WorkspaceIntegration {
+  """When the integration was created"""
+  createdAt: DateTime!
+  """Unique identifier for the integration"""
+  identifier: UUID!
+  """The integration provider (e.g., SLACK)"""
+  integrationProvider: IntegrationProvider!
+  """The user who manages this integration"""
+  managedBy: WorkspaceUser!
 }
 
 """Workspace Invite"""
