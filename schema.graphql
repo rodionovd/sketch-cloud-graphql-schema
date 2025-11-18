@@ -1120,6 +1120,8 @@ enum WorkspaceStatus {
 enum WorkspaceType {
   """A business workspace. This type of workspace is granted for business plans."""
   BUSINESS
+  """An enterprise workspace. This type of workspace is granted for enterprise plans."""
+  ENTERPRISE
   """A essential workspace. This type of workspace is granted for the essential plans."""
   ESSENTIAL @deprecated(reason: "The essential workspace type is deprecated.")
   """
