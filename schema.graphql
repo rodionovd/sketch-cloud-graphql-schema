@@ -3939,6 +3939,8 @@ type Preview {
   pages(after: String, before: String, limit: Int = 20): Pages!
   """Whether the preview is protected with a password"""
   passwordProtected: Boolean!
+  """The status of the previews's presentation files."""
+  presentationStatus: PresentationFileStatus!
   """List of prototypes in this preview"""
   prototypes(after: String, before: String, limit: Int = 20): Frames!
 }
