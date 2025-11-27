@@ -4636,6 +4636,12 @@ type RefreshAllPreviewsResponse {
   workspace: Workspace!
 }
 
+"""Response for removeIntegration mutation"""
+type RemoveIntegrationResponse {
+  """The removed integration"""
+  integration: WorkspaceIntegration!
+}
+
 """Response from mutation removePermissionGroupMembers"""
 type RemovePermissionGroupMemberResponse {
   """The permission group"""
@@ -5873,6 +5879,15 @@ type RootMutationType {
     """Preview identifier"""
     identifier: UUID!
   ): UpdatePreviewResponse!
+  """
+  Remove an integration from a workspace.
+  This will uninstall the integration and revoke access.
+  Requires workspace admin permissions.
+  """
+  removeIntegration(
+    """The identifier of the integration to remove"""
+    identifier: UUID!
+  ): RemoveIntegrationResponse!
   """Revove a member from a permission group"""
   removePermissionGroupMember(
     """The input param to remove a member from a permission group"""
