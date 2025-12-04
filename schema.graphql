@@ -1578,6 +1578,12 @@ type ArchiveStorageItemResponse {
   storageItem: StorageItem!
 }
 
+"""API response for archiveStorageItems mutation"""
+type ArchiveStorageItemsResponse {
+  """The archived storage items."""
+  storageItems: [StorageItem!]!
+}
+
 """Artboard"""
 type Artboard implements FrameGroup {
   """Annotation count"""
@@ -2284,6 +2290,12 @@ type DeleteSharePermanentlyResponse {
 type DeleteStorageItemResponse {
   """The deleted storage item"""
   storageItem: StorageItem!
+}
+
+"""API response for deleteStorageItems mutation"""
+type DeleteStorageItemsResponse {
+  """The deleted storage items."""
+  storageItems: [StorageItem!]!
 }
 
 """API response for deleteWorkspaceAvatar"""
@@ -5012,6 +5024,11 @@ type RootMutationType {
     """The type of the storage item that will be archived."""
     type: StorageItemType!
   ): ArchiveStorageItemResponse!
+  """Mutation to archive multiple storage items."""
+  archiveStorageItems(
+    """The storage items that will be archived."""
+    storageItems: [MinimalStorageItem!]!
+  ): ArchiveStorageItemsResponse!
   """Cancel scheduled seats update"""
   cancelScheduledBillingSeats(
     """Cancel scheduled seats update parameters"""
@@ -5523,6 +5540,11 @@ type RootMutationType {
     """The type of the storage item that will be deleted."""
     type: StorageItemType!
   ): DeleteStorageItemResponse!
+  """Mutation to delete multiple storage items."""
+  deleteStorageItems(
+    """The storage items that will be deleted."""
+    storageItems: [MinimalStorageItem!]!
+  ): DeleteStorageItemsResponse!
   """Delete a workspace"""
   deleteWorkspace(
     """The identifier of the workspace to delete."""
