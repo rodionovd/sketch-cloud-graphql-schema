@@ -5972,8 +5972,10 @@ type RootMutationType {
     """The input for our mutation, which is just the document identifier"""
     input: RenderDownloadableAssetsInput!
   ): RenderDownloadableAssetsPayload
-  """Triggers a presentation render for the given version"""
+  """Triggers a presentation render for the given version or preview"""
   renderPresentation(
+    """identifier of the preview to render a presentation files for"""
+    previewIdentifier: UUID
     """identifier of the version to render a presentation file for"""
     versionIdentifier: UUID
   ): RenderPresentationResponse!
