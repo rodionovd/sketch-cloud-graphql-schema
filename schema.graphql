@@ -465,6 +465,14 @@ enum PresentationFileStatus {
   PENDING
 }
 
+"""Option for which versions to preserve when deleting previous versions"""
+enum PreserveVersionsOption {
+  """Keep the latest version and all starred (published) versions"""
+  LATEST_AND_STARRED
+  """Keep only the latest version"""
+  LATEST_ONLY
+}
+
 """Type of the preview content item"""
 enum PreviewItemType {
   """The preview item is a page."""
@@ -2268,6 +2276,14 @@ type DeletePermissionGroupResponse {
 type DeletePreviewResponse {
   """The deleted preview"""
   preview: Preview!
+}
+
+"""API response for deletePreviousShareVersions"""
+type DeletePreviousShareVersionsResponse {
+  """The number of versions deleted"""
+  deletedCount: Int!
+  """The share which versions were deleted"""
+  share: Share!
 }
 
 """API response for deleteProjectPermanently"""
@@ -5516,6 +5532,18 @@ type RootMutationType {
     """Preview identifier"""
     identifier: UUID!
   ): DeletePreviewResponse!
+  """Delete previous versions of a share"""
+  deletePreviousShareVersions(
+    """Which versions to preserve"""
+    preserveVersions: PreserveVersionsOption! = LATEST_ONLY
+    """Share identifier"""
+    shareIdentifier: UUID!
+    """
+    Version identifier prior which to delete.
+    If not provided, defaults to the latest version.
+    """
+    versionIdentifier: UUID
+  ): DeletePreviousShareVersionsResponse
   """Delete a project"""
   deleteProject(
     """Project short id"""
