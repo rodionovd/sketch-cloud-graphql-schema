@@ -6925,8 +6925,10 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
+    """Preview identifier (mutually exclusive with shareIdentifier)"""
+    previewIdentifier: UUID
     """Share identifier"""
-    shareIdentifier: UUID!
+    shareIdentifier: UUID
     """Information about the subject of the annotation, which can be component, artboard, or page"""
     subject: AnnotationSubjectInput
   ): Annotation!
@@ -6940,6 +6942,8 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
+    """Preview identifier (mutually exclusive with shareIdentifier)"""
+    previewIdentifier: UUID
     """Share identifier"""
     shareIdentifier: UUID
     """Information about the subject of the annotation, which can be component, artboard, or page"""
@@ -6953,8 +6957,10 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
+    """Preview identifier (mutually exclusive with shareIdentifier)"""
+    previewIdentifier: UUID
     """Share identifier"""
-    shareIdentifier: UUID!
+    shareIdentifier: UUID
     """Information about the subject of the annotation, which can be component, artboard, or page"""
     subject: AnnotationSubjectInput
   ): Annotation!
@@ -6968,6 +6974,8 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
+    """Preview identifier (mutually exclusive with shareIdentifier)"""
+    previewIdentifier: UUID
     """Share identifier"""
     shareIdentifier: UUID
     """Information about the subject of the annotation, which can be component, artboard, or page"""
@@ -6983,6 +6991,8 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
+    """Preview identifier (mutually exclusive with shareIdentifier)"""
+    previewIdentifier: UUID
     """Share identifier"""
     shareIdentifier: UUID
     """Information about the subject of the annotation, which can be component, artboard, or page"""
@@ -6998,6 +7008,8 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
+    """Preview identifier (mutually exclusive with shareIdentifier)"""
+    previewIdentifier: UUID
     """Share identifier"""
     shareIdentifier: UUID
     """Information about the subject of the annotation, which can be component, artboard, or page"""
@@ -7013,6 +7025,8 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
+    """Preview identifier (mutually exclusive with shareIdentifier)"""
+    previewIdentifier: UUID
     """Share identifier"""
     shareIdentifier: UUID
     """Information about the subject of the annotation, which can be component, artboard, or page"""
@@ -7056,6 +7070,8 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
+    """Preview identifier (mutually exclusive with shareIdentifier)"""
+    previewIdentifier: UUID
     """Share identifier"""
     shareIdentifier: UUID
     """Information about the subject of the annotation, which can be component, artboard, or page"""
@@ -7071,6 +7087,8 @@ type RootSubscriptionType {
     `subject`. Defaults to `false`.
     """
     includeUnprocessed: Boolean = false
+    """Preview identifier (mutually exclusive with shareIdentifier)"""
+    previewIdentifier: UUID
     """Share identifier"""
     shareIdentifier: UUID
     """Information about the subject of the annotation, which can be component, artboard, or page"""
