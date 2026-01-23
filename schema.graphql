@@ -3250,6 +3250,14 @@ type LinkRegularAccountResponse {
   user: User!
 }
 
+"""API response for markAllCommentsAsRead"""
+type MarkAllCommentsAsReadResponse {
+  """Identifiers of comments successfully marked as read"""
+  commentIdentifiers: [UUID!]! @deprecated(reason: "Use comments instead")
+  """Comments successfully marked as read"""
+  comments: [Comment!]!
+}
+
 """API response for markCommentsAsRead"""
 type MarkCommentsAsReadResponse {
   """Identifiers of comments successfully marked as read"""
@@ -5772,6 +5780,18 @@ type RootMutationType {
     """MFA verification code"""
     totp: String
   ): LinkRegularAccountResponse!
+  """
+  Mark all annotation comments as read within a share, page, or frame.
+  If scoping by subject, provide either pageUuid or frameUuid, but not both.
+  """
+  markAllCommentsAsRead(
+    """UUID of the frame to scope comments (mutually exclusive with pageUuid)"""
+    frameUuid: String
+    """UUID of the page to scope comments (mutually exclusive with frameUuid)"""
+    pageUuid: String
+    """Share identifier"""
+    shareIdentifier: UUID!
+  ): MarkAllCommentsAsReadResponse!
   """Mark multiple comments as read"""
   markCommentsAsRead(
     """Comment identifiers"""
