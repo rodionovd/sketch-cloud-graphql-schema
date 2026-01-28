@@ -3252,16 +3252,12 @@ type LinkRegularAccountResponse {
 
 """API response for markAllCommentsAsRead"""
 type MarkAllCommentsAsReadResponse {
-  """Identifiers of comments successfully marked as read"""
-  commentIdentifiers: [UUID!]! @deprecated(reason: "Use comments instead")
   """Comments successfully marked as read"""
   comments: [Comment!]!
 }
 
 """API response for markCommentsAsRead"""
 type MarkCommentsAsReadResponse {
-  """Identifiers of comments successfully marked as read"""
-  commentIdentifiers: [UUID!]! @deprecated(reason: "Use comments instead")
   """Comments successfully marked as read"""
   comments: [Comment!]!
 }
