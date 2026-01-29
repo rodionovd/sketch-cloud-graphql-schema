@@ -467,10 +467,15 @@ enum PresentationFileStatus {
 
 """Option for which versions to preserve when deleting previous versions"""
 enum PreserveVersionsOption {
-  """Keep the latest version and all starred (published) versions"""
-  LATEST_AND_STARRED
-  """Keep only the latest version"""
-  LATEST_ONLY
+  """Keep the selected version and all newer versions"""
+  NONE
+  """Keep all starred versions, the selected version and all newer versions"""
+  STARRED_ONLY
+  """
+  Keep all starred versions, all versions with a description,
+  the selected version and all newer versions
+  """
+  STARRED_OR_WITH_DESCRIPTION
 }
 
 """Type of the preview content item"""
@@ -5539,7 +5544,7 @@ type RootMutationType {
   """Delete previous versions of a share"""
   deletePreviousShareVersions(
     """Which versions to preserve"""
-    preserveVersions: PreserveVersionsOption! = LATEST_ONLY
+    preserveVersions: PreserveVersionsOption! = STARRED_ONLY
     """Share identifier"""
     shareIdentifier: UUID!
     """
