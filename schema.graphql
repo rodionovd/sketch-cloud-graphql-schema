@@ -5552,7 +5552,7 @@ type RootMutationType {
     If not provided, defaults to the latest version.
     """
     versionIdentifier: UUID
-  ): DeletePreviousShareVersionsResponse
+  ): DeletePreviousShareVersionsResponse!
   """Delete a project"""
   deleteProject(
     """Project short id"""
