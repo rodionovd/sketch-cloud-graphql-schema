@@ -8921,6 +8921,8 @@ type Version {
   createdAt: DateTime!
   """User"""
   creator: PublicUser
+  """Deleted timestamp"""
+  deletedAt: DateTime
   """Description"""
   description: String
   """Document"""
