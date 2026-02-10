@@ -3106,6 +3106,12 @@ type IntegrationConnectUrlPayload {
   url: String!
 }
 
+"""Response containing an OAuth URL for user account linking"""
+type IntegrationIdentityConnectUrlPayload {
+  """The OAuth authorization URL"""
+  url: String!
+}
+
 """API response for inviteWorkspaceMembers"""
 type InviteWorkspaceMembersResponse {
   """List of members that had been already invited to the workspace"""
@@ -4673,6 +4679,12 @@ type RefreshAllPreviewsResponse {
   workspace: Workspace!
 }
 
+"""Response for removeIntegrationIdentity mutation"""
+type RemoveIntegrationIdentityResponse {
+  """The removed integration identity"""
+  integrationIdentity: WorkspaceIntegrationIdentity!
+}
+
 """Response for removeIntegration mutation"""
 type RemoveIntegrationResponse {
   """The removed integration"""
@@ -5750,6 +5762,17 @@ type RootMutationType {
     """The workspace to connect to the integration"""
     workspaceIdentifier: UUID!
   ): IntegrationConnectUrlPayload!
+  """
+  Generate an OAuth URL for the current user to link their account with an integration.
+  This enables user-specific features like receiving DM notifications.
+  Requires the workspace to have the integration installed.
+  """
+  getIntegrationIdentityConnectUrl(
+    """The integration provider (e.g., Slack)"""
+    provider: IntegrationProvider!
+    """The workspace whose integration to link with"""
+    workspaceIdentifier: UUID!
+  ): IntegrationIdentityConnectUrlPayload!
   """Mutation for inviting members to a workspace"""
   inviteWorkspaceMembers(
     """Invitation details"""
@@ -5959,6 +5982,14 @@ type RootMutationType {
     """The identifier of the integration to remove"""
     identifier: UUID!
   ): RemoveIntegrationResponse!
+  """
+  Remove the current user's linked identity from a workspace integration.
+  This disables user-specific features like DM notifications.
+  """
+  removeIntegrationIdentity(
+    """The identifier of the integration identity to remove"""
+    identifier: UUID!
+  ): RemoveIntegrationIdentityResponse!
   """Revove a member from a permission group"""
   removePermissionGroupMember(
     """The input param to remove a member from a permission group"""
@@ -9293,6 +9324,16 @@ type WorkspaceIntegration {
   managedBy: WorkspaceUser!
 }
 
+"""A workspace member's linked identity on an integration provider"""
+type WorkspaceIntegrationIdentity {
+  """When the identity was created"""
+  createdAt: DateTime!
+  """Unique identifier"""
+  identifier: UUID!
+  """The workspace integration this identity is linked to"""
+  integration: WorkspaceIntegration!
+}
+
 """Workspace Invite"""
 type WorkspaceInvite {
   """Email address of the invite's recipient"""
@@ -9323,6 +9364,11 @@ type WorkspaceMembership {
   activityStatus: ActivityStatus
   """Workspace membership identifier"""
   identifier: UUID!
+  """
+  The user's linked integration identities for this workspace membership. Only
+  returned for the current user's own membership.
+  """
+  integrationIdentities: [WorkspaceIntegrationIdentity!]!
   """
   The associated invite to the workspace.
     This field is null if the invited user already exists (`user` field is null until acceptance).
