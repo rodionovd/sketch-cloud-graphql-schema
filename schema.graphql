@@ -9316,6 +9316,8 @@ type WorkspaceFeatures {
 type WorkspaceIntegration {
   """When the integration was created"""
   createdAt: DateTime!
+  """The name of the external workspace (e.g., Slack team name)"""
+  externalWorkspaceName: String!
   """Unique identifier for the integration"""
   identifier: UUID!
   """The integration provider (e.g., SLACK)"""
