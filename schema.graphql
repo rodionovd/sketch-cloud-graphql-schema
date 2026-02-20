@@ -36,9 +36,6 @@ scalar Decimal
 """A valid e-mail address"""
 scalar Email
 
-"""The `JSON` scalar type represents a UTF-8 string value parsed by the `Jason` library."""
-scalar Json
-
 """
 The `Naive DateTime` scalar type represents a naive date and time without
 timezone. The DateTime appears in a JSON response as an ISO8601 formatted
@@ -596,14 +593,6 @@ enum RenderStatusType {
   RENDERING
   """Uploaded"""
   UPLOADED
-}
-
-"""Where to position something relative to the target when re-ordering"""
-enum ReorderPosition {
-  """Move something above the target"""
-  ABOVE
-  """Move something below the target"""
-  BELOW
 }
 
 """
@@ -2346,97 +2335,6 @@ type DeletedSharePermanentlyEvent {
   shareIdentifier: UUID!
   """Workspace identifier"""
   workspaceIdentifier: UUID!
-}
-
-"""Design System"""
-type DesignSystem {
-  """Main area content (json)"""
-  content: Json
-  """The date and time the design system was created"""
-  createdAt: DateTime!
-  """Description"""
-  description: String
-  """Header image url"""
-  header: String
-  """identifier"""
-  identifier: UUID!
-  """Name"""
-  name: String!
-  """Preview image url"""
-  preview: String
-  """A non-paginated list of shares. The maximum number of returned shares is 10."""
-  previewShares(
-    """The number of shares to be returned."""
-    limit: Int! = 5
-  ): [Share!]!
-  """Documentation sections in this design system"""
-  sections: [DesignSystemSection!]!
-  """Total number of shares belonging to the design system"""
-  shareCount: Int!
-  """Shares belonging to a design system"""
-  shares(
-    after: String
-    before: String
-    limit: Int = 20
-    """Share search params"""
-    search: DesignSystemSharesSearchParams
-  ): DesignSystemShares!
-  """The date and time the design system was last updated"""
-  updatedAt: DateTime!
-}
-
-"""Design system documentation page"""
-type DesignSystemPage {
-  """Page content (json)"""
-  content: Json
-  """Page description"""
-  description: String
-  """Identifier of the page"""
-  identifier: UUID!
-  """Name of the page"""
-  name: String!
-  """The order of which to sort the page"""
-  order: Int!
-  """Page section"""
-  section: DesignSystemSection!
-  """The page version. Must be used when making updates to a page"""
-  version: Int!
-}
-
-"""Subset of design system documentation page fields."""
-type DesignSystemPageSummary {
-  """Identifier of the page"""
-  identifier: UUID!
-  """Name of the page"""
-  name: String!
-}
-
-"""Design system documentation section"""
-type DesignSystemSection {
-  """The design system this section belongs to"""
-  designSystem: DesignSystem!
-  """Identifier of the section"""
-  identifier: UUID!
-  """Name of the section"""
-  name: String!
-  """Pages that belong to this section"""
-  pages: [DesignSystemPageSummary!]!
-}
-
-"""Shares belonging to a design system"""
-type DesignSystemShares {
-  """Paginated list of shares"""
-  entries: [Share!]!
-  """Pagination information"""
-  meta: PaginationMeta!
-}
-
-"""Paginated list of design systems"""
-type DesignSystems {
-  """List of design systems"""
-  entries: [DesignSystem!]!
-  """Pagination information"""
-  meta: PaginationMeta!
 }
 
 """API response for disableMfa"""
@@ -5356,18 +5254,6 @@ type RootMutationType {
     """
     shareIdentifiers: [UUID!]! = []
   ): CreateCollectionResponse!
-  """Create a workspace design system"""
-  createDesignSystem(
-    """Attributes of Design System to be created"""
-    input: CreateDesignSystemInput!
-    """The workspace the design system will belong to"""
-    workspaceIdentifier: UUID!
-  ): DesignSystem!
-  """Create design system documentation"""
-  createDesignSystemDocs(
-    """Identifier of the design system to create docs for"""
-    identifier: UUID!
-  ): DesignSystem!
   """Create a institution application"""
   createInstitutionApplication(
     """Input for creating a institution application"""
@@ -5528,21 +5414,6 @@ type RootMutationType {
     """Collection identifier"""
     identifier: UUID!
   ): DeleteCollectionResponse!
-  """Delete a design system"""
-  deleteDesignSystem(
-    """Identifier of the design system to be deleted"""
-    identifier: UUID!
-  ): DesignSystem!
-  """Delete all design system documentation permanently"""
-  deleteDesignSystemDocs(
-    """Identifier of the design system to delete documentation for"""
-    identifier: UUID!
-  ): DesignSystem!
-  """Deletes a design system documentation page permanently"""
-  deleteDesignSystemPage(
-    """Identifier of the design system page to delete"""
-    identifier: UUID!
-  ): DesignSystemPage!
   """Delete a permission group"""
   deletePermissionGroup(
     """The input param to delete a permission group"""
@@ -6059,15 +5930,6 @@ type RootMutationType {
     """identifier of the version to render a presentation file for"""
     versionIdentifier: UUID
   ): RenderPresentationResponse!
-  """Reorders a design system page"""
-  reorderDesignSystemPage(
-    """If you want to move the source page above or below the target page"""
-    position: ReorderPosition!
-    """The identifier of the page you wish to move"""
-    srcIdentifier: UUID!
-    """The identifier of the page where you want to move the page to"""
-    targetIdentifier: UUID!
-  ): DesignSystemPage!
   """Report a share"""
   reportShare(
     """Identifier of the share you want to report"""
@@ -6379,22 +6241,6 @@ type RootMutationType {
     """Update seats parameters"""
     input: UpdateBillingSeatsParams!
   ): UpdateBillingSeatsResponse!
-  """Update a design system"""
-  updateDesignSystem(
-    """Identifier of the design system to be updated"""
-    identifier: UUID!
-    """New attributes of Design System to be updated"""
-    input: UpdateDesignSystemInput!
-  ): DesignSystem!
-  """Update a design system documentation page"""
-  updateDesignSystemPage(
-    """Save regardless of any changes by other users"""
-    forceUpdate: Boolean
-    """Identifier of the design system page to be updated"""
-    identifier: UUID!
-    """New attributes of the page"""
-    input: UpdateDesignSystemPageInput!
-  ): DesignSystemPage!
   """Update a single notification"""
   updateNotification(
     """Identifier"""
@@ -6734,26 +6580,6 @@ type RootQueryType {
     """Curated libraries search input."""
     search: CuratedThirdPartyLibrarySearchInput
   ): Shares!
-  """Get a design system by its identifier"""
-  designSystem(
-    """Identifier of the design system"""
-    identifier: UUID!
-  ): DesignSystem!
-  """List of shares that can be added to design systems"""
-  designSystemEligibleShares(
-    after: String
-    before: String
-    limit: Int = 20
-    """Available params for searching shares of this workspace"""
-    search: SharesSearchParams
-    """Workspace from which shares will be returned"""
-    workspaceIdentifier: UUID!
-  ): Shares!
-  """Get a design system page by its identifier"""
-  designSystemPage(
-    """Identifier of the design system page"""
-    identifier: UUID!
-  ): DesignSystemPage!
   documentUploadParts(documentId: UUID!, multipartSessionTicket: String!, parts: [Int]!): MultipartUpload
   frame(
     documentVersionShortId: ShortId
@@ -7453,11 +7279,6 @@ type Share implements StorageItem {
   deletedAt: DateTime
   """The share's description"""
   description: String
-  """Design systems the share is part of"""
-  designSystems(
-    """Maximum number of design system to be returned."""
-    limit: Int! = 10
-  ): [DesignSystem!]!
   """Whether or not downloading the document is enabled"""
   downloadEnabled: Boolean! @deprecated(reason: "(Deprecated) Please migrate to userCanInspect")
   """(Deprecated) User identifier instead"""
@@ -9086,14 +8907,6 @@ type Workspace {
   not have an associated customer, as they have no subscription.
   """
   customer: WorkspaceCustomer
-  """Paginated list of design systems that belong to this workspace"""
-  designSystems(
-    after: String
-    before: String
-    limit: Int = 20
-    """Search params"""
-    search: DesignSystemSearchParams
-  ): DesignSystems!
   """The encryption config, if any, for the workspace"""
   encryptionConfig: EncryptionConfig
   """List of feature flags"""
@@ -9290,8 +9103,6 @@ type WorkspaceCustomerSubscriptionUpdatedEvent {
 type WorkspaceFeatures {
   """Is the Archive feature available for this workspace?"""
   archiveEnabled: Boolean!
-  """Are Design Systems enabled for this workspace?"""
-  designSystemsEnabled: Boolean!
   """Is the encryption enabled for this workspace?"""
   encryptionEnabled: Boolean!
   """Is the mandatory password protection for previews enabled for this workspace?"""
@@ -9694,18 +9505,6 @@ input ConfigureWorkspaceEncryptionKeysParams {
   workspaceIdentifier: UUID!
 }
 
-"""Attribues of the design system"""
-input CreateDesignSystemInput {
-  """Design system description"""
-  description: String
-  """Design system name"""
-  name: String!
-  """Design system icon file"""
-  preview: Upload
-  """Shares to be added to the design system"""
-  shares: [UUID!]!
-}
-
 """Input parameters for requesting a institution subscription"""
 input CreateInstitutionApplicationParams {
   """Address of the institution"""
@@ -9901,18 +9700,6 @@ input CuratedThirdPartyLibrarySearchInput {
 input DeletePermissionGroupParams {
   """The UUID of the permission group to delete"""
   permissionGroupIdentifier: UUID!
-}
-
-"""Design system search params"""
-input DesignSystemSearchParams {
-  """Case-insensitive search in name"""
-  name: String
-}
-
-"""Design system shares search params"""
-input DesignSystemSharesSearchParams {
-  """Case-insensitive search in share name"""
-  name: String
 }
 
 """Input parameters to the duplicateShareToDrafts mutation"""
@@ -10317,34 +10104,6 @@ input UpdateBillingSeatsParams {
   numberOfSeats: Int!
   """Workspace identifier"""
   workspaceIdentifier: UUID!
-}
-
-"""Design system attributes to be updated"""
-input UpdateDesignSystemInput {
-  """Design system main area content (json)"""
-  content: Json
-  """Design system description"""
-  description: String
-  """Design system header image"""
-  header: Upload
-  """Design system name"""
-  name: String
-  """Design system icon image"""
-  preview: Upload
-  """Shares to be added to the design system"""
-  shares: [UUID!]
-}
-
-"""Design system page attributes to be updated"""
-input UpdateDesignSystemPageInput {
-  """Page content (json)"""
-  content: Json
-  """Page description"""
-  description: String
-  """Name of the page"""
-  name: String
-  """Version of the page to update"""
-  version: Int
 }
 
 """
