@@ -4846,10 +4846,15 @@ type RootMutationType {
     """
     token: String
   ): ShareMembership!
-  """Mutation for accepting a membership to a workspace"""
+  """
+  Mutation for accepting a membership to a workspace.
+  Provide either a membershipToken or a membershipIdentifier, but not both.
+  """
   acceptWorkspaceInvite(
+    """The identifier of the workspace membership to accept"""
+    membershipIdentifier: UUID
     """The single-use token for accepting this membership invite"""
-    membershipToken: String!
+    membershipToken: String
   ): AcceptWorkspaceInviteResponse!
   """Add a member to a permission group"""
   addPermissionGroupMembers(
