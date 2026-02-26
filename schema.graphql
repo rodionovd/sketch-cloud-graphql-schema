@@ -4461,6 +4461,8 @@ type PublicWorkspaceCustomer {
 
 """A subset of all features available to a Workspace"""
 type PublicWorkspaceFeatures {
+  """Is account linking (SSO, Google, Apple) enabled for this workspace?"""
+  accountLinkingEnabled: Boolean!
   """Is the encryption feature enabled for this workspace?"""
   encryptionEnabled: Boolean!
 }
@@ -6241,6 +6243,11 @@ type RootMutationType {
     """Annotation identifier"""
     annotationIdentifier: UUID!
   ): UnresolveAnnotationResponse!
+  """Enable or disable account linking (SSO, Google, Apple) for a workspace"""
+  updateAccountLinkingEnabled(
+    """Update account linking parameters"""
+    input: UpdateAccountLinkingParams!
+  ): UpdateAccountLinkingResponse!
   """Update seats"""
   updateBillingSeats(
     """Update seats parameters"""
@@ -6360,6 +6367,11 @@ type RootMutationType {
     """Update restricted uploads state"""
     input: UpdateRestrictedUploadsStateParams!
   ): UpdateRestrictedUploadsStateResponse!
+  """Enable or disable SCIM cross-workspace auto-linking for a workspace"""
+  updateScimAutoLinkEnabled(
+    """Update SCIM auto-link parameters"""
+    input: UpdateScimAutoLinkParams!
+  ): UpdateScimAutoLinkResponse!
   """
   Updates a share membership
   
@@ -8370,6 +8382,12 @@ type UnresolveAnnotationResponse {
   annotation: Annotation!
 }
 
+"""API response for updateAccountLinking"""
+type UpdateAccountLinkingResponse {
+  """The associated workspace"""
+  workspace: Workspace!
+}
+
 """Response for updating the total seats for a Workspace"""
 type UpdateBillingSeatsResponse {
   """The token for the pending SCA authorization (if any)"""
@@ -8426,6 +8444,12 @@ type UpdateRestrictedPublicLinksResponse {
 
 """API response for updateRestrictedUploadsState"""
 type UpdateRestrictedUploadsStateResponse {
+  """The associated workspace"""
+  workspace: Workspace!
+}
+
+"""API response for updateScimAutoLink"""
+type UpdateScimAutoLinkResponse {
   """The associated workspace"""
   workspace: Workspace!
 }
@@ -9106,6 +9130,8 @@ type WorkspaceCustomerSubscriptionUpdatedEvent {
 
 """Features available to a Workspace"""
 type WorkspaceFeatures {
+  """Is account linking (SSO, Google, Apple) enabled for this workspace?"""
+  accountLinkingEnabled: Boolean!
   """Is the Archive feature available for this workspace?"""
   archiveEnabled: Boolean!
   """Is the encryption enabled for this workspace?"""
@@ -9116,6 +9142,8 @@ type WorkspaceFeatures {
   permissionGroupsEnabled: Boolean!
   """Are public links restricted in this workspace?"""
   restrictedPublicLinks: Boolean!
+  """Is SCIM cross-workspace auto-linking enabled for this workspace?"""
+  scimAutoLinkEnabled: Boolean!
   """Is the SSO feature available for this workspace?"""
   ssoEnabled: Boolean!
   """Is the Unlimited Storage feature available for this workspace?"""
@@ -10082,6 +10110,14 @@ input UnpinShareParams {
   shareIdentifier: UUID!
 }
 
+"""Parameters to update account linking settings"""
+input UpdateAccountLinkingParams {
+  """Whether account linking should be enabled"""
+  enabled: Boolean!
+  """Workspace identifier"""
+  workspaceIdentifier: UUID!
+}
+
 """
 SAML attribute mappings configuration.
 
@@ -10162,6 +10198,14 @@ input UpdateRestrictedUploadsStateParams {
   identifier: UUID!
   """Whether the uploads and some online capabilities should be restricted"""
   restrictedUploads: Boolean!
+}
+
+"""Parameters to update SCIM auto-link settings"""
+input UpdateScimAutoLinkParams {
+  """Whether SCIM cross-workspace auto-linking should be enabled"""
+  enabled: Boolean!
+  """Workspace identifier"""
+  workspaceIdentifier: UUID!
 }
 
 """Input parameters for updating a new share membership"""
