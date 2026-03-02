@@ -1460,6 +1460,8 @@ type Annotation {
   currentSubject: CurrentSubject! @deprecated(reason: "use `page` and `frameUuid` instead")
   """Annotation's initial comment"""
   firstComment: Comment!
+  """Frame to which this annotation is linked (if any)"""
+  frame: FrameGroup
   """UUID of the frame to which this annotation is linked (if any)"""
   frameUuid: String
   """Whether annotation has new comments for current user"""
@@ -9144,6 +9146,11 @@ type WorkspaceIntegration {
   identifier: UUID!
   """The integration provider (e.g., SLACK)"""
   integrationProvider: IntegrationProvider!
+  """
+  Whether the integration has a valid access token. Returns false when tokens
+  have been revoked and the app needs to be reconnected.
+  """
+  isActive: Boolean!
   """The user who manages this integration"""
   managedBy: WorkspaceUser!
 }
