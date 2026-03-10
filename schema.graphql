@@ -8543,6 +8543,8 @@ type User {
   id: String @deprecated(reason: "Use identifier instead.")
   """User identifier"""
   identifier: UUID!
+  """Whether the user is a PaaS admin. PaaS admins can manage SCIM personal access tokens."""
+  isPaasAdmin: Boolean!
   """Indicates if the user is a Sketch Partner"""
   isPartner: Boolean!
   """Whether the user has super admin privileges"""
@@ -9122,6 +9124,8 @@ type WorkspaceFeatures {
   permissionGroupsEnabled: Boolean!
   """Are public links restricted in this workspace?"""
   restrictedPublicLinks: Boolean!
+  """Is SCIM provisioning available for this workspace?"""
+  scimAccessEnabled: Boolean!
   """Is SCIM cross-workspace auto-linking enabled for this workspace?"""
   scimAutoLinkEnabled: Boolean!
   """Is the SSO feature available for this workspace?"""
