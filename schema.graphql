@@ -116,6 +116,18 @@ enum ArtboardFilterType {
   PROTOTYPE
 }
 
+"""Indicates what originated an audit log entry"""
+enum AuditSource {
+  """Scheduled seat change initiated log"""
+  SCHEDULED_SEAT_CHANGE
+  """SCIM API initiated audit log"""
+  SCIM
+  """SSO-provisioning initiated audit log"""
+  SSO
+  """User initiated audit log"""
+  USER
+}
+
 """[WILL BE REMOVED] Type of an item in the billing history"""
 enum BillingHistoryItemType {
   """Credit addition"""
@@ -295,6 +307,16 @@ enum IntegrationProvider {
   SLACK
 }
 
+"""Indicates what caused an integration to be uninstalled"""
+enum IntegrationUninstallCause {
+  """Integration was uninstalled from the third-party service"""
+  APP_UNINSTALLED
+  """User manually removed the integration"""
+  MANUAL
+  """Integration tokens were revoked by the third-party service"""
+  TOKENS_REVOKED
+}
+
 """Invite status"""
 enum InviteStatus {
   """The membership has been accepted by the owner or the requested user."""
@@ -407,6 +429,14 @@ enum ParentAccessLevel {
   DEFAULT
   """View only"""
   VIEW
+}
+
+"""Indicates a workspace payment method"""
+enum PaymentMethod {
+  """Workspace paying by credit card"""
+  CREDIT_CARD
+  """Workspace paying by invoice"""
+  INVOICE
 }
 
 """[WILL BE REMOVED] Form of payment for adding a contributor"""
@@ -1021,6 +1051,114 @@ enum WorkspaceAccessLevel {
   VIEW
 }
 
+"""Valid workspace audit actions"""
+enum WorkspaceAuditAction {
+  """An invitee accepted an invitation to the Workspace"""
+  ACCEPT_MEMBERSHIP_INVITE
+  """A member was added to a permission group in the Workspace"""
+  ADD_MEMBER_PERMISSION_GROUP
+  """An education request for this Workspace was approved"""
+  APPROVED_EDUCATION_REQUEST
+  """A folder was archived in the Workspace"""
+  ARCHIVE_PROJECT
+  """A feature flag was attached to the Workspace"""
+  ATTACH_FEATURE_FLAG
+  """A license was cancelled"""
+  CANCEL_LICENSE
+  """The Workspace's plan was changed"""
+  CHANGED_PLAN
+  """Restricted uploads was toggled for the Workspace"""
+  CHANGE_RESTRICTED_UPLOADS
+  """The Workspace's eligibility for an unlimited trial was changed"""
+  CHANGE_UNLIMITED_TRIAL
+  """The Workspace's public profile was enabled or disabled"""
+  CHANGE_WORKSPACE_PROFILE_ENABLED
+  """The Workspace's public profile official status was changed"""
+  CHANGE_WORKSPACE_PROFILE_IS_OFFICIAL
+  """The Workspace's public profile short url was changed"""
+  CHANGE_WORKSPACE_PROFILE_SHORT_URL
+  """The Workspace's public profile visibility was changed"""
+  CHANGE_WORKSPACE_PROFILE_VISIBILITY
+  """Workspace payment method was converted to invoice based billing"""
+  CONVERTED_TO_INVOICE_PAYMENT
+  """The Workspace was converted to an educational workspace"""
+  CONVERT_TO_EDUCATION_WORKSPACE
+  """A user was invited to the Workspace"""
+  CREATE_MEMBERSHIP
+  """A permission group was created in the Workspace"""
+  CREATE_PERMISSION_GROUP
+  """A permission group relation was created in the Workspace"""
+  CREATE_PERMISSION_GROUP_RELATION
+  """The Workspace was created"""
+  CREATE_WORKSPACE
+  """Credit was added to this Workspace's subscription"""
+  CREDIT_ADD
+  """A Workspace membership was deleted"""
+  DELETE_MEMBERSHIP
+  """The Workspace was deleted"""
+  DELETE_ORGANIZATION
+  """A permission group was deleted in the Workspace"""
+  DELETE_PERMISSION_GROUP
+  """A feature flag was detached from the Workspace"""
+  DETACH_FEATURE_FLAG
+  """A Workspace membership was disabled"""
+  DISABLE_MEMBERSHIP
+  """SSO was disabled for the Workspace"""
+  DISABLE_SSO
+  """A SSO Workspace membership was provisioned as a viewer"""
+  DOWNGRADED_SSO_MEMBERSHIP_PROVISIONED
+  """A feed of the Workspace's document versions was generated"""
+  GENERATE_DOCUMENTS_FEED
+  """An integration was installed in the Workspace"""
+  INSTALL_INTEGRATION
+  """An education request was submitted for this Workspace"""
+  NEW_EDUCATION_REQUEST
+  """An education request for this Workspace was rejected"""
+  REJECT_EDUCATION_REQUEST
+  """A member was removed from a permission group in the Workspace"""
+  REMOVE_MEMBER_PERMISSION_GROUP
+  """A permission group relation was removed in the Workspace"""
+  REMOVE_PERMISSION_GROUP_RELATION
+  """The SCIM token was reset for the Workspace"""
+  RESET_SCIM_TOKEN
+  """A Workspace membership was restored"""
+  RESTORE_MEMBERSHIP
+  """Design systems eligibility was toggled for the Workspace"""
+  SET_DESIGN_SYSTEMS_ELIGIBILITY
+  """Restricted uploads eligibility was toggled for the Workspace"""
+  SET_RESTRICTED_UPLOADS_ELIGIBILITY
+  """SCIM was enabled or disabled for the Workspace"""
+  SET_SCIM_ENABLED
+  """SSO configuration was changed for the Workspace"""
+  SET_SSO_CONFIG
+  """SSO eligibility was toggled for the Workspace"""
+  SET_SSO_ELIGIBILITY
+  """The version expiration rules for the Workspace were changed"""
+  SET_WORKSPACE_EXPIRED_VERSIONS_RULES
+  """An SSO Workspace membership was provisioned as an editor"""
+  SSO_MEMBERSHIP_PROVISIONED
+  """Support access was disabled for the Workspace"""
+  SUPPORT_ACCESS_DISABLED
+  """Support access was enabled for the Workspace"""
+  SUPPORT_ACCESS_ENABLED
+  """The Workspace was transferred to a different owner"""
+  TRANSFER_ORGANIZATION
+  """The duration of this Workspace's trial was changed"""
+  TRIAL_DURATION
+  """A folder was unarchived in the Workspace"""
+  UNARCHIVE_PROJECT
+  """An integration was uninstalled from the Workspace"""
+  UNINSTALL_INTEGRATION
+  """Unknown workspace audit action"""
+  UNKNOWN
+  """A Workspace membership was updated"""
+  UPDATE_MEMBERSHIP
+  """A permission group was updated in the Workspace"""
+  UPDATE_PERMISSION_GROUP
+  """This Workspace was upgraded from a personal to a standard workspace"""
+  UPGRADE_PERSONAL_WORKSPACE
+}
+
 """Available access_levels for workspace members"""
 enum WorkspaceMemberAccessLevel {
   """Can edit documents"""
@@ -1135,6 +1273,18 @@ enum WorkspaceType {
   STANDARD
   """An education workspace. This type of workspace is granted for students and institutions."""
   STUDENT
+}
+
+"""Audit log type"""
+interface AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """This event is dispatched every time preview state changes."""
@@ -1308,6 +1458,28 @@ interface UserNotification {
   workspace: PublicWorkspace
 }
 
+"""Membership invite acceptance audit info"""
+type AcceptMembershipInviteAudit implements AuditLogItem {
+  """User that accepted the invitation"""
+  acceptedUser: AuditActor
+  """Email of the user that accepted the invitation"""
+  acceptedUserEmail: String!
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Email that the invitation was originally sent to"""
+  inviteSentToEmail: String!
+  """User that made the invite"""
+  inviter: AuditActor
+  """The invited user role or null (available since version 3)"""
+  role: WorkspaceMembershipRole
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """Response from mutation requestAccessToProject"""
 type AcceptProjectAccessRequestResponse {
   """The private project"""
@@ -1340,6 +1512,22 @@ type ActivityStatus {
   lastSeenInDays: Int!
   """The user status relative to the last day seen online"""
   status: UserActivityStatus!
+}
+
+"""Members were added to a permission group"""
+type AddMemberPermissionGroup implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """List of added members"""
+  members: [WorkspaceMembership!]!
+  """Permission group, null if it was removed"""
+  permissionGroup: PermissionGroup
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Response from mutation addPermissionGroupMembers"""
@@ -1570,6 +1758,38 @@ type Annotations {
   meta: PaginationMeta!
 }
 
+"""Approved education request audit info"""
+type ApprovedEducationRequestAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The education application that resulted in this audit entry"""
+  educationRequest: EducationApplication!
+  """The date set for the education workspace subscription to end"""
+  expiryDate: Date
+  """The total number of seats approved with this education application"""
+  seats: Int!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Project was archived"""
+type ArchiveProject implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The project that has been archived"""
+  project: Project
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """API response for archiveProject"""
 type ArchiveProjectResponse {
   """The archived project"""
@@ -1701,6 +1921,22 @@ type Artboards {
   meta: PaginationMeta!
 }
 
+"""Feature flag was attached to a workspace audit type"""
+type AttachFeatureFlagAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Feature flag identifier"""
+  flagIdentifier: UUID!
+  """Feature flag name at the time of the operation"""
+  flagName: String!
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """SAML attribute mappings configuration"""
 type AttributeMappingEntry {
   """Attribute name for Avatar URL"""
@@ -1713,6 +1949,32 @@ type AttributeMappingEntry {
   fullName: NameMapping
   """Attribute name for Surname"""
   surname: SamlAttribute
+}
+
+"""User information associated with an audit log entry"""
+type AuditActor {
+  """User email"""
+  email: String
+  """User identifier"""
+  identifier: UUID!
+  """User name"""
+  name: String
+}
+
+"""Audit credit information"""
+type AuditCredit {
+  """Credit amount issued"""
+  amount: Int!
+  """Description used when the credit was issued"""
+  description: String
+}
+
+"""Audit membership"""
+type AuditMembership {
+  """Whether a license was assigned for this membership"""
+  assignLicense: Boolean!
+  """The associated role"""
+  role: String
 }
 
 """Avatar object"""
@@ -1782,10 +2044,120 @@ type BillingSeatsInfo {
   usedSeats: Int!
 }
 
+"""Cancel license audit object"""
+type CancelLicenseAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Associated license"""
+  license: License
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """Response for canceling the scheduled update of seats for a Workspace"""
 type CancelScheduledBillingSeatsResponse {
   """Modified workspace"""
   workspace: Workspace!
+}
+
+"""Workspace restricted uploads were enabled or disabled"""
+type ChangeRestrictedUploadsAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Were uploads restricted enabled or disabled"""
+  areUploadsRestricted: Boolean!
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Recorded when a workspace admin changes unlimited-trial availability"""
+type ChangeUnlimitedTrial implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The new value"""
+  newValue: Boolean!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Recorded when a workspace admin changes whether a workspace can have a profile"""
+type ChangeWorkspaceProfileEnabled implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The new value"""
+  newValue: Boolean!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Recorded when a user changes the official status of a workspace profile"""
+type ChangeWorkspaceProfileIsOfficial implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The new value"""
+  newValue: Boolean!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Recorded when a user changes the short URL of the workspace profile"""
+type ChangeWorkspaceProfileShortUrl implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The new value"""
+  newValue: String!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Recorded when a user changes the public visibility of the workspace profile"""
+type ChangeWorkspaceProfileVisibility implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The new value"""
+  newValue: Boolean!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Changed plan audit object"""
+type ChangedPlanAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """API response for checkWorkspaceProfileShortUrl"""
@@ -2121,6 +2493,24 @@ type ContributorCost {
   paymentType: PaymentType!
 }
 
+"""Convert to education workspace audit info"""
+type ConvertToEducationWorkspaceAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The education application that resulted in this audit entry"""
+  educationRequest: EducationApplication!
+  """The date set for the education workspace subscription to end"""
+  expiryDate: Date
+  """The total number of seats approved with this education application"""
+  seats: Int!
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """Coupon"""
 type Coupon {
   amountOff: Int
@@ -2158,10 +2548,67 @@ type CreateEducationApplicationResponse {
   workspace: Workspace! @deprecated(reason: "Can be fetched through the educationApplication field")
 }
 
+"""Create membership audit info"""
+type CreateMembershipAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """
+  Invitee Cloud user, if at the time of being invited to the workspace they were already
+  an existing Cloud user otherwise null
+  """
+  invitee: AuditActor
+  """Invitee email"""
+  inviteeEmail: String!
+  """Workspace membership"""
+  membership: AuditMembership
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """API response for createPartnerWorkspace"""
 type CreatePartnerWorkspaceResponse {
   """The associated workspace"""
   workspace: Workspace!
+}
+
+"""Create a permission group"""
+type CreatePermissionGroup implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Name"""
+  name: String!
+  """Permission group, null if it was removed"""
+  permissionGroup: PermissionGroup
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Share a permission group"""
+type CreatePermissionGroupRelation implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Name"""
+  name: String!
+  """Permission group, null if it was removed"""
+  permissionGroup: PermissionGroup
+  """Project the permission group was shared with, null if it was removed"""
+  project: Project
+  """Share the permission group was shared with, null if it was removed"""
+  share: Share
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Response from mutation createPermissionGroup"""
@@ -2174,6 +2621,20 @@ type CreatePermissionGroupResponse {
 type CreatePreviewResponse {
   """The newly created preview"""
   preview: Preview!
+}
+
+"""Create workspace audit object"""
+type CreateWorkspaceAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Workspace payment method"""
+  paymentMethod: PaymentMethod!
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """API response for createWorkspaceProfile"""
@@ -2230,6 +2691,20 @@ type Credit {
   updatedAt: DateTime!
 }
 
+"""Credit audit"""
+type CreditAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that issued this credit"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Audit credit"""
+  credit: AuditCredit
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """[WILL BE REMOVED] List of credits with pagination info"""
 type Credits {
   """Paginated data"""
@@ -2260,6 +2735,56 @@ type DeleteAnnotationResponse {
 type DeleteCollectionResponse {
   """The deleted collection"""
   collection: Collection!
+}
+
+"""Delete membership audit object"""
+type DeleteMembershipAudit implements AuditLogItem {
+  """Date and time the user accepted the invite, null if the invite was pending at delete time."""
+  acceptedAt: String
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Indicates the source that originated this audit log"""
+  auditSource: AuditSource!
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Did this membership add a seat assigned to it that was deleted"""
+  deletedSeat: Boolean!
+  """The associated role"""
+  role: String
+  """Membership user that was deleted, null if there is no corresponding user"""
+  user: AuditActor
+  """Email of the membership that was removed from the workspace"""
+  userEmail: String!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Delete workspace audit object"""
+type DeleteOrganizationAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Delete a permission group"""
+type DeletePermissionGroup implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Name"""
+  name: String!
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Response from mutation deletePermissionGroup"""
@@ -2339,6 +2864,44 @@ type DeletedSharePermanentlyEvent {
   workspaceIdentifier: UUID!
 }
 
+"""Feature flag was detached from a workspace audit type"""
+type DetachFeatureFlagAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Feature flag identifier"""
+  flagIdentifier: UUID!
+  """Feature flag name at the time of the operation"""
+  flagName: String!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Disable membership audit object"""
+type DisableMembershipAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Indicates the source that originated this audit log"""
+  auditSource: AuditSource!
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Did this membership add a seat assigned to it that was deleted"""
+  deletedSeat: Boolean!
+  """The associated role"""
+  role: String!
+  """Membership user that was disabled"""
+  user: AuditActor
+  """Email of the membership that was disabled from the workspace"""
+  userEmail: String!
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """API response for disableMfa"""
 type DisableMfaResponse {
   """The user attempting to disable MFA"""
@@ -2349,6 +2912,18 @@ type DisableMfaResponse {
 type DisableScimResponse {
   """Modified workspace"""
   workspace: Workspace!
+}
+
+"""SSO disabled for a workspace audit type"""
+type DisableSsoAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Response for disabling Support Access in a Workspace"""
@@ -2615,6 +3190,24 @@ type DocumentUploadProcessedNotification implements UserNotification {
   user: PublicUser
   """Workspace"""
   workspace: PublicWorkspace
+}
+
+"""Downgraded SSO membership provisioned audit object"""
+type DowngradedSsoMembershipProvisionedAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Indicates the source that originated this audit log"""
+  auditSource: AuditSource!
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Membership user that was provisioned"""
+  user: AuditActor
+  """Email of the SSO membership that was provisioned"""
+  userEmail: String!
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """
@@ -2948,6 +3541,18 @@ type Frames {
   meta: PaginationMeta!
 }
 
+"""Workspace documents feed generated audit"""
+type GeneratedDocumentsFeedAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """
 A newly generated SCIM personal access token.
 
@@ -2998,6 +3603,20 @@ type InspectorDataPayload {
   inspector: InspectorData
   """Indicates whether the mutation completed successfully or not."""
   successful: Boolean!
+}
+
+"""Integration was installed to a workspace"""
+type InstallIntegrationAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that installed the integration"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Integration provider (for example, slack)"""
+  provider: String!
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Response containing an OAuth connection URL"""
@@ -3303,6 +3922,20 @@ type NameMapping {
   surname: String
   """Update value on each login"""
   updateOnLogin: Boolean!
+}
+
+"""New education request audit info"""
+type NewEducationRequestAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The education application that resulted in this audit entry"""
+  educationRequest: EducationApplication!
+  """Version of this audit log entry"""
+  version: Int
 }
 
 type NotificationMarkAllAsReadPayload {
@@ -3711,6 +4344,18 @@ type PathComponentInfo {
   id: String!
   """Component name"""
   name: String!
+}
+
+"""Payment method changed to invoice"""
+type PaymentMethodConvertedToInvoiceAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """PermissionGroup"""
@@ -4581,6 +5226,22 @@ type RefreshAllPreviewsResponse {
   workspace: Workspace!
 }
 
+"""Rejected education request audit info"""
+type RejectEducationRequestAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The education application that resulted in this audit entry"""
+  educationRequest: EducationApplication!
+  """The reject reason"""
+  rejectReason: String
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """Response for removeIntegrationIdentity mutation"""
 type RemoveIntegrationIdentityResponse {
   """The removed integration identity"""
@@ -4593,10 +5254,46 @@ type RemoveIntegrationResponse {
   integration: WorkspaceIntegration!
 }
 
+"""Member was removed from a permission group"""
+type RemoveMemberPermissionGroup implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Removed member from the permission group"""
+  member: WorkspaceMembership
+  """Permission group, null if it was removed"""
+  permissionGroup: PermissionGroup
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """Response from mutation removePermissionGroupMembers"""
 type RemovePermissionGroupMemberResponse {
   """The permission group"""
   permissionGroup: PermissionGroup!
+}
+
+"""Unshare a permission group"""
+type RemovePermissionGroupRelation implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Name"""
+  name: String!
+  """Permission group, null if it was removed"""
+  permissionGroup: PermissionGroup
+  """Project the permission group was unshared with, null if it was removed"""
+  project: Project
+  """Share the permission group was unshared with, null if it was removed"""
+  share: Share
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Response from mutation addPermissionGroupRelation"""
@@ -4672,6 +5369,18 @@ type ResendWorkspaceInviteResponse {
   membership: WorkspaceMembership!
 }
 
+"""SCIM token reset audit type"""
+type ResetScimTokenAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """Response for resetting the Workspace's SCIM token"""
 type ResetScimTokenResponse {
   """The token for SCIM authentication"""
@@ -4684,6 +5393,28 @@ type ResetScimTokenResponse {
 type ResolveAnnotationResponse {
   """The resolved annotation"""
   annotation: Annotation!
+}
+
+"""Restore membership audit object"""
+type RestoreMembershipAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Indicates the source that originated this audit log"""
+  auditSource: AuditSource!
+  """Did this membership need a seat assigned to it"""
+  consumedSeat: Boolean!
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The associated role"""
+  role: String!
+  """Membership user that was restored"""
+  user: AuditActor
+  """Email of the membership that was restored to the workspace"""
+  userEmail: String!
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """API response for restoreProject"""
@@ -4807,8 +5538,10 @@ type RevokeSessionPayload {
 type RootMutationType {
   """Mutation for accepting a partnership membership into a workspace"""
   acceptPartnershipInvite(
+    """The identifier of the membership to accept"""
+    membershipId: UUID
     """The single-use token for accepting this membership invite"""
-    membershipToken: String!
+    membershipToken: String
     """Number of seats the subscription will have in the next billing cycle"""
     seats: Int!
     """Shipping details for the customer"""
@@ -6676,8 +7409,8 @@ type RootQueryType {
     """Partner email"""
     email: String!
   ): Partner
-  """Get a pending workspace membership by the invite token"""
-  pendingWorkspaceMembership(membershipToken: String!): PublicWorkspaceMembership!
+  """Get a pending workspace membership by the invite token or membership identifier"""
+  pendingWorkspaceMembership(membershipId: UUID, membershipToken: String): PublicWorkspaceMembership!
   """Fetch one permission group from the identifier"""
   permissionGroup(
     """The identifier of the permission group"""
@@ -6764,6 +7497,16 @@ type RootQueryType {
   ): SsoStartPayload!
   """Get a workspace by its identifier"""
   workspace(identifier: UUID!): Workspace!
+  """Get the paginated audit log for a workspace"""
+  workspaceAuditLogs(
+    after: String
+    before: String
+    limit: Int = 20
+    """Workspace audit log search params"""
+    search: WorkspaceAuditLogsSearchParams
+    """Workspace identifier"""
+    workspaceIdentifier: UUID!
+  ): WorkspaceAuditLogs!
   workspaceCustomer(identifier: UUID!): WorkspaceCustomer!
   """Get the heaviest shares in the workspace"""
   workspaceHeaviestShares(
@@ -7222,6 +7965,20 @@ type Sessions {
   meta: PaginationMeta!
 }
 
+"""Workspace enable or disable design systems audit type"""
+type SetDesignSystemsEligibilityAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Were design systems enabled or disabled"""
+  designSystemsEnabled: Boolean!
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """
 API response for setNotificationSubscription mutation.
 
@@ -7241,6 +7998,76 @@ type SetNotificationSubscriptionResponse {
   frame: FrameGroup
   """Share resource"""
   share: Share
+}
+
+"""Workspace restricted uploads eligibility set or unset audit type"""
+type SetRestrictedUploadsEligibilityAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Was restricted uploads eligibility enabled or disabled"""
+  restrictedUploadsEnabled: Boolean!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""SCIM enabled or disabled for a workspace audit type"""
+type SetScimEnabledAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """New value for SCIM enabled"""
+  scimEnabled: Boolean!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""SSO configuration for a workspace has been set audit type"""
+type SetSsoConfigAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Workspace SSO eligibility set or unset audit type"""
+type SetSsoEligibilityAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Was SSO eligibility enabled or disabled"""
+  ssoEnabled: Boolean!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Workspace expired versions rules changed audit type"""
+type SetWorkspaceExpiredVersionsRulesAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """New expired versions rules value"""
+  newRules: String
+  """Previous expired versions rules value"""
+  previousRules: String
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """API response for setupMfa"""
@@ -8010,6 +8837,24 @@ type Source {
   type: String
 }
 
+"""SSO membership provisioned audit object"""
+type SsoMembershipProvisionedAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Indicates the source that originated this audit log"""
+  auditSource: AuditSource!
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Membership user that was provisioned"""
+  user: AuditActor
+  """Email of the SSO membership that was provisioned"""
+  userEmail: String!
+  """Version of this audit log entry"""
+  version: Int
+}
+
 type SsoStartPayload {
   """A list of errors, raised when executing this migrations."""
   errors: [UserError]!
@@ -8081,6 +8926,32 @@ type StorageItemsPaginationMeta {
   sharesCount: Int!
   """Total count of storage items."""
   totalCount: Int!
+}
+
+"""Support access disabled audit type"""
+type SupportAccessDisabledAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Support access enabled audit type"""
+type SupportAccessEnabledAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Permission expiration date and time"""
+  until: String
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Symbol component"""
@@ -8203,6 +9074,22 @@ type TransferDestinations {
   meta: PaginationMeta!
 }
 
+"""Transfer workspace audit object"""
+type TransferOrganizationAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """New workspace owner"""
+  newOwner: AuditActor
+  """Old workspace owner"""
+  oldOwner: AuditActor
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """API response for transferShare"""
 type TransferShareResponse {
   """The transferred share"""
@@ -8289,10 +9176,68 @@ type TrashedShares {
   meta: PaginationMeta!
 }
 
+"""Trial amend audit object"""
+type TrialAmendAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Date and time the trial was set up to end"""
+  newTrialEnd: String
+  """Previous date and time the trial was set up to end"""
+  oldTrialEnd: String
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Project was unarchived"""
+type UnarchiveProject implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The project that has been unarchived"""
+  project: Project
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """API response for unarchiveProject"""
 type UnarchiveProjectResponse {
   """The unarchived project"""
   project: Project!
+}
+
+"""Integration was uninstalled from a workspace"""
+type UninstallIntegrationAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that uninstalled the integration"""
+  actor: AuditActor
+  """Cause of uninstallation"""
+  cause: IntegrationUninstallCause!
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Integration provider (for example, slack)"""
+  provider: String!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""New audit event without dedicated support"""
+type UnknownAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Response for unlinkSocialAccount mutation"""
@@ -8380,6 +9325,49 @@ type UpdateBillingSeatsResponse {
   pendingScaToken: String
   """Modified workspace"""
   workspace: Workspace!
+}
+
+"""Membership update audit object"""
+type UpdateMembershipAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Indicates the source that originated this audit log"""
+  auditSource: AuditSource!
+  """
+  Whether this update originated a change in the membership license.
+  Null if the license was unaffected in the update.
+  """
+  changedAssignLicense: Boolean
+  """The role this membership was updated to, null if the role was left unchanged."""
+  changedRole: String
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Membership user that was updated, null if there is no corresponding user"""
+  user: AuditActor
+  """Email of the membership that was updated"""
+  userEmail: String!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Update a permission group"""
+type UpdatePermissionGroup implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """New name"""
+  newName: String!
+  """Old name"""
+  oldName: String!
+  """Permission group, null if it was removed"""
+  permissionGroup: PermissionGroup
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """
@@ -8503,6 +9491,18 @@ type UpdateWorkspaceResponse {
 type UpdateWorkspaceSecurityEmailResponse {
   """The associated workspace"""
   workspace: Workspace!
+}
+
+"""Personal workspace upgraded to standard workspace audit type"""
+type UpgradePersonalWorkspaceAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """API response for upgradePersonalWorkspace"""
@@ -9048,6 +10048,14 @@ type Workspace {
     """Workspace Membership UUID"""
     identifier: UUID
   ): WorkspaceMembership
+}
+
+"""A paginated list of workspace audit logs"""
+type WorkspaceAuditLogs {
+  """Workspace audit entries"""
+  entries: [AuditLogItem!]!
+  """Pagination metadata"""
+  meta: PaginationMeta!
 }
 
 """
@@ -10343,6 +11351,12 @@ input UserPasswordUpdateParams {
   currentPassword: String!
   """New Password"""
   password: String!
+}
+
+"""Search params for workspace audit logs"""
+input WorkspaceAuditLogsSearchParams {
+  """Filter audit logs by action values"""
+  action: [WorkspaceAuditAction!]
 }
 
 """Parameters for billing address"""
