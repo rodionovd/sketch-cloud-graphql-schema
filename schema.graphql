@@ -1069,6 +1069,8 @@ enum WorkspaceAuditAction {
   CHANGED_PLAN
   """Restricted uploads was toggled for the Workspace"""
   CHANGE_RESTRICTED_UPLOADS
+  """The Workspace's unlimited storage override was enabled or disabled"""
+  CHANGE_UNLIMITED_STORAGE_OVERRIDE_ENABLED
   """The Workspace's eligibility for an unlimited trial was changed"""
   CHANGE_UNLIMITED_TRIAL
   """The Workspace's public profile was enabled or disabled"""
@@ -2074,6 +2076,20 @@ type ChangeRestrictedUploadsAudit implements AuditLogItem {
   areUploadsRestricted: Boolean!
   """Date and time of the operation"""
   createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""Recorded when a workspace admin changes unlimited storage override availability"""
+type ChangeUnlimitedStorageOverrideEnabled implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The new value"""
+  newValue: Boolean!
   """Version of this audit log entry"""
   version: Int
 }
