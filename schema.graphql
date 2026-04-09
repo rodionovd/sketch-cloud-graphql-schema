@@ -1067,8 +1067,14 @@ enum WorkspaceAuditAction {
   CANCEL_LICENSE
   """The Workspace's plan was changed"""
   CHANGED_PLAN
+  """Account linking was enabled or disabled for the Workspace"""
+  CHANGE_ACCOUNT_LINKING
   """Restricted uploads was toggled for the Workspace"""
   CHANGE_RESTRICTED_UPLOADS
+  """SCIM auto-linking was enabled or disabled for the Workspace"""
+  CHANGE_SCIM_AUTO_LINK
+  """The Workspace's security contact email was changed"""
+  CHANGE_SECURITY_EMAIL
   """The Workspace's unlimited storage override was enabled or disabled"""
   CHANGE_UNLIMITED_STORAGE_OVERRIDE_ENABLED
   """The Workspace's eligibility for an unlimited trial was changed"""
@@ -1081,6 +1087,8 @@ enum WorkspaceAuditAction {
   CHANGE_WORKSPACE_PROFILE_SHORT_URL
   """The Workspace's public profile visibility was changed"""
   CHANGE_WORKSPACE_PROFILE_VISIBILITY
+  """Workspace encryption keys (BYOK) were configured"""
+  CONFIGURE_ENCRYPTION_KEYS
   """Workspace payment method was converted to invoice based billing"""
   CONVERTED_TO_INVOICE_PAYMENT
   """The Workspace was converted to an educational workspace"""
@@ -1157,6 +1165,8 @@ enum WorkspaceAuditAction {
   UPDATE_MEMBERSHIP
   """A permission group was updated in the Workspace"""
   UPDATE_PERMISSION_GROUP
+  """The Workspace's name or avatar was updated"""
+  UPDATE_WORKSPACE
   """This Workspace was upgraded from a personal to a standard workspace"""
   UPGRADE_PERSONAL_WORKSPACE
 }
@@ -2066,6 +2076,20 @@ type CancelScheduledBillingSeatsResponse {
   workspace: Workspace!
 }
 
+"""Account linking was enabled or disabled for the Workspace"""
+type ChangeAccountLinkingAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Whether account linking was enabled or disabled"""
+  enabled: Boolean!
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """Workspace restricted uploads were enabled or disabled"""
 type ChangeRestrictedUploadsAudit implements AuditLogItem {
   """Name of the audit event type"""
@@ -2076,6 +2100,36 @@ type ChangeRestrictedUploadsAudit implements AuditLogItem {
   areUploadsRestricted: Boolean!
   """Date and time of the operation"""
   createdAt: NaiveDateTime
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""SCIM auto-linking was enabled or disabled for the Workspace"""
+type ChangeScimAutoLinkAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Whether SCIM auto-linking was enabled or disabled"""
+  enabled: Boolean!
+  """Version of this audit log entry"""
+  version: Int
+}
+
+"""The Workspace's security contact email was changed"""
+type ChangeSecurityEmailAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The previous security email address"""
+  previousSecurityEmail: String
+  """The new security email address"""
+  securityEmail: String!
   """Version of this audit log entry"""
   version: Int
 }
@@ -2485,6 +2539,20 @@ type Components {
   meta: PaginationMeta!
   """Component processing status"""
   status: DocumentComponentsState!
+}
+
+"""Workspace encryption keys (BYOK) were configured"""
+type ConfigureEncryptionKeysAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """KMS key ARNs configured for the Workspace"""
+  kmsArns: [String!]
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Response for configuring workspace encryption keys"""
@@ -9460,6 +9528,22 @@ type UpdateUserPreferencesResponse {
 type UpdateWorksapceCustomerSsoShortNameResponse {
   """The associated workspace customer"""
   customer: WorkspaceCustomer!
+}
+
+"""The Workspace's name or avatar was updated"""
+type UpdateWorkspaceAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Whether the avatar was changed"""
+  avatarChanged: Boolean
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The new Workspace name, if changed"""
+  name: String
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Mutation response for updateWorkspaceCustomerSssoAttributeMapping"""
