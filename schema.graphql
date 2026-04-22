@@ -2888,7 +2888,9 @@ type DeletePreviousShareVersionsResponse {
   """The number of versions deleted"""
   deletedCount: Int!
   """The share which versions were deleted"""
-  share: Share!
+  share: Share @deprecated(reason: "Use shares instead")
+  """The shares which versions were deleted"""
+  shares: [Share!]!
 }
 
 """API response for deleteProjectPermanently"""
@@ -6254,11 +6256,12 @@ type RootMutationType {
   deletePreviousShareVersions(
     """Which versions to preserve"""
     preserveVersions: PreserveVersionsOption! = STARRED_ONLY
-    """Share identifier"""
-    shareIdentifier: UUID!
+    """Share identifiers which versions to be deleted"""
+    shareIdentifiers: [UUID!]
     """
     Version identifier prior which to delete.
     If not provided, defaults to the latest version.
+    Only honoured when a single share is targeted.
     """
     versionIdentifier: UUID
   ): DeletePreviousShareVersionsResponse!
