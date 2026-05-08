@@ -1439,17 +1439,15 @@ cases, and we are considering strategies to remove those other incorrect uses of
 """
 interface UserNotification {
   """Created at date"""
-  date: DateTime
+  createdAt: DateTime!
+  """Created at date"""
+  date: DateTime @deprecated(reason: "Use `createdAt` instead.")
   """The old name for an identifier - DEPRECATED"""
   id: UUID! @deprecated(reason: "Use identifier instead.")
   """The UUID identifier of the notification"""
   identifier: UUID!
-  """Is the notification for an organization?"""
-  isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is the notification read?"""
-  isRead: Boolean
-  """Organization the user belongs to"""
-  organization: PublicOrganization @deprecated(reason: "Use `workspace`")
+  isRead: Boolean @deprecated(reason: "Use `state` instead.")
   """Relative path to an associated resource"""
   path: String
   """Share to which the notification is relevant"""
@@ -1590,12 +1588,8 @@ type AddShareMemberNotification implements UserNotification {
   id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is organization notification"""
-  isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Organization"""
-  organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Notification subject's URL path"""
   path: String
   """Share"""
@@ -2479,12 +2473,8 @@ type CommentNotification implements UserNotification {
   identifier: UUID!
   """Is the user mentioned in the comment?"""
   isMentioned: Boolean!
-  """Is organization notification"""
-  isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Organization"""
-  organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Path"""
   path: String
   """The share to which the artboard belongs."""
@@ -3206,12 +3196,8 @@ type DocumentUploadCompleteNotification implements UserNotification {
   id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is organization notification"""
-  isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Organization"""
-  organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Path"""
   path: String
   """Share"""
@@ -3252,12 +3238,8 @@ type DocumentUploadProcessedNotification implements UserNotification {
   id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is organization notification"""
-  isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Organization"""
-  organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Path"""
   path: String
   """Share"""
@@ -3352,14 +3334,10 @@ type DownloadableAssetRenderedNotification implements UserNotification {
   id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is organization notification"""
-  isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
   """Document version to which the notification is relevant"""
   notifiedVersion: Version
-  """Organization"""
-  organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Path"""
   path: String
   """Share to which the notification is relevant"""
@@ -3904,12 +3882,8 @@ type MentionNotification implements UserNotification {
   id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is organization notification"""
-  isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Organization"""
-  organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Path"""
   path: String
   """Share"""
@@ -4031,13 +4005,6 @@ type NotificationMarkAllAsReadPayload {
   successful: Boolean!
 }
 
-type NotificationMarkAllAsSeenPayload {
-  """A list of errors, raised when executing this migrations."""
-  errors: [UserError]!
-  """Indicates whether the mutation completed successfully or not."""
-  successful: Boolean!
-}
-
 type NotificationMarkAsReadPayload {
   """A list of errors, raised when executing this migrations."""
   errors: [UserError]!
@@ -4049,16 +4016,6 @@ type NotificationMarkAsReadPayload {
 type NotificationMarkEveryReadAsDonePayload {
   """A list of errors, raised when executing this migrations."""
   errors: [UserError]!
-  """Indicates whether the mutation completed successfully or not."""
-  successful: Boolean!
-}
-
-type NotificationSubscriptionUpdatedPayload {
-  artboard: Artboard
-  discussion: Comment
-  """A list of errors, raised when executing this migrations."""
-  errors: [UserError]!
-  share: Share
   """Indicates whether the mutation completed successfully or not."""
   successful: Boolean!
 }
@@ -6591,8 +6548,6 @@ type RootMutationType {
   ): ShareMoveResult!
   """Notification mark all as read payload"""
   notificationMarkAllAsRead: NotificationMarkAllAsReadPayload
-  """Marks all notifications of this user as seen"""
-  notificationMarkAllAsSeen: NotificationMarkAllAsSeenPayload @deprecated(reason: "no longer necessary. function is a noop now.")
   """Notification as read payload"""
   notificationMarkAsRead(
     """Identifier"""
@@ -7077,21 +7032,6 @@ type RootMutationType {
     """Input object for notifications"""
     input: NotificationInput!
   ): NotificationUpdatedPayload
-  """
-  Update the subscription settings for a given artboard, share or discussion.
-  
-  Only one of either share, artboard or discussion identifiers must be provided.
-  """
-  updateNotificationSubscription(
-    """Artboard identifier"""
-    artboardIdentifier: UUID
-    """Discussion identifier"""
-    discussionIdentifier: UUID
-    """Input object for subscriptions"""
-    input: SubscriptionInput!
-    """Share identifier"""
-    shareIdentifier: UUID
-  ): NotificationSubscriptionUpdatedPayload @deprecated(reason: "Use `setNotificationSubscription` instead.")
   """
   Update multiple notifications at once.
   
@@ -8963,12 +8903,8 @@ type StarNotification implements UserNotification {
   id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is organization notification"""
-  isOrganizationNotification: Boolean @deprecated(reason: "All notifications originate from a workspace")
   """Is read"""
   isRead: Boolean @deprecated(reason: "Use `state` instead.")
-  """Organization"""
-  organization: PublicOrganization @deprecated(reason: "Use `workspace` instead")
   """Path"""
   path: String
   """The share to which the version belongs."""
@@ -11178,12 +11114,6 @@ input StorageItemsSearchParams {
   search. Defaults to both project and share.
   """
   types: [StorageItemType!]! = [PROJECT, SHARE]
-}
-
-"""The input type for subscriptions"""
-input SubscriptionInput {
-  """The state of the subscription"""
-  status: NotificationSubscriptionStatus!
 }
 
 """Transfer destinations search params"""
