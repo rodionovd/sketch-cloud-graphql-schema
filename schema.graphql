@@ -366,8 +366,6 @@ enum MfaStateType {
 enum NotificationState {
   """The notification has been marked done"""
   DONE
-  """The notification has not been seen"""
-  NEW @deprecated(reason: "Use `unread` instead")
   """The notification has been read"""
   READ
   """The notification has not been read"""
@@ -1440,14 +1438,8 @@ cases, and we are considering strategies to remove those other incorrect uses of
 interface UserNotification {
   """Created at date"""
   createdAt: DateTime!
-  """Created at date"""
-  date: DateTime @deprecated(reason: "Use `createdAt` instead.")
-  """The old name for an identifier - DEPRECATED"""
-  id: UUID! @deprecated(reason: "Use identifier instead.")
   """The UUID identifier of the notification"""
   identifier: UUID!
-  """Is the notification read?"""
-  isRead: Boolean @deprecated(reason: "Use `state` instead.")
   """Relative path to an associated resource"""
   path: String
   """Share to which the notification is relevant"""
@@ -1582,14 +1574,8 @@ type AddReactionToPublicationResponse {
 type AddShareMemberNotification implements UserNotification {
   """Created at date"""
   createdAt: DateTime!
-  """Date"""
-  date: DateTime @deprecated(reason: "Use `createdAt` instead.")
-  """Identifier"""
-  id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is read"""
-  isRead: Boolean @deprecated(reason: "Use `state` instead.")
   """Notification subject's URL path"""
   path: String
   """Share"""
@@ -2465,16 +2451,10 @@ type CommentNotification implements UserNotification {
   comment: Comment
   """Created at date"""
   createdAt: DateTime!
-  """Date"""
-  date: DateTime @deprecated(reason: "Use `createdAt` instead.")
-  """Identifier"""
-  id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
   """Is the user mentioned in the comment?"""
   isMentioned: Boolean!
-  """Is read"""
-  isRead: Boolean @deprecated(reason: "Use `state` instead.")
   """Path"""
   path: String
   """The share to which the artboard belongs."""
@@ -3190,14 +3170,8 @@ type DocumentUploadCancelPayload {
 type DocumentUploadCompleteNotification implements UserNotification {
   """Created at date"""
   createdAt: DateTime!
-  """Date"""
-  date: DateTime @deprecated(reason: "Use `createdAt` instead.")
-  """Identifier"""
-  id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is read"""
-  isRead: Boolean @deprecated(reason: "Use `state` instead.")
   """Path"""
   path: String
   """Share"""
@@ -3232,14 +3206,8 @@ type DocumentUploadCompletePayload {
 type DocumentUploadProcessedNotification implements UserNotification {
   """Created at date"""
   createdAt: DateTime!
-  """Date"""
-  date: DateTime @deprecated(reason: "Use `createdAt` instead.")
-  """Identifier"""
-  id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is read"""
-  isRead: Boolean @deprecated(reason: "Use `state` instead.")
   """Path"""
   path: String
   """Share"""
@@ -3328,14 +3296,8 @@ type DownloadableAsset {
 type DownloadableAssetRenderedNotification implements UserNotification {
   """Created at date"""
   createdAt: DateTime!
-  """Date"""
-  date: DateTime @deprecated(reason: "Use `createdAt` instead.")
-  """Identifier"""
-  id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is read"""
-  isRead: Boolean @deprecated(reason: "Use `state` instead.")
   """Document version to which the notification is relevant"""
   notifiedVersion: Version
   """Path"""
@@ -3876,14 +3838,8 @@ type MentionNotification implements UserNotification {
   comment: Comment
   """Created at date"""
   createdAt: DateTime!
-  """Date"""
-  date: DateTime @deprecated(reason: "Use `createdAt` instead.")
-  """Identifier"""
-  id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is read"""
-  isRead: Boolean @deprecated(reason: "Use `state` instead.")
   """Path"""
   path: String
   """Share"""
@@ -6551,7 +6507,7 @@ type RootMutationType {
   """Notification as read payload"""
   notificationMarkAsRead(
     """Identifier"""
-    identifier: UUID
+    identifier: UUID!
   ): NotificationMarkAsReadPayload
   """Marks all 'read' notifications as done"""
   notificationMarkEveryReadAsDone: NotificationMarkEveryReadAsDonePayload
@@ -8013,14 +7969,12 @@ Only resource fields respective for the resource the subscription is set for
 and its parents are populated. That means:
 
 * for share, only `share` is non-empty
-* for artboard, `artboard` and `share` are non-empty
+* for frame, `frame` and `share` are non-empty
 * for annotation, all three are non-empty
 """
 type SetNotificationSubscriptionResponse {
   """Annotation resource"""
   annotation: Annotation
-  """Artboard resource"""
-  artboard: Artboard @deprecated(reason: "use `frame` instead")
   """FrameGroup resource"""
   frame: FrameGroup
   """Share resource"""
@@ -8897,14 +8851,8 @@ to is starred.
 type StarNotification implements UserNotification {
   """Created at date"""
   createdAt: DateTime!
-  """Date"""
-  date: DateTime @deprecated(reason: "Use `createdAt` instead.")
-  """Identifier"""
-  id: UUID! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """Is read"""
-  isRead: Boolean @deprecated(reason: "Use `state` instead.")
   """Path"""
   path: String
   """The share to which the version belongs."""
