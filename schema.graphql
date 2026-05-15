@@ -7,12 +7,6 @@ directive @specifiedBy(
 ) on SCALAR
 
 """
-The `CreditAmount` scalar type represents the amount of credit (should be float on FE and
-integer on BE)
-"""
-scalar CreditAmount
-
-"""
 The `Date` scalar type represents a date. The Date appears in a JSON
 response as an ISO8601 formatted string, without a time component.
 """
@@ -25,13 +19,6 @@ string, including UTC timezone ("Z"). The parsed date and time string will
 be converted to UTC if there is an offset.
 """
 scalar DateTime
-
-"""
-The `Decimal` scalar type represents signed double-precision fractional
-values parsed by the `Decimal` library. The Decimal appears in a JSON
-response as a string to preserve precision.
-"""
-scalar Decimal
 
 """A valid e-mail address"""
 scalar Email
@@ -128,14 +115,6 @@ enum AuditSource {
   USER
 }
 
-"""[WILL BE REMOVED] Type of an item in the billing history"""
-enum BillingHistoryItemType {
-  """Credit addition"""
-  CREDIT
-  """Invoice creation"""
-  INVOICE
-}
-
 """Billing period in which changes should be made"""
 enum BillingPeriodInput {
   """Current billing period"""
@@ -162,14 +141,6 @@ enum BillingStatus {
   UNPAID
 }
 
-"""[WILL BE REMOVED] Payment collection method"""
-enum CollectionMethod {
-  """Automatic"""
-  AUTOMATIC
-  """Invoice"""
-  INVOICE
-}
-
 """Component filter type"""
 enum ComponentFilterType {
   """Color variables"""
@@ -180,16 +151,6 @@ enum ComponentFilterType {
   SYMBOL
   """Text styles"""
   TEXT_STYLE
-}
-
-"""Credit types"""
-enum CreditType {
-  """Individual"""
-  INDIVIDUAL
-  """Team"""
-  TEAM
-  """Unknown"""
-  UNKNOWN
 }
 
 """Supported currencies"""
@@ -435,16 +396,6 @@ enum PaymentMethod {
   CREDIT_CARD
   """Workspace paying by invoice"""
   INVOICE
-}
-
-"""[WILL BE REMOVED] Form of payment for adding a contributor"""
-enum PaymentType {
-  CARD
-  CREDIT
-  CREDIT_AND_CARD
-  CREDIT_AND_INVOICE
-  INVOICE
-  NO_PAYMENT
 }
 
 """The preferred state of the default version"""
@@ -850,64 +801,6 @@ enum StorageItemType {
   PROJECT
   """The storage item is a share."""
   SHARE
-}
-
-"""[WILL BE REMOVED] Subscription status"""
-enum SubscriptionStatus {
-  """Active"""
-  ACTIVE
-  """Canceled"""
-  CANCELED
-  """Incomplete"""
-  INCOMPLETE
-  """Incomplete expired"""
-  INCOMPLETE_EXPIRED
-  """Past due"""
-  PAST_DUE
-  """Trialing"""
-  TRIALING
-  """Unpaid"""
-  UNPAID
-}
-
-"""[WILL BE REMOVED] Tax ID verification states"""
-enum TaxIdStatus {
-  """Verification is pending"""
-  PENDING
-  """Verification is unavailable"""
-  UNAVAILABLE
-  """The tax ID is unverified"""
-  UNVERIFIED
-  """The tax ID is verified"""
-  VERIFIED
-}
-
-"""[WILL BE REMOVED] A code identifying the country and tax abbreviation."""
-enum TaxIdType {
-  """Tax code for Australia"""
-  AU_ABN
-  """Tax code for Switzerland"""
-  CH_VAT
-  """A special case denoting a credit"""
-  CREDIT
-  """Tax code for the European Union"""
-  EU_VAT
-  """A special case denoting an invoice"""
-  INVOICE
-  """Tax code for Indonesia"""
-  IN_GST
-  """Tax code for Mexico"""
-  MX_RFC
-  """Tax code for Norway"""
-  NO_VAT
-  """Tax code for New Zealand"""
-  NZ_GST
-  """An unknown type"""
-  UNKNOWN
-  """Tax code for the United States of America"""
-  US_EIN
-  """Tax code for South Africa"""
-  ZA_VAT
 }
 
 """Horizontal alignment type"""
@@ -1998,32 +1891,6 @@ type Billing {
   trialEnd: DateTime
 }
 
-"""[WILL BE REMOVED] Billing history item"""
-type BillingHistoryItem {
-  """Amount/Quantity"""
-  amount: Int!
-  """Creation date"""
-  createdAt: DateTime!
-  """Description"""
-  description: String!
-  """Unique identifier"""
-  id: String!
-  """Invoice PDF url"""
-  invoicePdf: String
-  """Number"""
-  number: String!
-  """Type"""
-  type: BillingHistoryItemType!
-}
-
-"""[WILL BE REMOVED] List of billing history items with pagination info"""
-type BillingHistoryItems {
-  """[WILL BE REMOVED] List of billing history items"""
-  entries: [BillingHistoryItem!]!
-  """Pagination metadata"""
-  meta: PaginationMeta!
-}
-
 """Seats information for a subscription"""
 type BillingSeatsInfo {
   """Amount of seats available to assign editors"""
@@ -2044,8 +1911,6 @@ type CancelLicenseAudit implements AuditLogItem {
   actor: AuditActor
   """Date and time of the operation"""
   createdAt: NaiveDateTime
-  """Associated license"""
-  license: License
   """Version of this audit log entry"""
   version: Int
 }
@@ -2531,22 +2396,6 @@ type ConfigureWorkspaceEncryptionKeysResponse {
   workspace: Workspace!
 }
 
-"""[WILL BE REMOVED] Cost of adding a contributor to a license"""
-type ContributorCost {
-  """Monthly cost"""
-  amountPerMonth: Int!
-  """Total amount to charge"""
-  charge: Int!
-  """[WILL BE REMOVED] Amount that would be charged to credits left in the license"""
-  creditAmount: Int!
-  """Amount that would be charged to the default payment method of the license"""
-  creditCardAmount: Int! @deprecated(reason: "use paymentAmount instead")
-  """Amount that would be charged to the default payment method of the license"""
-  paymentAmount: Int!
-  """Form of payment"""
-  paymentType: PaymentType!
-}
-
 """Convert to education workspace audit info"""
 type ConvertToEducationWorkspaceAudit implements AuditLogItem {
   """Name of the audit event type"""
@@ -2563,17 +2412,6 @@ type ConvertToEducationWorkspaceAudit implements AuditLogItem {
   seats: Int!
   """Version of this audit log entry"""
   version: Int
-}
-
-"""Coupon"""
-type Coupon {
-  amountOff: Int
-  duration: String
-  durationInMonths: Int
-  name: String
-  percentOff: Decimal
-  redeemBy: DateTime
-  valid: Boolean
 }
 
 """API response for createAnnotationReply"""
@@ -2721,30 +2559,6 @@ type CreateWorkspaceShareResponse {
   version: Version!
 }
 
-"""[WILL BE REMOVED] Credit"""
-type Credit {
-  """Credit amount"""
-  amount: CreditAmount!
-  """Creation date"""
-  createdAt: DateTime!
-  """Description of the credit"""
-  description: String!
-  """Expiration date"""
-  expiresAt: DateTime
-  """Identifier of the credit"""
-  id: ID! @deprecated(reason: "Use identifier instead.")
-  """Identifier of the credit"""
-  identifier: UUID!
-  """[WILL BE REMOVED] Associated license"""
-  license: License
-  """Associated organization"""
-  organization: Organization
-  """[WILL BE REMOVED] Credit type (team, individual, unknown)"""
-  type: CreditType!
-  """Update date"""
-  updatedAt: DateTime!
-}
-
 """Credit audit"""
 type CreditAudit implements AuditLogItem {
   """Name of the audit event type"""
@@ -2757,14 +2571,6 @@ type CreditAudit implements AuditLogItem {
   credit: AuditCredit
   """Version of this audit log entry"""
   version: Int
-}
-
-"""[WILL BE REMOVED] List of credits with pagination info"""
-type Credits {
-  """Paginated data"""
-  entries: [Credit!]!
-  """Pagination informations"""
-  meta: PaginationMeta!
 }
 
 """API response for deleteAllPreviews"""
@@ -3669,32 +3475,6 @@ type InviteWorkspaceMembersResponse {
   workspace: Workspace!
 }
 
-"""[WILL BE REMOVED] Invoice"""
-type Invoice {
-  """Credit"""
-  credit: Credit
-  """Currency"""
-  currency: String!
-  """Date"""
-  date: DateTime!
-  """Invoice PDF"""
-  invoicePdf: String
-  """Number"""
-  number: String!
-  """Paid"""
-  paid: Boolean!
-  """Total"""
-  total: Int!
-}
-
-"""[WILL BE REMOVED] List of invoices with pagination info"""
-type Invoices {
-  """Entries"""
-  entries: [Invoice!]!
-  """Meta"""
-  meta: PaginationMeta!
-}
-
 """
 Metadata about the latest Version of the Share in which a given Annotation
 is visible.
@@ -3746,58 +3526,6 @@ type LayerStyle implements Component {
 type LeaveProjectResponse {
   """The project from which the user was removed"""
   project: Project!
-}
-
-"""A Sketch teams license"""
-type License {
-  """[WILL BE REMOVED] Number of seats assigned for the license"""
-  assignedSeatsCount: Int!
-  """[WILL BE REMOVED] Billing history for the license"""
-  billingHistory(after: String, before: String, limit: Int = 20): BillingHistoryItems
-  """[WILL BE REMOVED] Tax ID for the customer that owns the license"""
-  businessVatId: String @deprecated(reason: "Use tax_id instead.")
-  """[WILL BE REMOVED] Cost for a adding a contributor to the license"""
-  contributorCost: ContributorCost!
-  """[WILL BE REMOVED] Credit balance for the license"""
-  credit: Float
-  """[WILL BE REMOVED] Credits available for the license"""
-  credits(after: String, before: String, limit: Int = 20): Credits
-  """[WILL BE REMOVED] Default payment method for the license"""
-  defaultSource: Source
-  """[WILL BE REMOVED] Email of the customer that owns the license"""
-  email: String
-  """Unique identifier for a license"""
-  id: ID @deprecated(reason: "Use identifier instead.")
-  """Unique identifier for a license"""
-  identifier: UUID!
-  """[WILL BE REMOVED] City of the customer that owns the license"""
-  invoiceAddressCity: String
-  """[WILL BE REMOVED] Country of the customer that owns the license"""
-  invoiceAddressCountry: String
-  """[WILL BE REMOVED] First line of the address of the customer that owns the license"""
-  invoiceAddressLine1: String
-  """[WILL BE REMOVED] Second line of the address of the customer that owns the license"""
-  invoiceAddressLine2: String
-  """[WILL BE REMOVED] Postal code of the customer that owns the license"""
-  invoiceAddressPostalCode: String
-  """[WILL BE REMOVED] State of the customer that owns the license"""
-  invoiceAddressState: String
-  """[WILL BE REMOVED] Name of the customer that owns the license"""
-  invoiceName: String
-  """[WILL BE REMOVED] Invoices sent to the customer related to the license"""
-  invoices(after: String, before: String, limit: Int = 20): Invoices
-  """[WILL BE REMOVED] Organization that owns the license"""
-  organization: Organization
-  """[WILL BE REMOVED] Stripe subscription related to the license"""
-  subscription: SketchSubscription
-  """[WILL BE REMOVED] Tax ID for the customer that owns the license"""
-  taxId: TaxId
-  """[WILL BE REMOVED] List of Tax IDs for the customer that owns the license"""
-  taxIds: [TaxId!]!
-  """[WILL BE REMOVED] The number of trial days the license has left"""
-  trialDuration: Int
-  """[WILL BE REMOVED] Users of a license"""
-  users: [PublicUser]
 }
 
 """API response for linkRegularAccount mutation"""
@@ -4027,8 +3755,6 @@ type Organization {
   id: String! @deprecated(reason: "Use identifier instead.")
   """Identifier"""
   identifier: UUID!
-  """[WILL BE REMOVED] Associated license -not available for teams using payments v2"""
-  license: License
   """Memberships"""
   memberships(
     after: String
@@ -4469,22 +4195,6 @@ type PinProjectResponse {
 type PinShareResponse {
   """The pinned share"""
   share: Share!
-}
-
-"""[WILL BE REMOVED] Plan"""
-type Plan {
-  """Plan amount"""
-  amount: Int!
-  """Plan interval"""
-  interval: String!
-  """Plan name"""
-  name: String!
-}
-
-"""[WILL BE REMOVED] Plans"""
-type Plans {
-  """List of plans"""
-  entries: [Plan!]!
 }
 
 """
@@ -7399,8 +7109,6 @@ type RootQueryType {
     """The identifier of the permission group"""
     identifier: UUID!
   ): PermissionGroup!
-  """[WILL BE REMOVED] Legacy plans"""
-  plans: Plans!
   """Get a preview by its identifier"""
   preview(
     """Identifier of the preview"""
@@ -8768,32 +8476,6 @@ type SignUpPayload {
   user: User
 }
 
-"""[WILL BE REMOVED] Subscription"""
-type SketchSubscription {
-  """Billing cycle anchor"""
-  billingCycleAnchor: DateTime!
-  """Cancel at period end"""
-  cancelAtPeriodEnd: Boolean!
-  """Canceled at"""
-  canceledAt: DateTime
-  """Collection method"""
-  collectionMethod: CollectionMethod!
-  """Coupon"""
-  coupon: Coupon
-  """Current period end"""
-  currentPeriodEnd: DateTime!
-  """Current period start"""
-  currentPeriodStart: DateTime!
-  """Plan"""
-  plan: Plan
-  """Quantity"""
-  quantity: Int!
-  """Status"""
-  status: SubscriptionStatus!
-  """Trial end"""
-  trialEnd: DateTime
-}
-
 """A social account linked to the user"""
 type SocialAccount {
   """The email address associated with this social account"""
@@ -8810,12 +8492,6 @@ type SocialSignInStartUrlPayload {
   state: String
   """The authentication URL"""
   url: String!
-}
-
-"""[WILL BE REMOVED] Payment source"""
-type Source {
-  """Payment source type"""
-  type: String
 }
 
 """SSO membership provisioned audit object"""
@@ -8947,20 +8623,6 @@ type Symbol implements Component {
   pathInfo: [PathComponentInfo!]!
   """Symbol identifier from the sketch document"""
   uuid: UUID!
-}
-
-"""[WILL BE REMOVED] Tax identifier details"""
-type TaxId {
-  """The country name"""
-  country: String!
-  """The type of tax (often a code such as ev_vat)"""
-  type: TaxIdType!
-  """The tax identifier (for example the VAT number)"""
-  value: String!
-  """The verified name"""
-  verifiedName: String!
-  """The state of the tax ID verification process"""
-  verifiedStatus: TaxIdStatus!
 }
 
 """Text style component"""
@@ -9540,8 +9202,6 @@ type User {
   isVerified: Boolean!
   """Was the user created via web signup?"""
   isWebSignup: Boolean
-  """[WILL BE REMOVED] Licenses for the user"""
-  licenses: [License]
   """The user's MFA configuration state"""
   mfaState: MfaStateType
   """User name"""
