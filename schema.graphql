@@ -196,6 +196,8 @@ enum DownloadableAssetStatus {
 enum EducationApplicationState {
   """Approved"""
   APPROVED
+  """Additional information has been requested from the applicant"""
+  INFO_REQUESTED
   """Overwritten by a newer application"""
   OVERWRITTEN
   """Pending approval"""
@@ -1020,6 +1022,8 @@ enum WorkspaceAuditAction {
   REMOVE_MEMBER_PERMISSION_GROUP
   """A permission group relation was removed in the Workspace"""
   REMOVE_PERMISSION_GROUP_RELATION
+  """Additional information was requested for an education application"""
+  REQUEST_INFO_EDUCATION_REQUEST
   """The SCIM token was reset for the Workspace"""
   RESET_SCIM_TOKEN
   """A Workspace membership was restored"""
@@ -2972,32 +2976,6 @@ type DocumentUploadCancelPayload {
   successful: Boolean!
 }
 
-"""A notification that is created when document upload is complete."""
-type DocumentUploadCompleteNotification implements UserNotification {
-  """Created at date"""
-  createdAt: DateTime!
-  """Identifier"""
-  identifier: UUID!
-  """Path"""
-  path: String
-  """Share"""
-  share: Share
-  """The read/unread state of the notification"""
-  state: NotificationState
-  """Subtitle"""
-  subtitle: String
-  """Title"""
-  title: String
-  """Token"""
-  token: String
-  """URL"""
-  url: String
-  """User"""
-  user: PublicUser
-  """Workspace"""
-  workspace: PublicWorkspace
-}
-
 """upload complete payload"""
 type DocumentUploadCompletePayload {
   """message"""
@@ -3006,32 +2984,6 @@ type DocumentUploadCompletePayload {
   successful: Boolean!
   """version"""
   version: Version!
-}
-
-"""A notification that is created when document upload is processed."""
-type DocumentUploadProcessedNotification implements UserNotification {
-  """Created at date"""
-  createdAt: DateTime!
-  """Identifier"""
-  identifier: UUID!
-  """Path"""
-  path: String
-  """Share"""
-  share: Share
-  """The read/unread state of the notification"""
-  state: NotificationState
-  """Subtitle"""
-  subtitle: String
-  """Title"""
-  title: String
-  """Token"""
-  token: String
-  """URL"""
-  url: String
-  """User"""
-  user: PublicUser
-  """Workspace"""
-  workspace: PublicWorkspace
 }
 
 """Downgraded SSO membership provisioned audit object"""
@@ -3176,10 +3128,17 @@ type EducationApplication {
   institutionUrl: String!
   """Whether the education application has been made on behalf of an institution"""
   isInstitutional: Boolean! @deprecated(reason: "Use type field instead.")
+  """The most recent reason additional information was requested"""
+  latestInfoRequestReason: String
   """Number of seats requested for this education application"""
   requestedNumberOfSeats: Int!
   """State of the education application"""
   state: EducationApplicationState!
+  """
+  Time the application was last submitted by the applicant — set on initial
+  submit and on every resubmit, but not on admin actions
+  """
+  submittedAt: DateTime!
   """The type of the education application request"""
   type: EducationApplicationType!
   """Time the application was last updated"""
@@ -5063,6 +5022,22 @@ type ReportShareResponse {
 type RequestAccessToProjectResponse {
   """The UUID of the project"""
   projectIdentifier: UUID!
+}
+
+"""Requested additional information for an education application"""
+type RequestInfoEducationRequestAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """The education application that resulted in this audit entry"""
+  educationRequest: EducationApplication!
+  """The reason for requesting additional information"""
+  infoRequestReason: String
+  """Version of this audit log entry"""
+  version: Int
 }
 
 type ResendVerificationEmailPayload {
@@ -7016,6 +6991,11 @@ type RootQueryType {
     search: CuratedThirdPartyLibrarySearchInput
   ): Shares!
   documentUploadParts(documentId: UUID!, multipartSessionTicket: String!, parts: [Int]!): MultipartUpload
+  """Fetch the active education application for a workspace (if any)"""
+  educationApplication(
+    """Workspace identifier"""
+    workspaceIdentifier: UUID!
+  ): EducationApplication
   frame(
     documentVersionShortId: ShortId
     """The UUID of the Share under which this frame belongs."""
