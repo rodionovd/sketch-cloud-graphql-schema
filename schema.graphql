@@ -7076,6 +7076,11 @@ type RootQueryType {
     provider: SocialSignInProvider!
   ): SocialSignInStartUrlPayload! @deprecated(reason: "Use socialAuthStartUrl mutation with action: LINK_ACCOUNT instead")
   me: User!
+  """Get a notification by its identifier, scoped to the authenticated user"""
+  notification(
+    """Identifier of the notification"""
+    identifier: UUID!
+  ): UserNotification
   organization(customerId: ID, id: ID, shortId: ShortId): Organization! @deprecated(reason: "Use workspace instead")
   """Partner"""
   partner(
