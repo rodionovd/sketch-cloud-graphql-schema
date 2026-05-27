@@ -325,6 +325,14 @@ enum MfaStateType {
   ENABLED
 }
 
+"""Sort order for the user notifications list"""
+enum NotificationSortOrder {
+  """Oldest first, by creation date"""
+  CREATED_AT_ASC
+  """Newest first, by creation date"""
+  CREATED_AT_DESC
+}
+
 """The read state of a notification"""
 enum NotificationState {
   """The notification has been marked done"""
@@ -848,7 +856,9 @@ enum TokenExportFormat {
   AMAZON
   """Cascading Style Sheets"""
   CSS
-  """W3C Design Tokens"""
+  """DTCG Design Tokens 2025.10"""
+  DTCG_202510
+  """W3C (DTCG) Design Token Second Draft 2022-06-14"""
   W3C
 }
 
@@ -1340,21 +1350,21 @@ interface UserNotification {
   """Relative path to an associated resource"""
   path: String
   """Share to which the notification is relevant"""
-  share: Share
+  share: Share @deprecated(reason: "Select on the concrete notification type — not all notification types carry a share.")
   """The read/unread state of the notification"""
-  state: NotificationState
+  state: NotificationState!
   """Subtitle of the notification shown to users"""
-  subtitle: String
+  subtitle: String!
   """Title of the notification shown to users"""
-  title: String
+  title: String!
   """Token for the notification"""
-  token: String
+  token: String @deprecated(reason: "Select on the concrete notification type — not all notification types carry a token.")
   """Absolute URL to an associated resource"""
   url: String
   """User to whom the notification is relevant"""
-  user: PublicUser
+  user: PublicUser!
   """Workspace the user belongs to"""
-  workspace: PublicWorkspace
+  workspace: PublicWorkspace @deprecated(reason: "Select on the concrete notification type — not all notification types carry a workspace.")
 }
 
 """Membership invite acceptance audit info"""
@@ -1478,18 +1488,18 @@ type AddShareMemberNotification implements UserNotification {
   """Share"""
   share: Share
   """The read/unread state of the notification"""
-  state: NotificationState
+  state: NotificationState!
   """Subtitle"""
-  subtitle: String
+  subtitle: String!
   """Title"""
-  title: String
-  """Token"""
+  title: String!
+  """JWT bearer token for accepting the share invite"""
   token: String
   """URL"""
   url: String
   """User"""
-  user: PublicUser
-  """Workspace"""
+  user: PublicUser!
+  """Workspace the share belongs to"""
   workspace: PublicWorkspace
 }
 
@@ -2329,18 +2339,18 @@ type CommentNotification implements UserNotification {
   """The share to which the artboard belongs."""
   share: Share
   """The read/unread state of the notification"""
-  state: NotificationState
+  state: NotificationState!
   """Subtitle"""
-  subtitle: String
+  subtitle: String!
   """Title"""
-  title: String
-  """Token"""
-  token: String
+  title: String!
+  """Always nil — comment notifications do not carry a token."""
+  token: String @deprecated(reason: "This notification type does not carry a token.")
   """URL"""
   url: String
   """User"""
-  user: PublicUser
-  """Workspace"""
+  user: PublicUser!
+  """The workspace the share belongs to where the comment was made."""
   workspace: PublicWorkspace
 }
 
@@ -3063,18 +3073,18 @@ type DownloadableAssetRenderedNotification implements UserNotification {
   """Share to which the notification is relevant"""
   share: Share
   """The read/unread state of the notification"""
-  state: NotificationState
+  state: NotificationState!
   """Subtitle"""
-  subtitle: String
+  subtitle: String!
   """Title"""
-  title: String
-  """Token"""
-  token: String
+  title: String!
+  """Always nil — downloadable asset notifications do not carry a token."""
+  token: String @deprecated(reason: "This notification type does not carry a token.")
   """URL"""
   url: String
   """User"""
-  user: PublicUser
-  """Workspace"""
+  user: PublicUser!
+  """The workspace the share belongs to whose asset was rendered."""
   workspace: PublicWorkspace
 }
 
@@ -3532,18 +3542,18 @@ type MentionNotification implements UserNotification {
   """Share"""
   share: Share
   """The read/unread state of the notification"""
-  state: NotificationState
+  state: NotificationState!
   """Subtitle"""
-  subtitle: String
+  subtitle: String!
   """Title"""
-  title: String
-  """Token"""
-  token: String
+  title: String!
+  """Always nil — mention notifications do not carry a token."""
+  token: String @deprecated(reason: "This notification type does not carry a token.")
   """URL"""
   url: String
   """User"""
-  user: PublicUser
-  """Workspace"""
+  user: PublicUser!
+  """The workspace the share belongs to where the mention was made."""
   workspace: PublicWorkspace
 }
 
@@ -8519,20 +8529,20 @@ type StarNotification implements UserNotification {
   """The share to which the version belongs."""
   share: Share
   """The read/unread state of the notification"""
-  state: NotificationState
+  state: NotificationState!
   """Subtitle"""
-  subtitle: String
+  subtitle: String!
   """Title"""
-  title: String
-  """Token"""
-  token: String
+  title: String!
+  """Always nil — star notifications do not carry a token."""
+  token: String @deprecated(reason: "This notification type does not carry a token.")
   """URL"""
   url: String
   """User"""
-  user: PublicUser
+  user: PublicUser!
   """The version which has been starred."""
   version: Version
-  """Workspace"""
+  """The workspace the share belongs to whose version was starred."""
   workspace: PublicWorkspace
 }
 
@@ -9200,6 +9210,11 @@ type User {
     """Notification filters"""
     filter: UserNotificationFilterType
     limit: Int = 20
+    """
+    Override the default ordering. When omitted, unread come first then
+    newest by createdAt.
+    """
+    sortOrder: NotificationSortOrder
   ): Notifications
   """Organization memberships for the user"""
   organizationMemberships(after: String, before: String, limit: Int = 20): OrganizationMemberships @deprecated(reason: "Use `workspacesMemberships` instead")
