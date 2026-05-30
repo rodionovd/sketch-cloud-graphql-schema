@@ -2336,6 +2336,8 @@ type CommentNotification implements UserNotification {
   isMentioned: Boolean!
   """Path"""
   path: String
+  """Annotation preview images for the comment."""
+  previews: [File!]!
   """The share to which the artboard belongs."""
   share: Share
   """The read/unread state of the notification"""
@@ -3539,6 +3541,8 @@ type MentionNotification implements UserNotification {
   identifier: UUID!
   """Path"""
   path: String
+  """Annotation preview images for the comment."""
+  previews: [File!]!
   """Share"""
   share: Share
   """The read/unread state of the notification"""
