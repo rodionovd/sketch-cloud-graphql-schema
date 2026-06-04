@@ -3280,6 +3280,34 @@ type File {
   width: Int
 }
 
+"""A notification that is created when a folder is archived."""
+type FolderArchivedNotification implements UserNotification {
+  """Created at date"""
+  createdAt: DateTime!
+  """The folder that was archived."""
+  folder: Project
+  """Identifier"""
+  identifier: UUID!
+  """Path"""
+  path: String
+  """Always nil — folder archived notifications are not associated with a share."""
+  share: Share @deprecated(reason: "This notification type does not carry a share.")
+  """The read/unread state of the notification"""
+  state: NotificationState!
+  """Subtitle"""
+  subtitle: String!
+  """Title"""
+  title: String!
+  """Always nil — folder archived notifications do not carry a token."""
+  token: String @deprecated(reason: "This notification type does not carry a token.")
+  """URL"""
+  url: String
+  """User"""
+  user: PublicUser!
+  """The workspace the archived folder belonged to."""
+  workspace: PublicWorkspace
+}
+
 """Frame"""
 type Frame implements FrameGroup {
   """Annotation count"""
