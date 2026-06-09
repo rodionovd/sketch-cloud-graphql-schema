@@ -1347,6 +1347,8 @@ interface UserNotification {
   createdAt: DateTime!
   """The UUID identifier of the notification"""
   identifier: UUID!
+  """Whether the user has pinned this notification"""
+  isPinned: Boolean!
   """Relative path to an associated resource"""
   path: String
   """Share to which the notification is relevant"""
@@ -1483,6 +1485,8 @@ type AddShareMemberNotification implements UserNotification {
   createdAt: DateTime!
   """Identifier"""
   identifier: UUID!
+  """Whether the user has pinned this notification"""
+  isPinned: Boolean!
   """Notification subject's URL path"""
   path: String
   """Share"""
@@ -2334,6 +2338,8 @@ type CommentNotification implements UserNotification {
   identifier: UUID!
   """Is the user mentioned in the comment?"""
   isMentioned: Boolean!
+  """Whether the user has pinned this notification"""
+  isPinned: Boolean!
   """Path"""
   path: String
   """Annotation preview images for the comment."""
@@ -3068,6 +3074,8 @@ type DownloadableAssetRenderedNotification implements UserNotification {
   createdAt: DateTime!
   """Identifier"""
   identifier: UUID!
+  """Whether the user has pinned this notification"""
+  isPinned: Boolean!
   """Document version to which the notification is relevant"""
   notifiedVersion: Version
   """Path"""
@@ -3288,6 +3296,8 @@ type FolderArchivedNotification implements UserNotification {
   folder: Project
   """Identifier"""
   identifier: UUID!
+  """Whether the user has pinned this notification"""
+  isPinned: Boolean!
   """Path"""
   path: String
   """Always nil — folder archived notifications are not associated with a share."""
@@ -3567,6 +3577,8 @@ type MentionNotification implements UserNotification {
   createdAt: DateTime!
   """Identifier"""
   identifier: UUID!
+  """Whether the user has pinned this notification"""
+  isPinned: Boolean!
   """Path"""
   path: String
   """Annotation preview images for the comment."""
@@ -8556,6 +8568,8 @@ type StarNotification implements UserNotification {
   createdAt: DateTime!
   """Identifier"""
   identifier: UUID!
+  """Whether the user has pinned this notification"""
+  isPinned: Boolean!
   """Path"""
   path: String
   """The share to which the version belongs."""
@@ -10479,8 +10493,10 @@ input NameMappingParams {
 
 """The input type for notifications"""
 input NotificationInput {
+  """Pin or unpin the notification. `true` pins, `false` unpins. Omit to leave the pin state unchanged."""
+  pin: Boolean
   """The state of the notification"""
-  state: NotificationState!
+  state: NotificationState
 }
 
 """Organization shares search param"""
@@ -10994,6 +11010,8 @@ input UpgradePersonalWorkspaceParams {
 
 """Input object for filtering user notifications"""
 input UserNotificationFilterType {
+  """Filter by pin state. `true` returns only pinned notifications, `false` returns only unpinned. Omit to return both."""
+  pinned: Boolean
   """Allow complete filtering via search"""
   search: String
   """The states of the notification."""
