@@ -4896,6 +4896,8 @@ type PublicWorkspaceFeatures {
 
 """Public info for the relation between a user and a workspace to which they belong"""
 type PublicWorkspaceMembership {
+  """When the invite was accepted; null if it is still pending"""
+  acceptedAt: DateTime
   """Workspace membership identifier"""
   identifier: UUID!
   """
@@ -9934,6 +9936,36 @@ type WorkspaceInvite {
   email: String!
   """Workspace's unique identifier"""
   identifier: UUID!
+}
+
+"""A notification that is created when a user is invited to a workspace."""
+type WorkspaceInvitedNotification implements UserNotification {
+  """Created at date"""
+  createdAt: DateTime!
+  """Identifier"""
+  identifier: UUID!
+  """Whether the user has pinned this notification"""
+  isPinned: Boolean!
+  """The invitee's workspace membership created by this invite; null if the membership no longer exists"""
+  membership: PublicWorkspaceMembership
+  """Accept-invite path (carries the token query param)"""
+  path: String
+  """Always nil — workspace invited notifications are not associated with a share."""
+  share: Share @deprecated(reason: "This notification type does not carry a share.")
+  """The read/unread state of the notification"""
+  state: NotificationState!
+  """Subtitle"""
+  subtitle: String!
+  """Title"""
+  title: String!
+  """JWT bearer token for accepting the workspace invite"""
+  token: String
+  """URL"""
+  url: String
+  """User"""
+  user: PublicUser!
+  """Workspace the user was invited to"""
+  workspace: PublicWorkspace
 }
 
 """List of workspace members with pagination info"""
