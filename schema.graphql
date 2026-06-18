@@ -9938,6 +9938,36 @@ type WorkspaceInvite {
   identifier: UUID!
 }
 
+"""A notification created for the inviter when their workspace invite is accepted."""
+type WorkspaceInviteAcceptedNotification implements UserNotification {
+  """Created at date"""
+  createdAt: DateTime!
+  """Identifier"""
+  identifier: UUID!
+  """Whether the user has pinned this notification"""
+  isPinned: Boolean!
+  """The invitee's workspace membership; null if the membership no longer exists"""
+  membership: PublicWorkspaceMembership
+  """Path"""
+  path: String
+  """Always nil — workspace invite notifications are not associated with a share."""
+  share: Share @deprecated(reason: "This notification type does not carry a share.")
+  """The read/unread state of the notification"""
+  state: NotificationState!
+  """Subtitle"""
+  subtitle: String!
+  """Title"""
+  title: String!
+  """Always nil — there is nothing for the inviter to accept."""
+  token: String @deprecated(reason: "This notification type does not carry a token.")
+  """URL"""
+  url: String
+  """User"""
+  user: PublicUser!
+  """Workspace the invitee joined"""
+  workspace: PublicWorkspace
+}
+
 """A notification that is created when a user is invited to a workspace."""
 type WorkspaceInvitedNotification implements UserNotification {
   """Created at date"""
