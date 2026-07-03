@@ -4296,6 +4296,21 @@ type Preview {
   identifier: UUID!
   """Whether or not inspect is enabled for this preview"""
   inspectEnabled: Boolean!
+  """
+  Returns list of mentionable users for a given `preview`
+  
+  The list of mentionable users is determined by the current user's
+  relationship with the preview's share:
+  
+  - For a public share, external users (those without a membership) can mention
+  anyone who has previously commented on the share and still has comment access
+  - For all other shares, members can mention anyone with comment access to the
+  share.
+  
+  The list of mentionable users is sorted alphabetically by name. For
+  mentionable SSO users, the name from their external identity is used.
+  """
+  mentionableUsers: [MentionableUser!]!
   """The preview's name"""
   name: String!
   """Get a specific page from this preview by uuid"""
