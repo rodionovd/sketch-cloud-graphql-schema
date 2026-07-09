@@ -8064,15 +8064,21 @@ type Share implements StorageItem {
     """The identifier of the preview"""
     identifier: UUID!
   ): Preview
-  """(Deprecated) The preview images for this Share"""
+  """
+  The preview images for this Share.
+  
+  Taken from the latest version available to the viewer: users that can
+  only access starred versions get the preview of the latest starred
+  version, everyone else the preview of the latest version.
+  """
   previewFiles(
     """The scale of the image (Retina or not)"""
     scale: Int
     """The file type of the preview image"""
     type: FileType
-  ): [File] @deprecated(reason: "Use Version.previewFiles instead")
-  """(Deprecated) Thumbnails of the `previewFiles`"""
-  previewThumbnails: [Thumbnail] @deprecated(reason: "Use Version.previewThumbnails instead")
+  ): [File]
+  """Thumbnails of the `previewFiles`"""
+  previewThumbnails: [Thumbnail]
   """List of previews for this share"""
   previews: [Preview]!
   """(Deprecated) Please migrate to sharePrivacyIcon."""
