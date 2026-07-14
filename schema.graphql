@@ -1534,7 +1534,20 @@ type AgreeToWorkspaceTermsOfServiceResponse {
 """Annotation object"""
 type Annotation {
   """Full list of annotation's comments"""
-  comments(after: String, before: String, limit: Int = 20): Comments!
+  comments(
+    after: String
+    before: String
+    limit: Int = 20
+    """
+    Identifier of a comment to center the returned page around. When set, the page
+    contains that comment, preceded by up to half of `limit` newer comments and
+    completed with older ones. The returned pagination metadata allows resuming
+    regular cursor pagination in both directions. `after`/`before` cursors take
+    precedence over this argument, so the same query can be reused with a cursor
+    to paginate onwards from the centered page.
+    """
+    related: UUID
+  ): Comments!
   """The position of an annotation, given in (X,Y) coordinates, if any"""
   coordinates: AnnotationCoordinates
   """Created at"""
