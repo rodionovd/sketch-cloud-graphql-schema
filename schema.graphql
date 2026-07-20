@@ -1459,6 +1459,36 @@ type AddPermissionGroupRelationResponse {
   relation: PermissionGroupRelation!
 }
 
+"""A notification that is created when a member is added to a folder."""
+type AddProjectMemberNotification implements UserNotification {
+  """Created at date"""
+  createdAt: DateTime!
+  """The folder the member was added to."""
+  folder: Project
+  """Identifier"""
+  identifier: UUID!
+  """Whether the user has pinned this notification"""
+  isPinned: Boolean!
+  """Path"""
+  path: String
+  """Always nil — folder member notifications are not associated with a share."""
+  share: Share @deprecated(reason: "This notification type does not carry a share.")
+  """The read/unread state of the notification"""
+  state: NotificationState!
+  """Subtitle"""
+  subtitle: String!
+  """Title"""
+  title: String!
+  """Always nil — folder member notifications do not carry a token."""
+  token: String @deprecated(reason: "This notification type does not carry a token.")
+  """URL"""
+  url: String
+  """User"""
+  user: PublicUser!
+  """The workspace the folder belongs to."""
+  workspace: PublicWorkspace
+}
+
 """Response from mutation addProjectMember"""
 type AddProjectMemberResponse {
   """The affected project"""
