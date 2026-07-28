@@ -3487,6 +3487,8 @@ type Frame implements FrameGroup {
   previous: Frame
   """Revisions"""
   revisions(after: String, before: String, limit: Int = 20): FrameRevisions!
+  """The section this frame belongs to, if any"""
+  section: Section
   """The subscription status for the current user for this frame."""
   subscriptionStatus: NotificationSubscriptionStatus!
   """Unread count of comments"""
@@ -4162,6 +4164,11 @@ type Page {
   order: Int!
   """The presentation file for this page."""
   presentationFile: PresentationFile
+  """
+  All sections on this page, including nested ones, ordered by their order
+  number. Use parentSection to reconstruct the hierarchy.
+  """
+  sections: [Section!]!
   """Slug"""
   slug: String
   """
@@ -7338,6 +7345,14 @@ type RootQueryType {
     """Publications sort order"""
     sortOrder: PublicationSortOrder! = MOST_REACTED_DESC
   ): Publications!
+  section(
+    """The short ID of the document version to fetch the section from. When omitted, the latest version is used."""
+    documentVersionShortId: ShortId
+    """The UUID of the Share under which this section belongs."""
+    shareIdentifier: UUID!
+    """The UUID of the section in the sketch document."""
+    uuid: String!
+  ): Section
   share(id: UUID, shortId: ShortId): Share
   """Get a Share via a document's UUID"""
   shareForDocumentWithUuid(
@@ -7801,6 +7816,36 @@ type ScimPersonalAccessToken {
   This field is nullable as the token may not have been used yet.
   """
   lastUsedAt: DateTime
+}
+
+"""Section"""
+type Section {
+  """List of frames in this section"""
+  frames(
+    after: String
+    before: String
+    """Filter, default is all"""
+    filter: FrameFilterType = ALL
+    limit: Int = 20
+    """Search"""
+    search: String
+  ): Frames!
+  """Identifier"""
+  identifier: UUID!
+  """Whether this section groups the variants of a symbol"""
+  isVariantSet: Boolean!
+  """Name"""
+  name: String
+  """Order number"""
+  order: Int!
+  """Page"""
+  page: Page!
+  """The section this section is nested in, if any"""
+  parentSection: Section
+  """Slug"""
+  slug: String
+  """Section identifier from sketch document"""
+  uuid: UUID!
 }
 
 """API response for sendDownloadSketchEMail"""
