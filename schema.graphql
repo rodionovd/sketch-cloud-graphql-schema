@@ -93,6 +93,8 @@ enum AnnotationSubjectType {
   COMPONENT
   """For annotations bounded to a page"""
   PAGE
+  """For annotations bounded to a section"""
+  SECTION
 }
 
 """Artboard Filter"""
@@ -1631,6 +1633,10 @@ type Annotation {
   permanentPageId: String @deprecated(reason: "Use `currentSubject.uuid` instead")
   """Information about the annotation resolution (if resolved)"""
   resolution: AnnotationResolution
+  """Section to which this annotation is linked (if any)"""
+  section: Section
+  """UUID of the section to which this annotation is linked (if any)"""
+  sectionUuid: String
   """Share to which this annotation belongs"""
   share: Share!
   """Identifier of the share"""
@@ -5810,8 +5816,10 @@ type RootMutationType {
   """
   Create a new annotation with its first comment.
   
-  Annotations must be linked to either an artboard, or a page (so one of the
-  three permanent ids must be passed, and only one).
+  Annotations must be linked to a page, a frame, or a section (so at least one
+  of the three permanent ids must be passed — `pageUuid` should also be sent
+  alongside `frameUuid`/`sectionUuid` so the annotation resolves correctly when
+  listing a page's annotations).
   
   Also, for floating annotations coordinates must be passed.
   """
@@ -5827,6 +5835,8 @@ type RootMutationType {
     frameUuid: String
     """UUID of the page to which the annotation should be linked"""
     pageUuid: String
+    """UUID of the section to which the annotation should be linked"""
+    sectionUuid: String
     """Share identifier"""
     shareIdentifier: UUID!
     """
@@ -5936,7 +5946,9 @@ type RootMutationType {
   """
   Create a new annotation with its first comment for a preview.
   
-  Annotations must be linked to either an artboard, or a page.
+  Annotations must be linked to a page, a frame, or a section — `pageUuid`
+  should also be sent alongside `frameUuid`/`sectionUuid` so the annotation
+  resolves correctly when listing a page's annotations.
   
   Also, for floating annotations coordinates must be passed.
   """
@@ -5954,6 +5966,8 @@ type RootMutationType {
     pageUuid: String
     """Preview identifier"""
     previewIdentifier: UUID!
+    """UUID of the section to which the annotation should be linked"""
+    sectionUuid: String
   ): CreateAnnotationResponse!
   """Create a student application"""
   createStudentApplication(
@@ -6360,8 +6374,8 @@ type RootMutationType {
     frameUuid: String
     """UUID of the page to which the annotation should be linked"""
     pageUuid: String
-    """Information about the subject of the annotation, which can be artboard or page"""
-    subject: AnnotationSubjectInput
+    """UUID of the section to which the annotation should be linked"""
+    sectionUuid: String
     """
     Version identifier which was open for editing when the annotation was moved.
     Should be only populated by real-time clients when wanting to hide the annotation
@@ -10728,8 +10742,8 @@ input MoveAnnotationsInput {
   frameUuid: String
   """UUID of the page to which the annotation should be linked"""
   pageUuid: String
-  """Information about the subject of the annotation, which can be artboard or page"""
-  subject: AnnotationSubjectInput
+  """UUID of the section to which the annotation should be linked"""
+  sectionUuid: String
 }
 
 """multipart uploaded etag"""
