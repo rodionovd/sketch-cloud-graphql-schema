@@ -149,7 +149,7 @@ enum ComponentFilterType {
   COLOR_VARIABLE
   """Layer styles"""
   LAYER_STYLE
-  """Symbols"""
+  """Symbols and variant sets"""
   SYMBOL
   """Text styles"""
   TEXT_STYLE
@@ -2425,7 +2425,7 @@ type ComponentCount {
   colorVar: Int!
   """Layer style count"""
   layerStyle: Int!
-  """Symbol count"""
+  """Symbol count, variant sets counted as one symbol each"""
   symbol: Int!
   """Text style count"""
   textStyle: Int!
@@ -9680,6 +9680,28 @@ type UserUpdatePayload {
   """Indicates whether the mutation completed successfully or not."""
   successful: Boolean!
   user: User
+}
+
+"""Variant set component, groups the symbol variants it contains"""
+type VariantSet implements Component {
+  """Variant set depth"""
+  depth: Int!
+  """Variant set description"""
+  description: String
+  """Variant set identifier"""
+  identifier: UUID!
+  """Variant set name"""
+  name: String!
+  """Variant set path"""
+  path: String!
+  """Variant set path groups"""
+  pathGroups: [String!]!
+  """Structured path representation"""
+  pathInfo: [PathComponentInfo!]!
+  """The variant set section, holds the frames of the symbol variants"""
+  section: Section
+  """Variant set identifier from the sketch document (the section uuid)"""
+  uuid: UUID!
 }
 
 """'Updates' in UI terminology, depending on kind either 'Saves' or 'Versions'"""
