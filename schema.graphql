@@ -5964,6 +5964,8 @@ type RootMutationType {
     frameUuid: String
     """UUID of the page to which the annotation should be linked"""
     pageUuid: String
+    """Password for password-protected previews"""
+    password: String
     """Preview identifier"""
     previewIdentifier: UUID!
     """UUID of the section to which the annotation should be linked"""
@@ -6573,6 +6575,8 @@ type RootMutationType {
   ): RenderDownloadableAssetsPayload
   """Triggers a presentation render for the given version or preview"""
   renderPresentation(
+    """Password for password-protected previews"""
+    password: String
     """identifier of the preview to render a presentation files for"""
     previewIdentifier: UUID
     """identifier of the version to render a presentation file for"""
