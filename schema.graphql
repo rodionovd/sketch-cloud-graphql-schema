@@ -7332,6 +7332,8 @@ type RootQueryType {
     after: String
     before: String
     limit: Int = 20
+    """Password for password-protected previews"""
+    password: String
     previewIdentifier: UUID!
     sortOrder: AnnotationSortOrder = LATEST_FIRST
     """Only show annotations having particular resolution status."""
