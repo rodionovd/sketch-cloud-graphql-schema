@@ -5852,6 +5852,10 @@ type RootMutationType {
     annotationIdentifier: UUID!
     """Text of the reply"""
     body: String!
+    """Identifier of the preview this annotation is being viewed through"""
+    previewIdentifier: UUID
+    """Password for password-protected previews"""
+    previewPassword: String
   ): CreateAnnotationReplyResponse!
   """Create a new collection within the given project"""
   createCollection(
@@ -6054,11 +6058,19 @@ type RootMutationType {
   deleteAnnotation(
     """Annotation identifier"""
     annotationIdentifier: UUID!
+    """Identifier of the preview this annotation is being viewed through"""
+    previewIdentifier: UUID
+    """Password for password-protected previews"""
+    previewPassword: String
   ): DeleteAnnotationResponse!
   """Delete annotation reply"""
   deleteAnnotationReply(
     """Reply comment identifier"""
     commentIdentifier: UUID!
+    """Identifier of the preview this reply is being viewed through"""
+    previewIdentifier: UUID
+    """Password for password-protected previews"""
+    previewPassword: String
   ): DeleteAnnotationReplyResponse!
   """Delete a collection permanently. Its shares will stay directly under the project."""
   deleteCollection(
@@ -6237,6 +6249,10 @@ type RootMutationType {
     body: String!
     """Comment identifier"""
     commentIdentifier: UUID!
+    """Identifier of the preview this comment is being viewed through"""
+    previewIdentifier: UUID
+    """Password for password-protected previews"""
+    previewPassword: String
   ): EditCommentResponse!
   """Requests a resend of the email change confirmation"""
   emailResendChangeConfirmation: EmailResendChangeConfirmationPayload
@@ -6376,6 +6392,10 @@ type RootMutationType {
     frameUuid: String
     """UUID of the page to which the annotation should be linked"""
     pageUuid: String
+    """Identifier of the preview this annotation is being viewed through"""
+    previewIdentifier: UUID
+    """Password for password-protected previews"""
+    previewPassword: String
     """UUID of the section to which the annotation should be linked"""
     sectionUuid: String
     """
@@ -6398,6 +6418,10 @@ type RootMutationType {
   moveAnnotations(
     """List of input parameters for moving annotations."""
     input: [MoveAnnotationsInput!]!
+    """Identifier of the preview these annotations are being viewed through"""
+    previewIdentifier: UUID
+    """Password for password-protected previews"""
+    previewPassword: String
     """
     Version identifier which was open for editing when the annotations were moved.
     Should be only populated by real-time clients when wanting to hide the annotations
@@ -7153,6 +7177,10 @@ type RootQueryType {
   annotation(
     """Identifier of the annotation"""
     identifier: UUID
+    """Identifier of the preview this annotation is being viewed through"""
+    previewIdentifier: UUID
+    """Password for password-protected previews"""
+    previewPassword: String
   ): Annotation
   annotations(
     after: String
