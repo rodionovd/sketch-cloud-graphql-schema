@@ -962,6 +962,8 @@ enum WorkspaceAuditAction {
   ACCEPT_MEMBERSHIP_INVITE
   """A member was added to a permission group in the Workspace"""
   ADD_MEMBER_PERMISSION_GROUP
+  """Added a password to preview"""
+  ADD_PREVIEW_PASSWORD
   """An education request for this Workspace was approved"""
   APPROVED_EDUCATION_REQUEST
   """A folder was archived in the Workspace"""
@@ -1004,6 +1006,8 @@ enum WorkspaceAuditAction {
   CREATE_PERMISSION_GROUP
   """A permission group relation was created in the Workspace"""
   CREATE_PERMISSION_GROUP_RELATION
+  """Created preview"""
+  CREATE_PREVIEW
   """The Workspace was created"""
   CREATE_WORKSPACE
   """Credit was added to this Workspace's subscription"""
@@ -1014,6 +1018,8 @@ enum WorkspaceAuditAction {
   DELETE_ORGANIZATION
   """A permission group was deleted in the Workspace"""
   DELETE_PERMISSION_GROUP
+  """Deleted preview"""
+  DELETE_PREVIEW
   """A feature flag was detached from the Workspace"""
   DETACH_FEATURE_FLAG
   """A Workspace membership was disabled"""
@@ -1028,12 +1034,16 @@ enum WorkspaceAuditAction {
   INSTALL_INTEGRATION
   """An education request was submitted for this Workspace"""
   NEW_EDUCATION_REQUEST
+  """Refreshed the URL for preview"""
+  REFRESH_PREVIEW
   """An education request for this Workspace was rejected"""
   REJECT_EDUCATION_REQUEST
   """A member was removed from a permission group in the Workspace"""
   REMOVE_MEMBER_PERMISSION_GROUP
   """A permission group relation was removed in the Workspace"""
   REMOVE_PERMISSION_GROUP_RELATION
+  """Removed the password from preview"""
+  REMOVE_PREVIEW_PASSWORD
   """Additional information was requested for an education application"""
   REQUEST_INFO_EDUCATION_REQUEST
   """The SCIM token was reset for the Workspace"""
@@ -1072,6 +1082,8 @@ enum WorkspaceAuditAction {
   UPDATE_MEMBERSHIP
   """A permission group was updated in the Workspace"""
   UPDATE_PERMISSION_GROUP
+  """Updated preview"""
+  UPDATE_PREVIEW
   """The Workspace's name or avatar was updated"""
   UPDATE_WORKSPACE
   """This Workspace was upgraded from a personal to a standard workspace"""
@@ -1465,6 +1477,24 @@ Deprecated
 type AddPermissionGroupRelationResponse {
   """The created relation"""
   relation: PermissionGroupRelation!
+}
+
+"""Added a password to preview"""
+type AddPreviewPasswordAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User who performed the operation"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Human-readable description of the preview event"""
+  description: String!
+  """Preview identifier at the time of the operation"""
+  previewIdentifier: UUID
+  """Document containing the preview, null if it was removed"""
+  share: Share
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """A notification that is created when a member is added to a folder."""
@@ -2626,6 +2656,24 @@ type CreatePermissionGroupResponse {
   permissionGroup: PermissionGroup!
 }
 
+"""Created preview"""
+type CreatePreviewAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User who performed the operation"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Human-readable description of the preview event"""
+  description: String!
+  """Preview identifier at the time of the operation"""
+  previewIdentifier: UUID
+  """Document containing the preview, null if it was removed"""
+  share: Share
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """API response for createPreview"""
 type CreatePreviewResponse {
   """The newly created preview"""
@@ -2778,6 +2826,24 @@ type DeletePermissionGroup implements AuditLogItem {
 type DeletePermissionGroupResponse {
   """The UUID of the deleted permission group"""
   permissionGroupIdentifier: UUID!
+}
+
+"""Deleted preview"""
+type DeletePreviewAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User who performed the operation"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Human-readable description of the preview event"""
+  description: String!
+  """Preview identifier at the time of the operation"""
+  previewIdentifier: UUID
+  """Document containing the preview, null if it was removed"""
+  share: Share
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """API response for deletePreview"""
@@ -5181,6 +5247,26 @@ type RefreshAllPreviewsResponse {
   workspace: Workspace!
 }
 
+"""Refreshed the URL for preview"""
+type RefreshPreviewAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User who performed the operation"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Human-readable description of the preview event"""
+  description: String!
+  """Preview identifier at the time of the operation"""
+  previewIdentifier: UUID
+  """Preview identifier before its URL was refreshed"""
+  previousPreviewIdentifier: UUID
+  """Document containing the preview, null if it was removed"""
+  share: Share
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """Rejected education request audit info"""
 type RejectEducationRequestAudit implements AuditLogItem {
   """Name of the audit event type"""
@@ -5265,6 +5351,24 @@ type RemovePermissionGroupRelationResponse {
   project: Project
   """share of the relation, null if concerns project"""
   share: Share
+}
+
+"""Removed the password from preview"""
+type RemovePreviewPasswordAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User who performed the operation"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Human-readable description of the preview event"""
+  description: String!
+  """Preview identifier at the time of the operation"""
+  previewIdentifier: UUID
+  """Document containing the preview, null if it was removed"""
+  share: Share
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Response from mutation removeProjectMember"""
@@ -9428,6 +9532,24 @@ type UpdatePermissionGroupRelationResponse {
 type UpdatePermissionGroupResponse {
   """The updated permission group"""
   permissionGroup: PermissionGroup!
+}
+
+"""Updated preview"""
+type UpdatePreviewAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User who performed the operation"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: NaiveDateTime
+  """Human-readable description of the preview event"""
+  description: String!
+  """Preview identifier at the time of the operation"""
+  previewIdentifier: UUID
+  """Document containing the preview, null if it was removed"""
+  share: Share
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """API response for updatePreview"""
