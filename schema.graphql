@@ -1010,8 +1010,6 @@ enum WorkspaceAuditAction {
   CREATE_PREVIEW
   """The Workspace was created"""
   CREATE_WORKSPACE
-  """Credit was added to this Workspace's subscription"""
-  CREDIT_ADD
   """A Workspace membership was deleted"""
   DELETE_MEMBERSHIP
   """The Workspace was deleted"""
@@ -1213,7 +1211,7 @@ interface AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Administrator-facing event description"""
   description: String!
   """Version of this audit log entry"""
@@ -1396,7 +1394,7 @@ type AcceptMembershipInviteAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the accept membership invite event"""
   description: String!
   """Email that the invitation was originally sent to"""
@@ -1450,7 +1448,7 @@ type AddMemberPermissionGroup implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the add member permission group event"""
   description: String!
   """List of added members"""
@@ -1486,7 +1484,7 @@ type AddPreviewPasswordAudit implements AuditLogItem {
   """User who performed the operation"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the preview event"""
   description: String!
   """Preview identifier at the time of the operation"""
@@ -1753,7 +1751,7 @@ type ApprovedEducationRequestAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the new education request event"""
   description: String!
   """The education application that resulted in this audit entry"""
@@ -1773,7 +1771,7 @@ type ArchiveProject implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the archive project event"""
   description: String!
   """The project that has been archived"""
@@ -1920,7 +1918,7 @@ type AttachFeatureFlagAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the attach feature flag event"""
   description: String!
   """Feature flag identifier"""
@@ -1953,14 +1951,6 @@ type AuditActor {
   identifier: UUID!
   """User name"""
   name: String
-}
-
-"""Audit credit information"""
-type AuditCredit {
-  """Credit amount issued"""
-  amount: Int!
-  """Description used when the credit was issued"""
-  description: String
 }
 
 """Audit membership"""
@@ -2019,7 +2009,7 @@ type CancelLicenseAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the cancel license event"""
   description: String!
   """Version of this audit log entry"""
@@ -2039,7 +2029,7 @@ type ChangeAccountLinkingAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the change account linking event"""
   description: String!
   """Whether account linking was enabled or disabled"""
@@ -2057,7 +2047,7 @@ type ChangeRestrictedUploadsAudit implements AuditLogItem {
   """Were uploads restricted enabled or disabled"""
   areUploadsRestricted: Boolean!
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the change restricted uploads event"""
   description: String!
   """Version of this audit log entry"""
@@ -2071,7 +2061,7 @@ type ChangeScimAutoLinkAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the change scim auto link event"""
   description: String!
   """Whether SCIM auto-linking was enabled or disabled"""
@@ -2087,7 +2077,7 @@ type ChangeSecurityEmailAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the change security email event"""
   description: String!
   """The previous security email address"""
@@ -2105,7 +2095,7 @@ type ChangeUnlimitedStorageOverrideEnabled implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the change unlimited storage override enabled event"""
   description: String!
   """The new value"""
@@ -2121,7 +2111,7 @@ type ChangeUnlimitedTrial implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the change unlimited trial event"""
   description: String!
   """The new value"""
@@ -2137,7 +2127,7 @@ type ChangeWorkspaceProfileEnabled implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the change workspace profile enabled event"""
   description: String!
   """The new value"""
@@ -2153,7 +2143,7 @@ type ChangeWorkspaceProfileIsOfficial implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the change workspace profile is official event"""
   description: String!
   """The new value"""
@@ -2169,7 +2159,7 @@ type ChangeWorkspaceProfileShortUrl implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the change workspace profile short url event"""
   description: String!
   """The new value"""
@@ -2185,7 +2175,7 @@ type ChangeWorkspaceProfileVisibility implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the change workspace profile visibility event"""
   description: String!
   """The new value"""
@@ -2201,7 +2191,7 @@ type ChangedPlanAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the changed plan event"""
   description: String!
   """Version of this audit log entry"""
@@ -2520,7 +2510,7 @@ type ConfigureEncryptionKeysAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the configure encryption keys event"""
   description: String!
   """KMS key ARNs configured for the Workspace"""
@@ -2542,7 +2532,7 @@ type ConvertToEducationWorkspaceAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the new education request event"""
   description: String!
   """The education application that resulted in this audit entry"""
@@ -2588,7 +2578,7 @@ type CreateMembershipAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the create membership event"""
   description: String!
   """
@@ -2617,7 +2607,7 @@ type CreatePermissionGroup implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the create permission group event"""
   description: String!
   """Name"""
@@ -2635,7 +2625,7 @@ type CreatePermissionGroupRelation implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the create permission group relation event"""
   description: String!
   """Name"""
@@ -2663,7 +2653,7 @@ type CreatePreviewAudit implements AuditLogItem {
   """User who performed the operation"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the preview event"""
   description: String!
   """Preview identifier at the time of the operation"""
@@ -2687,7 +2677,7 @@ type CreateWorkspaceAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the create workspace event"""
   description: String!
   """Workspace payment method"""
@@ -2726,22 +2716,6 @@ type CreateWorkspaceShareResponse {
   version: Version!
 }
 
-"""Credit audit"""
-type CreditAudit implements AuditLogItem {
-  """Name of the audit event type"""
-  action: WorkspaceAuditAction
-  """User that issued this credit"""
-  actor: AuditActor
-  """Date and time of the operation"""
-  createdAt: NaiveDateTime
-  """Audit credit"""
-  credit: AuditCredit
-  """Human-readable description of the credit event"""
-  description: String!
-  """Version of this audit log entry"""
-  version: Int
-}
-
 """API response for deleteAllPreviews"""
 type DeleteAllPreviewsResponse {
   """The updated workspace"""
@@ -2777,7 +2751,7 @@ type DeleteMembershipAudit implements AuditLogItem {
   """Indicates the source that originated this audit log"""
   auditSource: AuditSource!
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Did this membership add a seat assigned to it that was deleted"""
   deletedSeat: Boolean!
   """Human-readable description of the delete membership event"""
@@ -2799,7 +2773,7 @@ type DeleteOrganizationAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the delete organization event"""
   description: String!
   """Version of this audit log entry"""
@@ -2813,7 +2787,7 @@ type DeletePermissionGroup implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the delete permission group event"""
   description: String!
   """Name"""
@@ -2835,7 +2809,7 @@ type DeletePreviewAudit implements AuditLogItem {
   """User who performed the operation"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the preview event"""
   description: String!
   """Preview identifier at the time of the operation"""
@@ -2926,7 +2900,7 @@ type DetachFeatureFlagAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the detach feature flag event"""
   description: String!
   """Feature flag identifier"""
@@ -2946,7 +2920,7 @@ type DisableMembershipAudit implements AuditLogItem {
   """Indicates the source that originated this audit log"""
   auditSource: AuditSource!
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Did this membership add a seat assigned to it that was deleted"""
   deletedSeat: Boolean!
   """Human-readable description of the disable membership event"""
@@ -2980,7 +2954,7 @@ type DisableSsoAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the disable sso event"""
   description: String!
   """Version of this audit log entry"""
@@ -3190,7 +3164,7 @@ type DowngradedSsoMembershipProvisionedAudit implements AuditLogItem {
   """Indicates the source that originated this audit log"""
   auditSource: AuditSource!
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the downgraded sso membership provisioned event"""
   description: String!
   """Membership user that was provisioned"""
@@ -3658,7 +3632,7 @@ type GeneratedDocumentsFeedAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the generated documents feed event"""
   description: String!
   """Version of this audit log entry"""
@@ -3724,7 +3698,7 @@ type InstallIntegrationAudit implements AuditLogItem {
   """User that installed the integration"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the install integration event"""
   description: String!
   """Integration provider (for example, slack)"""
@@ -3961,7 +3935,7 @@ type NewEducationRequestAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the new education request event"""
   description: String!
   """The education application that resulted in this audit entry"""
@@ -4371,7 +4345,7 @@ type PaymentMethodConvertedToInvoiceAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the payment method converted to invoice event"""
   description: String!
   """Version of this audit log entry"""
@@ -5254,7 +5228,7 @@ type RefreshPreviewAudit implements AuditLogItem {
   """User who performed the operation"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the preview event"""
   description: String!
   """Preview identifier at the time of the operation"""
@@ -5274,7 +5248,7 @@ type RejectEducationRequestAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the new education request event"""
   description: String!
   """The education application that resulted in this audit entry"""
@@ -5304,7 +5278,7 @@ type RemoveMemberPermissionGroup implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the remove member permission group event"""
   description: String!
   """Removed member from the permission group"""
@@ -5328,7 +5302,7 @@ type RemovePermissionGroupRelation implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the remove permission group relation event"""
   description: String!
   """Name"""
@@ -5360,7 +5334,7 @@ type RemovePreviewPasswordAudit implements AuditLogItem {
   """User who performed the operation"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the preview event"""
   description: String!
   """Preview identifier at the time of the operation"""
@@ -5428,7 +5402,7 @@ type RequestInfoEducationRequestAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the new education request event"""
   description: String!
   """The education application that resulted in this audit entry"""
@@ -5459,7 +5433,7 @@ type ResetScimTokenAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the reset scim token event"""
   description: String!
   """Version of this audit log entry"""
@@ -5491,7 +5465,7 @@ type RestoreMembershipAudit implements AuditLogItem {
   """Did this membership need a seat assigned to it"""
   consumedSeat: Boolean!
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the restore membership event"""
   description: String!
   """The associated role"""
@@ -8138,7 +8112,7 @@ type SetDesignSystemsEligibilityAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the set design systems eligibility event"""
   description: String!
   """Were design systems enabled or disabled"""
@@ -8173,7 +8147,7 @@ type SetRestrictedUploadsEligibilityAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the set restricted uploads eligibility event"""
   description: String!
   """Was restricted uploads eligibility enabled or disabled"""
@@ -8189,7 +8163,7 @@ type SetScimEnabledAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the set scim enabled event"""
   description: String!
   """New value for SCIM enabled"""
@@ -8205,7 +8179,7 @@ type SetSsoConfigAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the set sso config event"""
   description: String!
   """Version of this audit log entry"""
@@ -8219,7 +8193,7 @@ type SetSsoEligibilityAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the set sso eligibility event"""
   description: String!
   """Was SSO eligibility enabled or disabled"""
@@ -8235,7 +8209,7 @@ type SetWorkspaceExpiredVersionsRulesAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the set workspace expired versions rules event"""
   description: String!
   """New expired versions rules value"""
@@ -8996,7 +8970,7 @@ type SsoMembershipProvisionedAudit implements AuditLogItem {
   """Indicates the source that originated this audit log"""
   auditSource: AuditSource!
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the sso membership provisioned event"""
   description: String!
   """Membership user that was provisioned"""
@@ -9079,7 +9053,7 @@ type SupportAccessDisabledAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the support access disabled event"""
   description: String!
   """Version of this audit log entry"""
@@ -9093,7 +9067,7 @@ type SupportAccessEnabledAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the support access enabled event"""
   description: String!
   """Permission expiration date and time"""
@@ -9215,7 +9189,7 @@ type TransferOrganizationAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the transfer organization event"""
   description: String!
   """New workspace owner"""
@@ -9319,7 +9293,7 @@ type TrialAmendAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the trial amend event"""
   description: String!
   """Date and time the trial was set up to end"""
@@ -9337,7 +9311,7 @@ type UnarchiveProject implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the unarchive project event"""
   description: String!
   """The project that has been unarchived"""
@@ -9361,7 +9335,7 @@ type UninstallIntegrationAudit implements AuditLogItem {
   """Cause of uninstallation"""
   cause: IntegrationUninstallCause!
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the uninstall integration event"""
   description: String!
   """Integration provider (for example, slack)"""
@@ -9377,7 +9351,7 @@ type UnknownAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the unknown event"""
   description: String!
   """Version of this audit log entry"""
@@ -9487,7 +9461,7 @@ type UpdateMembershipAudit implements AuditLogItem {
   """The role this membership was updated to, null if the role was left unchanged."""
   changedRole: String
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the update membership event"""
   description: String!
   """Membership user that was updated, null if there is no corresponding user"""
@@ -9505,7 +9479,7 @@ type UpdatePermissionGroup implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the update permission group event"""
   description: String!
   """New name"""
@@ -9541,7 +9515,7 @@ type UpdatePreviewAudit implements AuditLogItem {
   """User who performed the operation"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the preview event"""
   description: String!
   """Preview identifier at the time of the operation"""
@@ -9621,7 +9595,7 @@ type UpdateWorkspaceAudit implements AuditLogItem {
   """Whether the avatar was changed"""
   avatarChanged: Boolean
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the update workspace event"""
   description: String!
   """The new Workspace name, if changed"""
@@ -9684,7 +9658,7 @@ type UpgradePersonalWorkspaceAudit implements AuditLogItem {
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
   """Date and time of the operation"""
-  createdAt: NaiveDateTime
+  createdAt: DateTime
   """Human-readable description of the upgrade personal workspace event"""
   description: String!
   """Version of this audit log entry"""
