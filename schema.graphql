@@ -1048,6 +1048,10 @@ enum WorkspaceAuditAction {
   RESET_SCIM_TOKEN
   """A Workspace membership was restored"""
   RESTORE_MEMBERSHIP
+  """A seat change was scheduled for the next billing cycle"""
+  SCHEDULED_SEAT_CHANGE
+  """Empty Editor seats were added"""
+  SEATS_ADDED
   """Design systems eligibility was toggled for the Workspace"""
   SET_DESIGN_SYSTEMS_ELIGIBILITY
   """Restricted uploads eligibility was toggled for the Workspace"""
@@ -7997,6 +8001,20 @@ type SamlAttribute {
   updateOnLogin: Boolean!
 }
 
+"""Scheduled seat change audit object"""
+type ScheduledSeatChangeAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: DateTime
+  """Human-readable description of the scheduled seat change event"""
+  description: String!
+  """Version of this audit log entry"""
+  version: Int
+}
+
 """
 SCIM personal access tokens are used to authenticate requests to the SCIM
 API.
@@ -8033,6 +8051,20 @@ type ScimPersonalAccessToken {
   This field is nullable as the token may not have been used yet.
   """
   lastUsedAt: DateTime
+}
+
+"""Empty Editor seats added audit object"""
+type SeatsAddedAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: DateTime
+  """Human-readable description of the seats added event"""
+  description: String!
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Section"""
