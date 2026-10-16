@@ -970,6 +970,8 @@ enum WorkspaceAuditAction {
   ARCHIVE_PROJECT
   """A feature flag was attached to the Workspace"""
   ATTACH_FEATURE_FLAG
+  """The workspace subscription was cancelled"""
+  CANCELLED_SUBSCRIPTION
   """A license was cancelled"""
   CANCEL_LICENSE
   """The Workspace's plan was changed"""
@@ -2024,6 +2026,20 @@ type CancelLicenseAudit implements AuditLogItem {
 type CancelScheduledBillingSeatsResponse {
   """Modified workspace"""
   workspace: Workspace!
+}
+
+"""Cancelled subscription audit object"""
+type CancelledSubscriptionAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: DateTime
+  """Human-readable description of the subscription cancellation event"""
+  description: String!
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Account linking was enabled or disabled for the Workspace"""
