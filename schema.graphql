@@ -4544,6 +4544,8 @@ type Preview {
   presentationStatus: PresentationFileStatus!
   """List of prototypes in this preview"""
   prototypes(after: String, before: String, limit: Int = 20): Frames!
+  """The original document, available only to signed-in users with permission to view it"""
+  share: Share
 }
 
 """Event fired when a preview is created"""
