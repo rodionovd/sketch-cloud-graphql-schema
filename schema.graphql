@@ -1080,6 +1080,8 @@ enum WorkspaceAuditAction {
   TRIAL_DURATION
   """A folder was unarchived in the Workspace"""
   UNARCHIVE_PROJECT
+  """The workspace subscription's scheduled cancellation was undone"""
+  UNDID_SUBSCRIPTION_CANCELLATION
   """An integration was uninstalled from the Workspace"""
   UNINSTALL_INTEGRATION
   """Unknown workspace audit action"""
@@ -9029,6 +9031,8 @@ type SocialSignInStartUrlPayload {
 
 """SSO membership provisioned audit object"""
 type SsoMembershipProvisionedAudit implements AuditLogItem {
+  """Access level the member was provisioned with. Null if the entry didn't record one"""
+  accessLevel: WorkspaceMemberAccessLevel
   """Name of the audit event type"""
   action: WorkspaceAuditAction
   """User that performed the operation that resulted in this audit entry"""
@@ -9039,6 +9043,8 @@ type SsoMembershipProvisionedAudit implements AuditLogItem {
   createdAt: DateTime
   """Human-readable description of the sso membership provisioned event"""
   description: String!
+  """Role the member was provisioned with. Null if the entry didn't record one"""
+  role: WorkspaceMembershipRole
   """Membership user that was provisioned"""
   user: AuditActor
   """Email of the SSO membership that was provisioned"""
@@ -9390,6 +9396,20 @@ type UnarchiveProject implements AuditLogItem {
 type UnarchiveProjectResponse {
   """The unarchived project"""
   project: Project!
+}
+
+"""Undone subscription cancellation audit object"""
+type UndidSubscriptionCancellationAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: DateTime
+  """Human-readable description of the undone subscription cancellation"""
+  description: String!
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Integration was uninstalled from a workspace"""
