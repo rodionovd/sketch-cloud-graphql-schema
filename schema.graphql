@@ -1086,6 +1086,8 @@ enum WorkspaceAuditAction {
   UNINSTALL_INTEGRATION
   """Unknown workspace audit action"""
   UNKNOWN
+  """The workspace's payment card was changed"""
+  UPDATED_PAYMENT_METHOD
   """A Workspace membership was updated"""
   UPDATE_MEMBERSHIP
   """A permission group was updated in the Workspace"""
@@ -9735,6 +9737,20 @@ type UpdateWorkspaceResponse {
 type UpdateWorkspaceSecurityEmailResponse {
   """The associated workspace"""
   workspace: Workspace!
+}
+
+"""Changed payment card audit object"""
+type UpdatedPaymentMethodAudit implements AuditLogItem {
+  """Name of the audit event type"""
+  action: WorkspaceAuditAction
+  """User that performed the operation that resulted in this audit entry"""
+  actor: AuditActor
+  """Date and time of the operation"""
+  createdAt: DateTime
+  """Human-readable description of the payment card change"""
+  description: String!
+  """Version of this audit log entry"""
+  version: Int
 }
 
 """Personal workspace upgraded to standard workspace audit type"""
