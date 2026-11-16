@@ -10417,6 +10417,14 @@ type WorkspaceFeatures {
   accountLinkingEnabled: Boolean!
   """Is the Archive feature available for this workspace?"""
   archiveEnabled: Boolean!
+  """Is the Audit Log available for this workspace?"""
+  auditLogEnabled: Boolean!
+  """
+  How many days back this workspace's plan shows the Audit Log, counting from the start of
+  today (UTC). Null when the plan includes the full history, and 0 when the plan has no
+  Audit Log.
+  """
+  auditLogHistoryDays: Int
   """Is the encryption enabled for this workspace?"""
   encryptionEnabled: Boolean!
   """Is the mandatory password protection for previews enabled for this workspace?"""
