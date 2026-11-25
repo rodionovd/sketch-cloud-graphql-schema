@@ -117,6 +117,8 @@ enum ArtboardFilterType {
 
 """Indicates what originated an audit log entry"""
 enum AuditSource {
+  """Plan downgrade initiated audit log"""
+  PLAN_DOWNGRADE
   """Scheduled seat change initiated log"""
   SCHEDULED_SEAT_CHANGE
   """SCIM API initiated audit log"""
@@ -2836,6 +2838,8 @@ type DeletePermissionGroup implements AuditLogItem {
   action: WorkspaceAuditAction
   """User that performed the operation that resulted in this audit entry"""
   actor: AuditActor
+  """Indicates the source that originated this audit log"""
+  auditSource: AuditSource!
   """Date and time of the operation"""
   createdAt: DateTime
   """Human-readable description of the delete permission group event"""
